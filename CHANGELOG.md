@@ -9,6 +9,7 @@
 - Settings › SMS & AI: notification access, sources, scan past SMS (30–365 days, READ_SMS), on-device model
 - Settings › Notifications: permission and per-type channel settings
 - Add automatically (on by default): bank alerts post straight to the matching account (last digits), with payee, category from payee history, payment method and UPI app; duplicates from SMS + Gmail, manual or CSV entries are skipped; uncertain ones wait in Review; a notification for each
+- Bank parser tuned on real ICICI / Federal / SBI Card alerts: card bill payments, "Acc", amounts glued to "credited", own-account transfers, reversal refunds, completed mandate debits, "card number ending with"; alerts with links now go to Review instead of being dropped
 
 ## 0.8.1
 

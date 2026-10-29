@@ -79,7 +79,7 @@ class MessageInboxRepository @Inject constructor(
             id != -1L
         }
         if (!inserted) return "Message already detected"
-        if (!settings.messages.first().autoAdd || settings.money.first().currency != "INR") return ADDED_TO_REVIEW
+        if (!settings.messages.first().autoAdd || p.hasLink || settings.money.first().currency != "INR") return ADDED_TO_REVIEW
         val account = AutoAdd.account(db.accounts().list(), p.accountSuffix, body) ?: return ADDED_TO_REVIEW
         val name = AutoAdd.payee(p.merchant, body) ?: return ADDED_TO_REVIEW
         val category = AutoAdd.category(name, body, db.categories().list(), db.expenses().list()) ?: return ADDED_TO_REVIEW

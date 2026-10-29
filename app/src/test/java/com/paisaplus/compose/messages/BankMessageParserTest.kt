@@ -38,6 +38,26 @@ class BankMessageParserTest {
     @Test fun refundsAreIncome() {
         assertEquals(TransactionType.INCOME, parsed("INR 700.00 refunded to card ending 1357 for Online Shop. Ref 928374610123.").type)
     }
+    /** Real bank alerts often carry a dispute link: parsed, but flagged so they only go to Review. */
+    @Test fun linkedAlertsAreFlaggedForReview() {
+        assertTrue(parsed("INR 1500 debited from account XX1234. Visit bank-example.in.").hasLink)
+        assertFalse(parsed("INR 1500 debited from account XX1234. Ref 123456789.").hasLink)
+    }
+
+    /** Formats seen in real ICICI / Federal / SBI alerts. */
+    @Test fun realWorldFormats() {
+        assertEquals(TransactionType.INCOME, parsed("Hi,Rs.2900credited in your A/c XX6405 on 11OCT2026 15:00:38 using cash deposit machine at FBL-LULU MALL KOCHI. Current Bal: Rs.10167.94 - Federal Bank").type)
+        assertEquals("002", parsed("ICICI Bank Acc XX002 debited Rs. 34,000.00 on 09-Oct-26 InfoBIL*INFT*FJD4.Avl Bal Rs. 31,484.06.").accountSuffix)
+        parsed("ICICI Bank Acct XXX002 debited with INR 10730.00 on 12-Oct-26. Acct XXX626 credited.UPI:665177020519.").let {
+            assertEquals(TransactionType.EXPENSE, it.type); assertEquals(1073000L, it.amountPaise)
+        }
+        assertEquals(TransactionType.INCOME, parsed("Dear Customer, Payment of INR 34,000.00 has been received on your ICICI Bank Credit Card Account 5xxx1007 on 09-OCT-26.Thank you.").type)
+        assertEquals("0324", parsed("Payment of Rs 5,838.83 is received towards your credit card number ending with 0324 on 22/09/26.").accountSuffix)
+        assertEquals(TransactionType.INCOME, parsed("Dear Customer, your ICICI Bank Account XXX002 has been credited with Rs 300.00 on 08-Oct-26 as reversal of transaction with UPI: 664779930898.").type)
+        assertEquals(200L, parsed("Debited Rs 2.00 from a/c X6405 for UPI mandate towards Google Cloud on 06-10-2026 17:28:47. Ref: 664570602553.").amountPaise)
+        ignored("UPI ASPRESENTED mandate created towards Google Cloud till 31-12-2036. Max amount Rs 15000.00. Ref: 627978413797.")
+    }
+
     @Test fun dangerousAndInformationalMessagesNeverBook() {
         listOf(
             "Your account XX1234 balance is INR 5000.",
@@ -46,8 +66,6 @@ class BankMessageParserTest {
             "Payment failed. INR 1500 not debited from A/c XX1234.",
             "INR 1500 will be debited from account XX1234 tomorrow.",
             "INR 1500 reversed to account XX1234 after it was debited.",
-            "INR 1500 debited from account XX1234. Verify at https://example.invalid.",
-            "INR 1500 debited from account XX1234. Visit bank-example.in.",
             "Your credit card bill INR 1500 is due. You spent INR 5000 this month.",
             "INR 1500 debited from A/c XX1234 and credited to another account.",
             "Payment request: INR 1500 to be paid from account XX1234.",
