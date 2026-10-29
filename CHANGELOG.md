@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.9.4
 
 - Updates install without a confirmation prompt once Paisa+ has installed itself (Android 12+); the first in-app update still asks
 - Optional "Install with Shizuku" (Settings › About › App updates): no prompt at all while Shizuku runs; falls back to the normal installer otherwise
