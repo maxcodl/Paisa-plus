@@ -1,0 +1,19 @@
+{
+  "formatVersion": 1,
+  "models": [
+    {
+      "formatVersion": 1,
+      "id": "banking-v8-int4-v1",
+      "name": "Banking SMS V8 \u00b7 INT4 (experimental)",
+      "sourceModel": "rawsun00001/banking-sms-json-parser-v8",
+      "sourceRevision": "97ecb964b239469691549bef0647c5f2e957cdb6",
+      "runtime": "onnx-gpt2-bpe-v1",
+      "contextTokens": 384,
+      "maxNewTokens": 96,
+      "downloadBytes": 55687065,
+      "installedBytes": 65606438,
+      "sha256": "88d2fe02b1057340571a758386e94f0e8a8f6af679fa2507ec28d0b4bd085f6a",
+      "url": "https://github.com/maxcodl/Paisa-plus/releases/download/models-v1/banking-v8-int4-v1.zip"
+    }
+  ]
+}

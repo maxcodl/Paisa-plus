@@ -21,7 +21,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             // Personal sideload build: sign release with the debug key.
             signingConfig = signingConfigs.getByName("debug")
         }
@@ -30,6 +30,19 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a", "armeabi-v7a", "x86_64")
+            isUniversalApk = false
+        }
+    }
+
+    packaging {
+        jniLibs.useLegacyPackaging = true
     }
 
     buildFeatures {
@@ -66,6 +79,7 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.11.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.28.0")
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("androidx.glance:glance-appwidget:1.1.1")
     implementation("androidx.glance:glance-material3:1.1.1")

@@ -1,0 +1,12 @@
+{
+  "model": "multinomial-naive-bayes-two-expert-v2",
+  "corpus_sha256": "fc9ef3a05e219273daa283dcd85b9cc3556fe1b3c7e6d50c0981c360210c4692",
+  "training_rows": 1088,
+  "training_families": 90,
+  "held_out_rows": 12,
+  "threshold": 0.8,
+  "true_positives": 6,
+  "false_positives": 1,
+  "false_negatives": 0,
+  "note": "Synthetic template-disjoint smoke evaluation; not real-world accuracy or phishing authentication."
+}

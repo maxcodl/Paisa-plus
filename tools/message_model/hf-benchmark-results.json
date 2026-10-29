@@ -1,0 +1,882 @@
+{
+  "model": "rawsun00001/banking-sms-json-parser-v8",
+  "revision": "97ecb964b239469691549bef0647c5f2e957cdb6",
+  "runtime": "CPU float32, 4 threads; not Android latency",
+  "prompt": "sms + |",
+  "max_new_tokens": 180,
+  "decoding": "greedy; stop at first balanced object; no JSON repair",
+  "cases": 38,
+  "valid_json": 24,
+  "all_checked_fields_correct": 1,
+  "results": [
+    {
+      "id": "canara-bank-0",
+      "input": "Dear Customer, Acct XXX730 Dr. INR 10,000.00 on 29/10/26 to DEMO MERCHANT; UPI: 930000000000; Bal INR 73,495.88.Not you?SMS BLOCKUPI to 0000000000-CanaraBank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 1000000,
+        "type": "EXPENSE",
+        "account_suffix": "730",
+        "reference": "930000000000",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"debit\",\"amount\":10,000.00,\"category\":\"Entertainment\",\"last4\":\"730\",\"is_transaction\":true}",
+      "parsed": null,
+      "checks": {
+        "valid_json": false
+      },
+      "seconds": 0.631
+    },
+    {
+      "id": "canara-bank-1",
+      "input": "Dear Customer, Acct XXX730 Cr. INR 10,000.00 on 29/10/26 from DEMO MERCHANT; UPI: 930000000001; Bal INR 83,495.88.-CanaraBank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 1000000,
+        "type": "INCOME",
+        "account_suffix": "730",
+        "reference": "930000000001",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"debit\",\"amount\":10,000.00,\"category\":\"Entertainment\",\"last4\":\"730\",\"is_transaction\":true}",
+      "parsed": null,
+      "checks": {
+        "valid_json": false
+      },
+      "seconds": 0.599
+    },
+    {
+      "id": "canara-bank-negative-0",
+      "input": "Canara Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000000000.",
+      "expected": {
+        "bookable": false
+      },
+      "completion": "{\"date\":\"2025-07-21\",\"type\":\"debit\",\"amount\":246810.50,\"category\":\"Other\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-07-21",
+        "type": "debit",
+        "amount": 246810.5,
+        "category": "Other",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": false
+      },
+      "seconds": 0.594
+    },
+    {
+      "id": "canara-bank-negative-1",
+      "input": "Canara Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000000001.",
+      "expected": {
+        "bookable": false
+      },
+      "completion": "{\"date\":\"2025-07-12\",\"type\":\"credit\",\"amount\":234.50,\"category\":\"Other\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-07-12",
+        "type": "credit",
+        "amount": 234.5,
+        "category": "Other",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": false
+      },
+      "seconds": 0.559
+    },
+    {
+      "id": "hdfc-bank-0",
+      "input": "Sent Rs.1,234.50 From HDFC Bank A/C *4920 To DEMO MERCHANT On 29/10/26 Ref 930000001200. Not You? SMS BLOCK UPI to 0000000000",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001200",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"debit\",\"amount\":1,234.50,\"category\":\"Investment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": null,
+      "checks": {
+        "valid_json": false
+      },
+      "seconds": 0.574
+    },
+    {
+      "id": "hdfc-bank-1",
+      "input": "HDFC Bank: Rs.1,234.50 deposited to a/c **4920 on 29-10-26. Info: DEMO MERCHANT. Ref 930000001201. Avl Bal Rs.48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001201",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"debit\",\"amount\":1,234.50,\"category\":\"Investment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": null,
+      "checks": {
+        "valid_json": false
+      },
+      "seconds": 0.569
+    },
+    {
+      "id": "hdfc-bank-negative-0",
+      "input": "HDFC Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000001200.",
+      "expected": {
+        "bookable": false
+      },
+      "completion": "{\"date\":\"2025-07-14\",\"type\":\"debit\",\"amount\":246810.50,\"category\":\"Other\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-07-14",
+        "type": "debit",
+        "amount": 246810.5,
+        "category": "Other",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": false
+      },
+      "seconds": 0.545
+    },
+    {
+      "id": "hdfc-bank-negative-1",
+      "input": "HDFC Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000001201.",
+      "expected": {
+        "bookable": false
+      },
+      "completion": "{\"date\":\"2025-07-30\",\"type\":\"debit\",\"amount\":234.50,\"category\":\"Other\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-07-30",
+        "type": "debit",
+        "amount": 234.5,
+        "category": "Other",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": false
+      },
+      "seconds": 0.518
+    },
+    {
+      "id": "state-bank-of-india-0",
+      "input": "Your a/c XXXX4920 is debited by Rs.1,234.50 on 29/10/26 transfer to DEMO MERCHANT. Ref No 930000000100. Avl Bal Rs.42,875.25 -SBI",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000000100",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"debit\",\"amount\":1,234.50,\"category\":\"Entertainment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": null,
+      "checks": {
+        "valid_json": false
+      },
+      "seconds": 0.577
+    },
+    {
+      "id": "state-bank-of-india-1",
+      "input": "Your a/c XXXX4920 is credited by Rs.1,234.50 on 29/10/26 transfer from DEMO MERCHANT. Ref No 930000000101. Avl Bal Rs.48,875.25 -SBI",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000000101",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"credit\",\"amount\":1,234.50,\"category\":\"Entertainment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": null,
+      "checks": {
+        "valid_json": false
+      },
+      "seconds": 0.595
+    },
+    {
+      "id": "state-bank-of-india-negative-0",
+      "input": "State Bank of India: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000000100.",
+      "expected": {
+        "bookable": false
+      },
+      "completion": "{\"date\":\"2025-07-30\",\"type\":\"debit\",\"amount\":246810.50,\"category\":\"Other\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-07-30",
+        "type": "debit",
+        "amount": 246810.5,
+        "category": "Other",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": false
+      },
+      "seconds": 0.534
+    },
+    {
+      "id": "state-bank-of-india-negative-1",
+      "input": "State Bank of India: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000000101.",
+      "expected": {
+        "bookable": false
+      },
+      "completion": "{\"date\":\"2025-07-16\",\"type\":\"debit\",\"amount\":1,234.50,\"category\":\"Other\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": null,
+      "checks": {
+        "valid_json": false
+      },
+      "seconds": 0.581
+    },
+    {
+      "id": "icici-bank-0",
+      "input": "ICICI Bank Acct XX4920 debited for Rs 1,234.50 on 29-Oct-2026; DEMO MERCHANT credited. RRN 930000001300. Updated Bal Rs 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001300",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-Oct-2026\",\"type\":\"debit\",\"amount\":1,234.50,\"category\":\"Investment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": null,
+      "checks": {
+        "valid_json": false
+      },
+      "seconds": 0.59
+    },
+    {
+      "id": "icici-bank-1",
+      "input": "ICICI Bank Acct XX4920 credited with Rs 1,234.50 from DEMO MERCHANT on 29-Oct-2026. RRN 930000001301. Updated Bal Rs 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001301",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-Oct-2026\",\"type\":\"credit\",\"amount\":1,234.50,\"category\":\"Investment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": null,
+      "checks": {
+        "valid_json": false
+      },
+      "seconds": 0.57
+    },
+    {
+      "id": "icici-bank-negative-0",
+      "input": "ICICI Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000001300.",
+      "expected": {
+        "bookable": false
+      },
+      "completion": "{\"date\":\"2025-07-26\",\"type\":\"debit\",\"amount\":246810.50,\"category\":\"Other\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-07-26",
+        "type": "debit",
+        "amount": 246810.5,
+        "category": "Other",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": false
+      },
+      "seconds": 0.549
+    },
+    {
+      "id": "icici-bank-negative-1",
+      "input": "ICICI Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000001301.",
+      "expected": {
+        "bookable": false
+      },
+      "completion": "{\"date\":\"2025-07-26\",\"type\":\"credit\",\"amount\":1234.50,\"category\":\"Other\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-07-26",
+        "type": "credit",
+        "amount": 1234.5,
+        "category": "Other",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": false
+      },
+      "seconds": 0.525
+    },
+    {
+      "id": "kotak-mahindra-bank-0",
+      "input": "Sent Rs.1,234.50 from Kotak Bank AC X4920 to DEMO MERCHANT on 29-10-26. UPI Ref 930000001500. Avl Bal Rs.42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001500",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"debit\",\"amount\":1,234.50,\"category\":\"Investment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": null,
+      "checks": {
+        "valid_json": false
+      },
+      "seconds": 0.58
+    },
+    {
+      "id": "kotak-mahindra-bank-1",
+      "input": "Received Rs.1,234.50 in your Kotak Bank AC X4920 from DEMO MERCHANT on 29-10-26. UPI Ref 930000001501. Avl Bal Rs.48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001501",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"debit\",\"amount\":1,234.50,\"category\":\"Entertainment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": null,
+      "checks": {
+        "valid_json": false
+      },
+      "seconds": 0.585
+    },
+    {
+      "id": "kotak-mahindra-bank-negative-0",
+      "input": "Kotak Mahindra Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000001500.",
+      "expected": {
+        "bookable": false
+      },
+      "completion": "{\"date\":\"2025-06-24\",\"type\":\"debit\",\"amount\":246810.50,\"category\":\"Other\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-06-24",
+        "type": "debit",
+        "amount": 246810.5,
+        "category": "Other",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": false
+      },
+      "seconds": 0.536
+    },
+    {
+      "id": "kotak-mahindra-bank-negative-1",
+      "input": "Kotak Mahindra Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000001501.",
+      "expected": {
+        "bookable": false
+      },
+      "completion": "{\"date\":\"2025-06-13\",\"type\":\"debit\",\"amount\":1234.50,\"category\":\"Other\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-06-13",
+        "type": "debit",
+        "amount": 1234.5,
+        "category": "Other",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": false
+      },
+      "seconds": 0.539
+    },
+    {
+      "id": "bank-of-baroda-0",
+      "input": "Rs.1,234.50 Dr. from A/c XX4920 on 29-Oct-2026. Info: DEMO MERCHANT. UPI Ref 930000000300. Avl Bal Rs.42,875.25 -Bank of Baroda",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000000300",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-Oct-2026\",\"type\":\"debit\",\"amount\":1,234.50,\"category\":\"Entertainment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": null,
+      "checks": {
+        "valid_json": false
+      },
+      "seconds": 0.592
+    },
+    {
+      "id": "bank-of-baroda-1",
+      "input": "Your A/c XX4920 credited with INR 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. UTR 930000000301. Avl Bal INR 48,875.25 -Bank of Baroda",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000000301",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-Oct-2026\",\"type\":\"credit\",\"amount\":1,234.50,\"category\":\"Entertainment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": null,
+      "checks": {
+        "valid_json": false
+      },
+      "seconds": 0.581
+    },
+    {
+      "id": "bank-of-baroda-negative-0",
+      "input": "Bank of Baroda: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000000300.",
+      "expected": {
+        "bookable": false
+      },
+      "completion": "{\"date\":\"2025-06-24\",\"type\":\"debit\",\"amount\":246810.50,\"category\":\"Other\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-06-24",
+        "type": "debit",
+        "amount": 246810.5,
+        "category": "Other",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": false
+      },
+      "seconds": 0.544
+    },
+    {
+      "id": "bank-of-baroda-negative-1",
+      "input": "Bank of Baroda: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000000301.",
+      "expected": {
+        "bookable": false
+      },
+      "completion": "{\"date\":\"2025-06-24\",\"type\":\"debit\",\"amount\":1,234.50,\"category\":\"Other\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": null,
+      "checks": {
+        "valid_json": false
+      },
+      "seconds": 0.556
+    },
+    {
+      "id": "canara-bank-0-ungrouped",
+      "input": "Dear Customer, Acct XXX730 Dr. INR 10000.00 on 29/10/26 to DEMO MERCHANT; UPI: 930000000000; Bal INR 73495.88.Not you?SMS BLOCKUPI to 0000000000-CanaraBank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 1000000,
+        "type": "EXPENSE",
+        "account_suffix": "730",
+        "reference": "930000000000",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"debit\",\"amount\":10000.00,\"category\":\"Entertainment\",\"last4\":\"730\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-10-26",
+        "type": "debit",
+        "amount": 10000.0,
+        "category": "Entertainment",
+        "last4": "730",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": true,
+        "direction": true,
+        "amount": true,
+        "account": true,
+        "date": false
+      },
+      "seconds": 0.536
+    },
+    {
+      "id": "canara-bank-1-ungrouped",
+      "input": "Dear Customer, Acct XXX730 Cr. INR 10000.00 on 29/10/26 from DEMO MERCHANT; UPI: 930000000001; Bal INR 83495.88.-CanaraBank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 1000000,
+        "type": "INCOME",
+        "account_suffix": "730",
+        "reference": "930000000001",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"debit\",\"amount\":10000.00,\"category\":\"Entertainment\",\"last4\":\"730\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-10-26",
+        "type": "debit",
+        "amount": 10000.0,
+        "category": "Entertainment",
+        "last4": "730",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": true,
+        "direction": false,
+        "amount": true,
+        "account": true,
+        "date": false
+      },
+      "seconds": 0.544
+    },
+    {
+      "id": "hdfc-bank-0-ungrouped",
+      "input": "Sent Rs.1234.50 From HDFC Bank A/C *4920 To DEMO MERCHANT On 29/10/26 Ref 930000001200. Not You? SMS BLOCK UPI to 0000000000",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001200",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"debit\",\"amount\":1234.50,\"category\":\"Investment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-10-26",
+        "type": "debit",
+        "amount": 1234.5,
+        "category": "Investment",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": true,
+        "direction": true,
+        "amount": true,
+        "account": true,
+        "date": false
+      },
+      "seconds": 0.55
+    },
+    {
+      "id": "hdfc-bank-1-ungrouped",
+      "input": "HDFC Bank: Rs.1234.50 deposited to a/c **4920 on 29-10-26. Info: DEMO MERCHANT. Ref 930000001201. Avl Bal Rs.48875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001201",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"debit\",\"amount\":1234.50,\"category\":\"Investment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-10-26",
+        "type": "debit",
+        "amount": 1234.5,
+        "category": "Investment",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": true,
+        "direction": false,
+        "amount": true,
+        "account": true,
+        "date": false
+      },
+      "seconds": 0.559
+    },
+    {
+      "id": "state-bank-of-india-0-ungrouped",
+      "input": "Your a/c XXXX4920 is debited by Rs.1234.50 on 29/10/26 transfer to DEMO MERCHANT. Ref No 930000000100. Avl Bal Rs.42875.25 -SBI",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000000100",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"debit\",\"amount\":1234.50,\"category\":\"Entertainment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-10-26",
+        "type": "debit",
+        "amount": 1234.5,
+        "category": "Entertainment",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": true,
+        "direction": true,
+        "amount": true,
+        "account": true,
+        "date": false
+      },
+      "seconds": 0.554
+    },
+    {
+      "id": "state-bank-of-india-1-ungrouped",
+      "input": "Your a/c XXXX4920 is credited by Rs.1234.50 on 29/10/26 transfer from DEMO MERCHANT. Ref No 930000000101. Avl Bal Rs.48875.25 -SBI",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000000101",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"credit\",\"amount\":1234.50,\"category\":\"Entertainment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-10-26",
+        "type": "credit",
+        "amount": 1234.5,
+        "category": "Entertainment",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": true,
+        "direction": true,
+        "amount": true,
+        "account": true,
+        "date": false
+      },
+      "seconds": 0.541
+    },
+    {
+      "id": "icici-bank-0-ungrouped",
+      "input": "ICICI Bank Acct XX4920 debited for Rs 1234.50 on 29-Oct-2026; DEMO MERCHANT credited. RRN 930000001300. Updated Bal Rs 42875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001300",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-Oct-2026\",\"type\":\"debit\",\"amount\":1234.50,\"category\":\"Investment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-Oct-2026",
+        "type": "debit",
+        "amount": 1234.5,
+        "category": "Investment",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": true,
+        "direction": true,
+        "amount": true,
+        "account": true,
+        "date": false
+      },
+      "seconds": 0.568
+    },
+    {
+      "id": "icici-bank-1-ungrouped",
+      "input": "ICICI Bank Acct XX4920 credited with Rs 1234.50 from DEMO MERCHANT on 29-Oct-2026. RRN 930000001301. Updated Bal Rs 48875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001301",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-Oct-2026\",\"type\":\"credit\",\"amount\":1234.50,\"category\":\"Entertainment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-Oct-2026",
+        "type": "credit",
+        "amount": 1234.5,
+        "category": "Entertainment",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": true,
+        "direction": true,
+        "amount": true,
+        "account": true,
+        "date": false
+      },
+      "seconds": 0.558
+    },
+    {
+      "id": "kotak-mahindra-bank-0-ungrouped",
+      "input": "Sent Rs.1234.50 from Kotak Bank AC X4920 to DEMO MERCHANT on 29-10-26. UPI Ref 930000001500. Avl Bal Rs.42875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001500",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"debit\",\"amount\":1234.50,\"category\":\"Investment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-10-26",
+        "type": "debit",
+        "amount": 1234.5,
+        "category": "Investment",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": true,
+        "direction": true,
+        "amount": true,
+        "account": true,
+        "date": false
+      },
+      "seconds": 0.55
+    },
+    {
+      "id": "kotak-mahindra-bank-1-ungrouped",
+      "input": "Received Rs.1234.50 in your Kotak Bank AC X4920 from DEMO MERCHANT on 29-10-26. UPI Ref 930000001501. Avl Bal Rs.48875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001501",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-10-26\",\"type\":\"debit\",\"amount\":1234.50,\"category\":\"Entertainment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-10-26",
+        "type": "debit",
+        "amount": 1234.5,
+        "category": "Entertainment",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": true,
+        "direction": false,
+        "amount": true,
+        "account": true,
+        "date": false
+      },
+      "seconds": 0.554
+    },
+    {
+      "id": "bank-of-baroda-0-ungrouped",
+      "input": "Rs.1234.50 Dr. from A/c XX4920 on 29-Oct-2026. Info: DEMO MERCHANT. UPI Ref 930000000300. Avl Bal Rs.42875.25 -Bank of Baroda",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000000300",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-Oct-2026\",\"type\":\"debit\",\"amount\":1234.50,\"category\":\"Entertainment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-Oct-2026",
+        "type": "debit",
+        "amount": 1234.5,
+        "category": "Entertainment",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": true,
+        "direction": true,
+        "amount": true,
+        "account": true,
+        "date": false
+      },
+      "seconds": 0.555
+    },
+    {
+      "id": "bank-of-baroda-1-ungrouped",
+      "input": "Your A/c XX4920 credited with INR 1234.50 on 29-Oct-2026 from DEMO MERCHANT. UTR 930000000301. Avl Bal INR 48875.25 -Bank of Baroda",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000000301",
+        "merchant": "DEMO MERCHANT"
+      },
+      "completion": "{\"date\":\"2025-Oct-2026\",\"type\":\"credit\",\"amount\":1234.50,\"category\":\"Entertainment\",\"last4\":\"4920\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-Oct-2026",
+        "type": "credit",
+        "amount": 1234.5,
+        "category": "Entertainment",
+        "last4": "4920",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": true,
+        "direction": true,
+        "amount": true,
+        "account": true,
+        "date": false
+      },
+      "seconds": 0.559
+    },
+    {
+      "id": "author-widget-debit",
+      "input": "Sent Rs.1500.00 from HDFC Bank AC XX1234 to john@okicici on 15-Aug-25.UPI Ref 123456789012.",
+      "expected": {
+        "bookable": true,
+        "type": "EXPENSE",
+        "amount_paise": 150000,
+        "account_suffix": "1234",
+        "date": "2025-08-15"
+      },
+      "completion": "{\"date\":\"2025-08-15\",\"type\":\"debit\",\"amount\":1500.00,\"category\":\"Other\",\"last4\":\"1234\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-08-15",
+        "type": "debit",
+        "amount": 1500.0,
+        "category": "Other",
+        "last4": "1234",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": true,
+        "direction": true,
+        "amount": true,
+        "account": true,
+        "date": true
+      },
+      "seconds": 0.529
+    },
+    {
+      "id": "author-widget-credit",
+      "input": "Rs.25000 credited to your SBI Bank a/c XX5678 via NEFT from beneficiary COMPANY LTD.",
+      "expected": {
+        "bookable": true,
+        "type": "INCOME",
+        "amount_paise": 2500000,
+        "account_suffix": "5678",
+        "date": null
+      },
+      "completion": "{\"date\":\"2025-07-21\",\"type\":\"credit\",\"amount\":25000.79,\"category\":\"Other\",\"last4\":\"5678\",\"is_transaction\":true}",
+      "parsed": {
+        "date": "2025-07-21",
+        "type": "credit",
+        "amount": 25000.79,
+        "category": "Other",
+        "last4": "5678",
+        "is_transaction": true
+      },
+      "checks": {
+        "valid_json": true,
+        "transaction": true,
+        "direction": true,
+        "amount": false,
+        "account": true
+      },
+      "seconds": 0.519
+    }
+  ]
+}

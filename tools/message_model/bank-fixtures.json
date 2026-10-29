@@ -1,0 +1,4051 @@
+{
+  "description": "Synthetic regression mocks, not a held-out accuracy benchmark or official bank templates.",
+  "banks": [
+    {
+      "bank": "Canara Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CanaraBankParser.ts",
+      "style": "canara"
+    },
+    {
+      "bank": "State Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SBIBankParser.ts",
+      "style": "sbi"
+    },
+    {
+      "bank": "Punjab National Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/PNBBankParser.ts",
+      "style": "pnb"
+    },
+    {
+      "bank": "Bank of Baroda",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BankOfBarodaParser.ts",
+      "style": "bob"
+    },
+    {
+      "bank": "Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BankOfIndiaParser.ts",
+      "style": "boi"
+    },
+    {
+      "bank": "Union Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UnionBankParser.ts",
+      "style": "union"
+    },
+    {
+      "bank": "Indian Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndianBankParser.ts",
+      "style": "common"
+    },
+    {
+      "bank": "Indian Overseas Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndianOverseasBankParser.ts",
+      "style": "common"
+    },
+    {
+      "bank": "Central Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CentralBankOfIndiaParser.ts",
+      "style": "central"
+    },
+    {
+      "bank": "UCO Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UCOBankParser.ts",
+      "style": "common"
+    },
+    {
+      "bank": "Punjab & Sind Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/PunjabSindBankParser.ts",
+      "style": "psb"
+    },
+    {
+      "bank": "Bank of Maharashtra",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "style": "common"
+    },
+    {
+      "bank": "HDFC Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/HDFCBankParser.ts",
+      "style": "hdfc"
+    },
+    {
+      "bank": "ICICI Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/ICICIBankParser.ts",
+      "style": "beneficiary"
+    },
+    {
+      "bank": "Axis Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AxisBankParser.ts",
+      "style": "axis"
+    },
+    {
+      "bank": "Kotak Mahindra Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KotakBankParser.ts",
+      "style": "kotak"
+    },
+    {
+      "bank": "Yes Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/YesBankParser.ts",
+      "style": "card"
+    },
+    {
+      "bank": "IndusInd Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndusIndBankParser.ts",
+      "style": "rrn"
+    },
+    {
+      "bank": "IDFC First Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IDFCFirstBankParser.ts",
+      "style": "beneficiary"
+    },
+    {
+      "bank": "Federal Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/FederalBankParser.ts",
+      "style": "federal"
+    },
+    {
+      "bank": "South Indian Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SouthIndianBankParser.ts",
+      "style": "common"
+    },
+    {
+      "bank": "Karnataka Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KarnatakaBankParser.ts",
+      "style": "common"
+    },
+    {
+      "bank": "IDBI Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IDBIBankParser.ts",
+      "style": "idbi"
+    },
+    {
+      "bank": "DBS Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/DBSBankParser.ts",
+      "style": "dbs"
+    },
+    {
+      "bank": "Bandhan Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BandhanBankParser.ts",
+      "style": "bandhan"
+    },
+    {
+      "bank": "City Union Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CityUnionBankParser.ts",
+      "style": "common"
+    },
+    {
+      "bank": "Dhanlaxmi Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/DhanlaxmiBankParser.ts",
+      "style": "dhanlaxmi"
+    },
+    {
+      "bank": "Jammu & Kashmir Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/JKBankParser.ts",
+      "style": "common"
+    },
+    {
+      "bank": "RBL Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "style": "common"
+    },
+    {
+      "bank": "Karur Vysya Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "style": "common"
+    },
+    {
+      "bank": "CSB Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "style": "common"
+    },
+    {
+      "bank": "DCB Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "style": "common"
+    },
+    {
+      "bank": "Tamilnad Mercantile Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "style": "common"
+    },
+    {
+      "bank": "HSBC India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/HSBCBankParser.ts",
+      "style": "card"
+    },
+    {
+      "bank": "Standard Chartered India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/StandardCharteredBankParser.ts",
+      "style": "neft"
+    },
+    {
+      "bank": "AU Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AUBankParser.ts",
+      "style": "au"
+    },
+    {
+      "bank": "Equitas Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/EquitasBankParser.ts",
+      "style": "equitas"
+    },
+    {
+      "bank": "Utkarsh Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UtkarshBankParser.ts",
+      "style": "card"
+    },
+    {
+      "bank": "Jana Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "style": "common"
+    },
+    {
+      "bank": "Suryoday Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "style": "common"
+    },
+    {
+      "bank": "Ujjivan Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "style": "common"
+    },
+    {
+      "bank": "ESAF Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "style": "common"
+    },
+    {
+      "bank": "Airtel Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AirtelPaymentsBankParser.ts",
+      "style": "airtel"
+    },
+    {
+      "bank": "India Post Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IPPBParser.ts",
+      "style": "common"
+    },
+    {
+      "bank": "Jio Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/JioPaymentsBankParser.ts",
+      "style": "common"
+    },
+    {
+      "bank": "NSDL Payments Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "style": "common"
+    },
+    {
+      "bank": "Saraswat Co-operative Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SaraswatBankParser.ts",
+      "style": "common"
+    },
+    {
+      "bank": "SVC Co-operative Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "style": "common"
+    },
+    {
+      "bank": "Greater Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/GreaterBankParser.ts",
+      "style": "greater"
+    },
+    {
+      "bank": "Kerala Gramin Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KeralaGraminBankParser.ts",
+      "style": "common"
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "canara-bank-0",
+      "bank": "Canara Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CanaraBankParser.ts",
+      "kind": "debit",
+      "body": "Dear Customer, Acct XXX730 Dr. INR 10,000.00 on 29/10/26 to DEMO MERCHANT; UPI: 930000000000; Bal INR 73,495.88.Not you?SMS BLOCKUPI to 0000000000-CanaraBank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 1000000,
+        "type": "EXPENSE",
+        "account_suffix": "730",
+        "reference": "930000000000",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "canara-bank-1",
+      "bank": "Canara Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CanaraBankParser.ts",
+      "kind": "credit",
+      "body": "Dear Customer, Acct XXX730 Cr. INR 10,000.00 on 29/10/26 from DEMO MERCHANT; UPI: 930000000001; Bal INR 83,495.88.-CanaraBank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 1000000,
+        "type": "INCOME",
+        "account_suffix": "730",
+        "reference": "930000000001",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "canara-bank-negative-0",
+      "bank": "Canara Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CanaraBankParser.ts",
+      "kind": "otp",
+      "body": "Canara Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000000000.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "canara-bank-negative-1",
+      "bank": "Canara Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CanaraBankParser.ts",
+      "kind": "failed",
+      "body": "Canara Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000000001.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "canara-bank-negative-2",
+      "bank": "Canara Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CanaraBankParser.ts",
+      "kind": "future",
+      "body": "Canara Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000000002.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "canara-bank-negative-3",
+      "bank": "Canara Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CanaraBankParser.ts",
+      "kind": "balance",
+      "body": "Canara Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000000003.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "state-bank-of-india-0",
+      "bank": "State Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SBIBankParser.ts",
+      "kind": "debit",
+      "body": "Your a/c XXXX4920 is debited by Rs.1,234.50 on 29/10/26 transfer to DEMO MERCHANT. Ref No 930000000100. Avl Bal Rs.42,875.25 -SBI",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000000100",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "state-bank-of-india-1",
+      "bank": "State Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SBIBankParser.ts",
+      "kind": "credit",
+      "body": "Your a/c XXXX4920 is credited by Rs.1,234.50 on 29/10/26 transfer from DEMO MERCHANT. Ref No 930000000101. Avl Bal Rs.48,875.25 -SBI",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000000101",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "state-bank-of-india-negative-0",
+      "bank": "State Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SBIBankParser.ts",
+      "kind": "otp",
+      "body": "State Bank of India: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000000100.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "state-bank-of-india-negative-1",
+      "bank": "State Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SBIBankParser.ts",
+      "kind": "failed",
+      "body": "State Bank of India: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000000101.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "state-bank-of-india-negative-2",
+      "bank": "State Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SBIBankParser.ts",
+      "kind": "future",
+      "body": "State Bank of India: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000000102.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "state-bank-of-india-negative-3",
+      "bank": "State Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SBIBankParser.ts",
+      "kind": "balance",
+      "body": "State Bank of India: Available balance INR 1,234.50 in A/c XX4920. Ref 940000000103.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "punjab-national-bank-0",
+      "bank": "Punjab National Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/PNBBankParser.ts",
+      "kind": "debit",
+      "body": "PNB: Your a/c no XX4920 is debited for Rs 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. Ref 930000000200. Avl Bal Rs 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000000200",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "punjab-national-bank-1",
+      "bank": "Punjab National Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/PNBBankParser.ts",
+      "kind": "credit",
+      "body": "PNB: Rs.1,234.50 credited to your A/c XX4920 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000000201. Avl Bal Rs 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000000201",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "punjab-national-bank-negative-0",
+      "bank": "Punjab National Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/PNBBankParser.ts",
+      "kind": "otp",
+      "body": "Punjab National Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000000200.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "punjab-national-bank-negative-1",
+      "bank": "Punjab National Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/PNBBankParser.ts",
+      "kind": "failed",
+      "body": "Punjab National Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000000201.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "punjab-national-bank-negative-2",
+      "bank": "Punjab National Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/PNBBankParser.ts",
+      "kind": "future",
+      "body": "Punjab National Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000000202.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "punjab-national-bank-negative-3",
+      "bank": "Punjab National Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/PNBBankParser.ts",
+      "kind": "balance",
+      "body": "Punjab National Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000000203.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bank-of-baroda-0",
+      "bank": "Bank of Baroda",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BankOfBarodaParser.ts",
+      "kind": "debit",
+      "body": "Rs.1,234.50 Dr. from A/c XX4920 on 29-Oct-2026. Info: DEMO MERCHANT. UPI Ref 930000000300. Avl Bal Rs.42,875.25 -Bank of Baroda",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000000300",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "bank-of-baroda-1",
+      "bank": "Bank of Baroda",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BankOfBarodaParser.ts",
+      "kind": "credit",
+      "body": "Your A/c XX4920 credited with INR 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. UTR 930000000301. Avl Bal INR 48,875.25 -Bank of Baroda",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000000301",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "bank-of-baroda-negative-0",
+      "bank": "Bank of Baroda",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BankOfBarodaParser.ts",
+      "kind": "otp",
+      "body": "Bank of Baroda: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000000300.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bank-of-baroda-negative-1",
+      "bank": "Bank of Baroda",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BankOfBarodaParser.ts",
+      "kind": "failed",
+      "body": "Bank of Baroda: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000000301.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bank-of-baroda-negative-2",
+      "bank": "Bank of Baroda",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BankOfBarodaParser.ts",
+      "kind": "future",
+      "body": "Bank of Baroda: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000000302.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bank-of-baroda-negative-3",
+      "bank": "Bank of Baroda",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BankOfBarodaParser.ts",
+      "kind": "balance",
+      "body": "Bank of Baroda: Available balance INR 1,234.50 in A/c XX4920. Ref 940000000303.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bank-of-india-0",
+      "bank": "Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BankOfIndiaParser.ts",
+      "kind": "debit",
+      "body": "Rs.1,234.50 debited A/cXX4920 and credited to DEMO MERCHANT via UPI Ref No 930000000400 on 29Oct26. -BOI",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000000400",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "bank-of-india-1",
+      "bank": "Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BankOfIndiaParser.ts",
+      "kind": "credit",
+      "body": "Rs.1,234.50 credited to A/cXX4920 from DEMO MERCHANT via NEFT Ref No 930000000401 on 29Oct26. -BOI",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000000401",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "bank-of-india-negative-0",
+      "bank": "Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BankOfIndiaParser.ts",
+      "kind": "otp",
+      "body": "Bank of India: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000000400.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bank-of-india-negative-1",
+      "bank": "Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BankOfIndiaParser.ts",
+      "kind": "failed",
+      "body": "Bank of India: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000000401.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bank-of-india-negative-2",
+      "bank": "Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BankOfIndiaParser.ts",
+      "kind": "future",
+      "body": "Bank of India: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000000402.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bank-of-india-negative-3",
+      "bank": "Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BankOfIndiaParser.ts",
+      "kind": "balance",
+      "body": "Bank of India: Available balance INR 1,234.50 in A/c XX4920. Ref 940000000403.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "union-bank-of-india-0",
+      "bank": "Union Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UnionBankParser.ts",
+      "kind": "debit",
+      "body": "A/c *4920 Debited for Rs:1,234.50 on 29-10-2026 to DEMO MERCHANT. Mob Bk ref no 930000000500. Avl Bal Rs:42,875.25 -Union Bank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000000500"
+      }
+    },
+    {
+      "id": "union-bank-of-india-1",
+      "bank": "Union Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UnionBankParser.ts",
+      "kind": "credit",
+      "body": "A/c *4920 Credited for Rs:1,234.50 on 29-10-2026 from DEMO MERCHANT. NEFT ref no 930000000501. Avl Bal Rs:48,875.25 -Union Bank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000000501"
+      }
+    },
+    {
+      "id": "union-bank-of-india-negative-0",
+      "bank": "Union Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UnionBankParser.ts",
+      "kind": "otp",
+      "body": "Union Bank of India: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000000500.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "union-bank-of-india-negative-1",
+      "bank": "Union Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UnionBankParser.ts",
+      "kind": "failed",
+      "body": "Union Bank of India: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000000501.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "union-bank-of-india-negative-2",
+      "bank": "Union Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UnionBankParser.ts",
+      "kind": "future",
+      "body": "Union Bank of India: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000000502.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "union-bank-of-india-negative-3",
+      "bank": "Union Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UnionBankParser.ts",
+      "kind": "balance",
+      "body": "Union Bank of India: Available balance INR 1,234.50 in A/c XX4920. Ref 940000000503.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "indian-bank-0",
+      "bank": "Indian Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndianBankParser.ts",
+      "kind": "debit",
+      "body": "Indian Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000000600. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000000600"
+      }
+    },
+    {
+      "id": "indian-bank-1",
+      "bank": "Indian Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndianBankParser.ts",
+      "kind": "credit",
+      "body": "Indian Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000000601. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000000601"
+      }
+    },
+    {
+      "id": "indian-bank-negative-0",
+      "bank": "Indian Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndianBankParser.ts",
+      "kind": "otp",
+      "body": "Indian Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000000600.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "indian-bank-negative-1",
+      "bank": "Indian Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndianBankParser.ts",
+      "kind": "failed",
+      "body": "Indian Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000000601.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "indian-bank-negative-2",
+      "bank": "Indian Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndianBankParser.ts",
+      "kind": "future",
+      "body": "Indian Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000000602.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "indian-bank-negative-3",
+      "bank": "Indian Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndianBankParser.ts",
+      "kind": "balance",
+      "body": "Indian Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000000603.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "indian-overseas-bank-0",
+      "bank": "Indian Overseas Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndianOverseasBankParser.ts",
+      "kind": "debit",
+      "body": "Indian Overseas Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000000700. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000000700"
+      }
+    },
+    {
+      "id": "indian-overseas-bank-1",
+      "bank": "Indian Overseas Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndianOverseasBankParser.ts",
+      "kind": "credit",
+      "body": "Indian Overseas Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000000701. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000000701"
+      }
+    },
+    {
+      "id": "indian-overseas-bank-negative-0",
+      "bank": "Indian Overseas Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndianOverseasBankParser.ts",
+      "kind": "otp",
+      "body": "Indian Overseas Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000000700.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "indian-overseas-bank-negative-1",
+      "bank": "Indian Overseas Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndianOverseasBankParser.ts",
+      "kind": "failed",
+      "body": "Indian Overseas Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000000701.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "indian-overseas-bank-negative-2",
+      "bank": "Indian Overseas Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndianOverseasBankParser.ts",
+      "kind": "future",
+      "body": "Indian Overseas Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000000702.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "indian-overseas-bank-negative-3",
+      "bank": "Indian Overseas Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndianOverseasBankParser.ts",
+      "kind": "balance",
+      "body": "Indian Overseas Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000000703.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "central-bank-of-india-0",
+      "bank": "Central Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CentralBankOfIndiaParser.ts",
+      "kind": "debit",
+      "body": "Central Bank: A/c XX4920 Debited by Rs.1,234.50 on 29-Oct-2026 to DEMO MERCHANT. Ref 930000000800. Bal Rs.42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000000800"
+      }
+    },
+    {
+      "id": "central-bank-of-india-1",
+      "bank": "Central Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CentralBankOfIndiaParser.ts",
+      "kind": "credit",
+      "body": "Central Bank: A/c XX4920 Credited by Rs.1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000000801. Bal Rs.48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000000801"
+      }
+    },
+    {
+      "id": "central-bank-of-india-negative-0",
+      "bank": "Central Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CentralBankOfIndiaParser.ts",
+      "kind": "otp",
+      "body": "Central Bank of India: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000000800.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "central-bank-of-india-negative-1",
+      "bank": "Central Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CentralBankOfIndiaParser.ts",
+      "kind": "failed",
+      "body": "Central Bank of India: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000000801.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "central-bank-of-india-negative-2",
+      "bank": "Central Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CentralBankOfIndiaParser.ts",
+      "kind": "future",
+      "body": "Central Bank of India: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000000802.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "central-bank-of-india-negative-3",
+      "bank": "Central Bank of India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CentralBankOfIndiaParser.ts",
+      "kind": "balance",
+      "body": "Central Bank of India: Available balance INR 1,234.50 in A/c XX4920. Ref 940000000803.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "uco-bank-0",
+      "bank": "UCO Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UCOBankParser.ts",
+      "kind": "debit",
+      "body": "UCO Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000000900. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000000900"
+      }
+    },
+    {
+      "id": "uco-bank-1",
+      "bank": "UCO Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UCOBankParser.ts",
+      "kind": "credit",
+      "body": "UCO Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000000901. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000000901"
+      }
+    },
+    {
+      "id": "uco-bank-negative-0",
+      "bank": "UCO Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UCOBankParser.ts",
+      "kind": "otp",
+      "body": "UCO Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000000900.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "uco-bank-negative-1",
+      "bank": "UCO Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UCOBankParser.ts",
+      "kind": "failed",
+      "body": "UCO Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000000901.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "uco-bank-negative-2",
+      "bank": "UCO Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UCOBankParser.ts",
+      "kind": "future",
+      "body": "UCO Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000000902.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "uco-bank-negative-3",
+      "bank": "UCO Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UCOBankParser.ts",
+      "kind": "balance",
+      "body": "UCO Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000000903.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "punjab-sind-bank-0",
+      "bank": "Punjab & Sind Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/PunjabSindBankParser.ts",
+      "kind": "debit",
+      "body": "A/c No **4920 Debited with Rs 1,234.50--DEMO MERCHANT Ref 930000001000 (CLR BAL 42875.25CR)(29-10-2026 12:00:00)-Punjab&Sind Bank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001000"
+      }
+    },
+    {
+      "id": "punjab-sind-bank-1",
+      "bank": "Punjab & Sind Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/PunjabSindBankParser.ts",
+      "kind": "credit",
+      "body": "A/c No **4920 Credited with Rs 1,234.50--DEMO MERCHANT Ref 930000001001 (CLR BAL 48875.25CR)(29-10-2026 12:00:00)-Punjab&Sind Bank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001001"
+      }
+    },
+    {
+      "id": "punjab-sind-bank-negative-0",
+      "bank": "Punjab & Sind Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/PunjabSindBankParser.ts",
+      "kind": "otp",
+      "body": "Punjab & Sind Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000001000.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "punjab-sind-bank-negative-1",
+      "bank": "Punjab & Sind Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/PunjabSindBankParser.ts",
+      "kind": "failed",
+      "body": "Punjab & Sind Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000001001.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "punjab-sind-bank-negative-2",
+      "bank": "Punjab & Sind Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/PunjabSindBankParser.ts",
+      "kind": "future",
+      "body": "Punjab & Sind Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000001002.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "punjab-sind-bank-negative-3",
+      "bank": "Punjab & Sind Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/PunjabSindBankParser.ts",
+      "kind": "balance",
+      "body": "Punjab & Sind Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000001003.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bank-of-maharashtra-0",
+      "bank": "Bank of Maharashtra",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "debit",
+      "body": "Bank of Maharashtra: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000001100. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001100"
+      }
+    },
+    {
+      "id": "bank-of-maharashtra-1",
+      "bank": "Bank of Maharashtra",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "credit",
+      "body": "Bank of Maharashtra: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000001101. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001101"
+      }
+    },
+    {
+      "id": "bank-of-maharashtra-negative-0",
+      "bank": "Bank of Maharashtra",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "otp",
+      "body": "Bank of Maharashtra: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000001100.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bank-of-maharashtra-negative-1",
+      "bank": "Bank of Maharashtra",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "failed",
+      "body": "Bank of Maharashtra: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000001101.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bank-of-maharashtra-negative-2",
+      "bank": "Bank of Maharashtra",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "future",
+      "body": "Bank of Maharashtra: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000001102.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bank-of-maharashtra-negative-3",
+      "bank": "Bank of Maharashtra",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "balance",
+      "body": "Bank of Maharashtra: Available balance INR 1,234.50 in A/c XX4920. Ref 940000001103.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "hdfc-bank-0",
+      "bank": "HDFC Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/HDFCBankParser.ts",
+      "kind": "debit",
+      "body": "Sent Rs.1,234.50 From HDFC Bank A/C *4920 To DEMO MERCHANT On 29/10/26 Ref 930000001200. Not You? SMS BLOCK UPI to 0000000000",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001200",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "hdfc-bank-1",
+      "bank": "HDFC Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/HDFCBankParser.ts",
+      "kind": "credit",
+      "body": "HDFC Bank: Rs.1,234.50 deposited to a/c **4920 on 29-10-26. Info: DEMO MERCHANT. Ref 930000001201. Avl Bal Rs.48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001201",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "hdfc-bank-negative-0",
+      "bank": "HDFC Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/HDFCBankParser.ts",
+      "kind": "otp",
+      "body": "HDFC Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000001200.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "hdfc-bank-negative-1",
+      "bank": "HDFC Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/HDFCBankParser.ts",
+      "kind": "failed",
+      "body": "HDFC Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000001201.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "hdfc-bank-negative-2",
+      "bank": "HDFC Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/HDFCBankParser.ts",
+      "kind": "future",
+      "body": "HDFC Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000001202.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "hdfc-bank-negative-3",
+      "bank": "HDFC Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/HDFCBankParser.ts",
+      "kind": "balance",
+      "body": "HDFC Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000001203.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "icici-bank-0",
+      "bank": "ICICI Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/ICICIBankParser.ts",
+      "kind": "debit",
+      "body": "ICICI Bank Acct XX4920 debited for Rs 1,234.50 on 29-Oct-2026; DEMO MERCHANT credited. RRN 930000001300. Updated Bal Rs 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001300",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "icici-bank-1",
+      "bank": "ICICI Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/ICICIBankParser.ts",
+      "kind": "credit",
+      "body": "ICICI Bank Acct XX4920 credited with Rs 1,234.50 from DEMO MERCHANT on 29-Oct-2026. RRN 930000001301. Updated Bal Rs 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001301",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "icici-bank-negative-0",
+      "bank": "ICICI Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/ICICIBankParser.ts",
+      "kind": "otp",
+      "body": "ICICI Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000001300.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "icici-bank-negative-1",
+      "bank": "ICICI Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/ICICIBankParser.ts",
+      "kind": "failed",
+      "body": "ICICI Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000001301.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "icici-bank-negative-2",
+      "bank": "ICICI Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/ICICIBankParser.ts",
+      "kind": "future",
+      "body": "ICICI Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000001302.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "icici-bank-negative-3",
+      "bank": "ICICI Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/ICICIBankParser.ts",
+      "kind": "balance",
+      "body": "ICICI Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000001303.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "axis-bank-0",
+      "bank": "Axis Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AxisBankParser.ts",
+      "kind": "debit",
+      "body": "INR 1,234.50 debited from A/c no. XX4920 on 29-10-2026 at DEMO MERCHANT. Ref 930000001400. Avl bal INR 42,875.25 -Axis Bank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001400",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "axis-bank-1",
+      "bank": "Axis Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AxisBankParser.ts",
+      "kind": "credit",
+      "body": "INR 1,234.50 credited to A/c no. XX4920 on 29-10-2026 from DEMO MERCHANT. Ref 930000001401. Avl bal INR 48,875.25 -Axis Bank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001401",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "axis-bank-negative-0",
+      "bank": "Axis Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AxisBankParser.ts",
+      "kind": "otp",
+      "body": "Axis Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000001400.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "axis-bank-negative-1",
+      "bank": "Axis Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AxisBankParser.ts",
+      "kind": "failed",
+      "body": "Axis Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000001401.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "axis-bank-negative-2",
+      "bank": "Axis Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AxisBankParser.ts",
+      "kind": "future",
+      "body": "Axis Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000001402.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "axis-bank-negative-3",
+      "bank": "Axis Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AxisBankParser.ts",
+      "kind": "balance",
+      "body": "Axis Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000001403.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "kotak-mahindra-bank-0",
+      "bank": "Kotak Mahindra Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KotakBankParser.ts",
+      "kind": "debit",
+      "body": "Sent Rs.1,234.50 from Kotak Bank AC X4920 to DEMO MERCHANT on 29-10-26. UPI Ref 930000001500. Avl Bal Rs.42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001500",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "kotak-mahindra-bank-1",
+      "bank": "Kotak Mahindra Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KotakBankParser.ts",
+      "kind": "credit",
+      "body": "Received Rs.1,234.50 in your Kotak Bank AC X4920 from DEMO MERCHANT on 29-10-26. UPI Ref 930000001501. Avl Bal Rs.48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001501",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "kotak-mahindra-bank-negative-0",
+      "bank": "Kotak Mahindra Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KotakBankParser.ts",
+      "kind": "otp",
+      "body": "Kotak Mahindra Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000001500.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "kotak-mahindra-bank-negative-1",
+      "bank": "Kotak Mahindra Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KotakBankParser.ts",
+      "kind": "failed",
+      "body": "Kotak Mahindra Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000001501.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "kotak-mahindra-bank-negative-2",
+      "bank": "Kotak Mahindra Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KotakBankParser.ts",
+      "kind": "future",
+      "body": "Kotak Mahindra Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000001502.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "kotak-mahindra-bank-negative-3",
+      "bank": "Kotak Mahindra Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KotakBankParser.ts",
+      "kind": "balance",
+      "body": "Kotak Mahindra Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000001503.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "yes-bank-0",
+      "bank": "Yes Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/YesBankParser.ts",
+      "kind": "debit",
+      "body": "Yes Bank: INR 1,234.50 spent on card ending 4920 at DEMO MERCHANT on 29-Oct-2026. Ref 930000001600. Avl Lmt INR 1,42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001600",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "yes-bank-1",
+      "bank": "Yes Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/YesBankParser.ts",
+      "kind": "credit",
+      "body": "Yes Bank: INR 1,234.50 refunded to card ending 4920 from DEMO MERCHANT on 29-Oct-2026. Ref 930000001601. Avl Lmt INR 1,48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001601",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "yes-bank-negative-0",
+      "bank": "Yes Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/YesBankParser.ts",
+      "kind": "otp",
+      "body": "Yes Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000001600.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "yes-bank-negative-1",
+      "bank": "Yes Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/YesBankParser.ts",
+      "kind": "failed",
+      "body": "Yes Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000001601.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "yes-bank-negative-2",
+      "bank": "Yes Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/YesBankParser.ts",
+      "kind": "future",
+      "body": "Yes Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000001602.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "yes-bank-negative-3",
+      "bank": "Yes Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/YesBankParser.ts",
+      "kind": "balance",
+      "body": "Yes Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000001603.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "indusind-bank-0",
+      "bank": "IndusInd Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndusIndBankParser.ts",
+      "kind": "debit",
+      "body": "Rs.1,234.50 debited from IndusInd Bank A/c XX4920 to DEMO MERCHANT. RRN:930000001700. Avl Bal Rs.42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001700",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "indusind-bank-1",
+      "bank": "IndusInd Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndusIndBankParser.ts",
+      "kind": "credit",
+      "body": "A/C *XX4920 credited by Rs 1,234.50 from DEMO MERCHANT. RRN:930000001701. Avl Bal Rs.48,875.25 -IndusInd Bank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001701",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "indusind-bank-negative-0",
+      "bank": "IndusInd Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndusIndBankParser.ts",
+      "kind": "otp",
+      "body": "IndusInd Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000001700.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "indusind-bank-negative-1",
+      "bank": "IndusInd Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndusIndBankParser.ts",
+      "kind": "failed",
+      "body": "IndusInd Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000001701.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "indusind-bank-negative-2",
+      "bank": "IndusInd Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndusIndBankParser.ts",
+      "kind": "future",
+      "body": "IndusInd Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000001702.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "indusind-bank-negative-3",
+      "bank": "IndusInd Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IndusIndBankParser.ts",
+      "kind": "balance",
+      "body": "IndusInd Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000001703.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "idfc-first-bank-0",
+      "bank": "IDFC First Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IDFCFirstBankParser.ts",
+      "kind": "debit",
+      "body": "IDFC First Bank Acct XX4920 debited for Rs 1,234.50 on 29-Oct-2026; DEMO MERCHANT credited. RRN 930000001800. Updated Bal Rs 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001800",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "idfc-first-bank-1",
+      "bank": "IDFC First Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IDFCFirstBankParser.ts",
+      "kind": "credit",
+      "body": "IDFC First Bank Acct XX4920 credited with Rs 1,234.50 from DEMO MERCHANT on 29-Oct-2026. RRN 930000001801. Updated Bal Rs 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001801",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "idfc-first-bank-negative-0",
+      "bank": "IDFC First Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IDFCFirstBankParser.ts",
+      "kind": "otp",
+      "body": "IDFC First Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000001800.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "idfc-first-bank-negative-1",
+      "bank": "IDFC First Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IDFCFirstBankParser.ts",
+      "kind": "failed",
+      "body": "IDFC First Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000001801.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "idfc-first-bank-negative-2",
+      "bank": "IDFC First Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IDFCFirstBankParser.ts",
+      "kind": "future",
+      "body": "IDFC First Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000001802.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "idfc-first-bank-negative-3",
+      "bank": "IDFC First Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IDFCFirstBankParser.ts",
+      "kind": "balance",
+      "body": "IDFC First Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000001803.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "federal-bank-0",
+      "bank": "Federal Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/FederalBankParser.ts",
+      "kind": "debit",
+      "body": "Debited Rs 1,234.50 from a/c XX4920 on 29OCT2026 via NEFT to DEMO MERCHANT.Ref 930000001900.Bal Rs 42,875.25.-Federal Bank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000001900",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "federal-bank-1",
+      "bank": "Federal Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/FederalBankParser.ts",
+      "kind": "credit",
+      "body": "Credited Rs 1,234.50 to a/c XX4920 on 29OCT2026 via NEFT from DEMO MERCHANT.Ref 930000001901.Bal Rs 48,875.25.-Federal Bank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000001901",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "federal-bank-negative-0",
+      "bank": "Federal Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/FederalBankParser.ts",
+      "kind": "otp",
+      "body": "Federal Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000001900.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "federal-bank-negative-1",
+      "bank": "Federal Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/FederalBankParser.ts",
+      "kind": "failed",
+      "body": "Federal Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000001901.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "federal-bank-negative-2",
+      "bank": "Federal Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/FederalBankParser.ts",
+      "kind": "future",
+      "body": "Federal Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000001902.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "federal-bank-negative-3",
+      "bank": "Federal Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/FederalBankParser.ts",
+      "kind": "balance",
+      "body": "Federal Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000001903.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "south-indian-bank-0",
+      "bank": "South Indian Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SouthIndianBankParser.ts",
+      "kind": "debit",
+      "body": "South Indian Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000002000. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000002000"
+      }
+    },
+    {
+      "id": "south-indian-bank-1",
+      "bank": "South Indian Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SouthIndianBankParser.ts",
+      "kind": "credit",
+      "body": "South Indian Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000002001. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000002001"
+      }
+    },
+    {
+      "id": "south-indian-bank-negative-0",
+      "bank": "South Indian Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SouthIndianBankParser.ts",
+      "kind": "otp",
+      "body": "South Indian Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000002000.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "south-indian-bank-negative-1",
+      "bank": "South Indian Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SouthIndianBankParser.ts",
+      "kind": "failed",
+      "body": "South Indian Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000002001.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "south-indian-bank-negative-2",
+      "bank": "South Indian Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SouthIndianBankParser.ts",
+      "kind": "future",
+      "body": "South Indian Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000002002.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "south-indian-bank-negative-3",
+      "bank": "South Indian Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SouthIndianBankParser.ts",
+      "kind": "balance",
+      "body": "South Indian Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000002003.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "karnataka-bank-0",
+      "bank": "Karnataka Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KarnatakaBankParser.ts",
+      "kind": "debit",
+      "body": "Karnataka Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000002100. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000002100"
+      }
+    },
+    {
+      "id": "karnataka-bank-1",
+      "bank": "Karnataka Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KarnatakaBankParser.ts",
+      "kind": "credit",
+      "body": "Karnataka Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000002101. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000002101"
+      }
+    },
+    {
+      "id": "karnataka-bank-negative-0",
+      "bank": "Karnataka Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KarnatakaBankParser.ts",
+      "kind": "otp",
+      "body": "Karnataka Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000002100.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "karnataka-bank-negative-1",
+      "bank": "Karnataka Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KarnatakaBankParser.ts",
+      "kind": "failed",
+      "body": "Karnataka Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000002101.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "karnataka-bank-negative-2",
+      "bank": "Karnataka Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KarnatakaBankParser.ts",
+      "kind": "future",
+      "body": "Karnataka Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000002102.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "karnataka-bank-negative-3",
+      "bank": "Karnataka Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KarnatakaBankParser.ts",
+      "kind": "balance",
+      "body": "Karnataka Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000002103.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "idbi-bank-0",
+      "bank": "IDBI Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IDBIBankParser.ts",
+      "kind": "debit",
+      "body": "IDBI Bank Acct XX4920 debited with Rs 1,234.50 on 29-Oct-2026 at DEMO MERCHANT. Ref 930000002200. Available Bal Rs 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000002200",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "idbi-bank-1",
+      "bank": "IDBI Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IDBIBankParser.ts",
+      "kind": "credit",
+      "body": "IDBI Bank Acct XX4920 credited with Rs 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000002201. Available Bal Rs 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000002201",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "idbi-bank-negative-0",
+      "bank": "IDBI Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IDBIBankParser.ts",
+      "kind": "otp",
+      "body": "IDBI Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000002200.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "idbi-bank-negative-1",
+      "bank": "IDBI Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IDBIBankParser.ts",
+      "kind": "failed",
+      "body": "IDBI Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000002201.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "idbi-bank-negative-2",
+      "bank": "IDBI Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IDBIBankParser.ts",
+      "kind": "future",
+      "body": "IDBI Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000002202.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "idbi-bank-negative-3",
+      "bank": "IDBI Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IDBIBankParser.ts",
+      "kind": "balance",
+      "body": "IDBI Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000002203.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "dbs-bank-0",
+      "bank": "DBS Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/DBSBankParser.ts",
+      "kind": "debit",
+      "body": "Your DBS Bank Acct XX4920 debited with INR 1,234.50 to DEMO MERCHANT on 29-Oct-2026. Ref 930000002300. Avl Bal INR 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000002300",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "dbs-bank-1",
+      "bank": "DBS Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/DBSBankParser.ts",
+      "kind": "credit",
+      "body": "Your DBS Bank Acct XX4920 credited with INR 1,234.50 from DEMO MERCHANT on 29-Oct-2026. Ref 930000002301. Avl Bal INR 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000002301",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "dbs-bank-negative-0",
+      "bank": "DBS Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/DBSBankParser.ts",
+      "kind": "otp",
+      "body": "DBS Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000002300.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "dbs-bank-negative-1",
+      "bank": "DBS Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/DBSBankParser.ts",
+      "kind": "failed",
+      "body": "DBS Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000002301.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "dbs-bank-negative-2",
+      "bank": "DBS Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/DBSBankParser.ts",
+      "kind": "future",
+      "body": "DBS Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000002302.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "dbs-bank-negative-3",
+      "bank": "DBS Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/DBSBankParser.ts",
+      "kind": "balance",
+      "body": "DBS Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000002303.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bandhan-bank-0",
+      "bank": "Bandhan Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BandhanBankParser.ts",
+      "kind": "debit",
+      "body": "Bandhan Bank: A/c XX4920 debited INR 1,234.50 towards DEMO MERCHANT on 29-Oct-2026. UPI Ref 930000002400. Avl Bal INR 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000002400"
+      }
+    },
+    {
+      "id": "bandhan-bank-1",
+      "bank": "Bandhan Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BandhanBankParser.ts",
+      "kind": "credit",
+      "body": "Bandhan Bank: A/c XX4920 credited INR 1,234.50 from DEMO MERCHANT on 29-Oct-2026. UPI Ref 930000002401. Avl Bal INR 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000002401"
+      }
+    },
+    {
+      "id": "bandhan-bank-negative-0",
+      "bank": "Bandhan Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BandhanBankParser.ts",
+      "kind": "otp",
+      "body": "Bandhan Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000002400.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bandhan-bank-negative-1",
+      "bank": "Bandhan Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BandhanBankParser.ts",
+      "kind": "failed",
+      "body": "Bandhan Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000002401.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bandhan-bank-negative-2",
+      "bank": "Bandhan Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BandhanBankParser.ts",
+      "kind": "future",
+      "body": "Bandhan Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000002402.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "bandhan-bank-negative-3",
+      "bank": "Bandhan Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/BandhanBankParser.ts",
+      "kind": "balance",
+      "body": "Bandhan Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000002403.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "city-union-bank-0",
+      "bank": "City Union Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CityUnionBankParser.ts",
+      "kind": "debit",
+      "body": "City Union Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000002500. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000002500"
+      }
+    },
+    {
+      "id": "city-union-bank-1",
+      "bank": "City Union Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CityUnionBankParser.ts",
+      "kind": "credit",
+      "body": "City Union Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000002501. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000002501"
+      }
+    },
+    {
+      "id": "city-union-bank-negative-0",
+      "bank": "City Union Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CityUnionBankParser.ts",
+      "kind": "otp",
+      "body": "City Union Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000002500.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "city-union-bank-negative-1",
+      "bank": "City Union Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CityUnionBankParser.ts",
+      "kind": "failed",
+      "body": "City Union Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000002501.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "city-union-bank-negative-2",
+      "bank": "City Union Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CityUnionBankParser.ts",
+      "kind": "future",
+      "body": "City Union Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000002502.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "city-union-bank-negative-3",
+      "bank": "City Union Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/CityUnionBankParser.ts",
+      "kind": "balance",
+      "body": "City Union Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000002503.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "dhanlaxmi-bank-0",
+      "bank": "Dhanlaxmi Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/DhanlaxmiBankParser.ts",
+      "kind": "debit",
+      "body": "INR 1,234.50 is debited from A/c XXXX4920 on 29-OCT-2026 to DEMO MERCHANT. UPI Ref 930000002600. Bal INR 42,875.25 -Dhanlaxmi Bank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000002600",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "dhanlaxmi-bank-1",
+      "bank": "Dhanlaxmi Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/DhanlaxmiBankParser.ts",
+      "kind": "credit",
+      "body": "INR 1,234.50 is credited to A/c XXXX4920 on 29-OCT-2026 from DEMO MERCHANT. UPI Ref 930000002601. Bal INR 48,875.25 -Dhanlaxmi Bank",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000002601",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "dhanlaxmi-bank-negative-0",
+      "bank": "Dhanlaxmi Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/DhanlaxmiBankParser.ts",
+      "kind": "otp",
+      "body": "Dhanlaxmi Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000002600.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "dhanlaxmi-bank-negative-1",
+      "bank": "Dhanlaxmi Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/DhanlaxmiBankParser.ts",
+      "kind": "failed",
+      "body": "Dhanlaxmi Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000002601.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "dhanlaxmi-bank-negative-2",
+      "bank": "Dhanlaxmi Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/DhanlaxmiBankParser.ts",
+      "kind": "future",
+      "body": "Dhanlaxmi Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000002602.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "dhanlaxmi-bank-negative-3",
+      "bank": "Dhanlaxmi Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/DhanlaxmiBankParser.ts",
+      "kind": "balance",
+      "body": "Dhanlaxmi Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000002603.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "jammu-kashmir-bank-0",
+      "bank": "Jammu & Kashmir Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/JKBankParser.ts",
+      "kind": "debit",
+      "body": "Jammu & Kashmir Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000002700. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000002700"
+      }
+    },
+    {
+      "id": "jammu-kashmir-bank-1",
+      "bank": "Jammu & Kashmir Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/JKBankParser.ts",
+      "kind": "credit",
+      "body": "Jammu & Kashmir Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000002701. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000002701"
+      }
+    },
+    {
+      "id": "jammu-kashmir-bank-negative-0",
+      "bank": "Jammu & Kashmir Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/JKBankParser.ts",
+      "kind": "otp",
+      "body": "Jammu & Kashmir Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000002700.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "jammu-kashmir-bank-negative-1",
+      "bank": "Jammu & Kashmir Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/JKBankParser.ts",
+      "kind": "failed",
+      "body": "Jammu & Kashmir Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000002701.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "jammu-kashmir-bank-negative-2",
+      "bank": "Jammu & Kashmir Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/JKBankParser.ts",
+      "kind": "future",
+      "body": "Jammu & Kashmir Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000002702.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "jammu-kashmir-bank-negative-3",
+      "bank": "Jammu & Kashmir Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/JKBankParser.ts",
+      "kind": "balance",
+      "body": "Jammu & Kashmir Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000002703.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "rbl-bank-0",
+      "bank": "RBL Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "debit",
+      "body": "RBL Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000002800. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000002800"
+      }
+    },
+    {
+      "id": "rbl-bank-1",
+      "bank": "RBL Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "credit",
+      "body": "RBL Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000002801. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000002801"
+      }
+    },
+    {
+      "id": "rbl-bank-negative-0",
+      "bank": "RBL Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "otp",
+      "body": "RBL Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000002800.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "rbl-bank-negative-1",
+      "bank": "RBL Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "failed",
+      "body": "RBL Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000002801.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "rbl-bank-negative-2",
+      "bank": "RBL Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "future",
+      "body": "RBL Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000002802.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "rbl-bank-negative-3",
+      "bank": "RBL Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "balance",
+      "body": "RBL Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000002803.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "karur-vysya-bank-0",
+      "bank": "Karur Vysya Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "debit",
+      "body": "Karur Vysya Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000002900. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000002900"
+      }
+    },
+    {
+      "id": "karur-vysya-bank-1",
+      "bank": "Karur Vysya Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "credit",
+      "body": "Karur Vysya Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000002901. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000002901"
+      }
+    },
+    {
+      "id": "karur-vysya-bank-negative-0",
+      "bank": "Karur Vysya Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "otp",
+      "body": "Karur Vysya Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000002900.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "karur-vysya-bank-negative-1",
+      "bank": "Karur Vysya Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "failed",
+      "body": "Karur Vysya Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000002901.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "karur-vysya-bank-negative-2",
+      "bank": "Karur Vysya Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "future",
+      "body": "Karur Vysya Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000002902.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "karur-vysya-bank-negative-3",
+      "bank": "Karur Vysya Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "balance",
+      "body": "Karur Vysya Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000002903.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "csb-bank-0",
+      "bank": "CSB Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "debit",
+      "body": "CSB Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000003000. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000003000"
+      }
+    },
+    {
+      "id": "csb-bank-1",
+      "bank": "CSB Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "credit",
+      "body": "CSB Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000003001. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000003001"
+      }
+    },
+    {
+      "id": "csb-bank-negative-0",
+      "bank": "CSB Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "otp",
+      "body": "CSB Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000003000.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "csb-bank-negative-1",
+      "bank": "CSB Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "failed",
+      "body": "CSB Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000003001.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "csb-bank-negative-2",
+      "bank": "CSB Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "future",
+      "body": "CSB Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000003002.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "csb-bank-negative-3",
+      "bank": "CSB Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "balance",
+      "body": "CSB Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000003003.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "dcb-bank-0",
+      "bank": "DCB Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "debit",
+      "body": "DCB Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000003100. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000003100"
+      }
+    },
+    {
+      "id": "dcb-bank-1",
+      "bank": "DCB Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "credit",
+      "body": "DCB Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000003101. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000003101"
+      }
+    },
+    {
+      "id": "dcb-bank-negative-0",
+      "bank": "DCB Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "otp",
+      "body": "DCB Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000003100.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "dcb-bank-negative-1",
+      "bank": "DCB Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "failed",
+      "body": "DCB Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000003101.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "dcb-bank-negative-2",
+      "bank": "DCB Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "future",
+      "body": "DCB Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000003102.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "dcb-bank-negative-3",
+      "bank": "DCB Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "balance",
+      "body": "DCB Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000003103.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "tamilnad-mercantile-bank-0",
+      "bank": "Tamilnad Mercantile Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "debit",
+      "body": "Tamilnad Mercantile Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000003200. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000003200"
+      }
+    },
+    {
+      "id": "tamilnad-mercantile-bank-1",
+      "bank": "Tamilnad Mercantile Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "credit",
+      "body": "Tamilnad Mercantile Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000003201. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000003201"
+      }
+    },
+    {
+      "id": "tamilnad-mercantile-bank-negative-0",
+      "bank": "Tamilnad Mercantile Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "otp",
+      "body": "Tamilnad Mercantile Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000003200.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "tamilnad-mercantile-bank-negative-1",
+      "bank": "Tamilnad Mercantile Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "failed",
+      "body": "Tamilnad Mercantile Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000003201.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "tamilnad-mercantile-bank-negative-2",
+      "bank": "Tamilnad Mercantile Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "future",
+      "body": "Tamilnad Mercantile Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000003202.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "tamilnad-mercantile-bank-negative-3",
+      "bank": "Tamilnad Mercantile Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "balance",
+      "body": "Tamilnad Mercantile Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000003203.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "hsbc-india-0",
+      "bank": "HSBC India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/HSBCBankParser.ts",
+      "kind": "debit",
+      "body": "HSBC India: INR 1,234.50 spent on card ending 4920 at DEMO MERCHANT on 29-Oct-2026. Ref 930000003300. Avl Lmt INR 1,42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000003300",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "hsbc-india-1",
+      "bank": "HSBC India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/HSBCBankParser.ts",
+      "kind": "credit",
+      "body": "HSBC India: INR 1,234.50 refunded to card ending 4920 from DEMO MERCHANT on 29-Oct-2026. Ref 930000003301. Avl Lmt INR 1,48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000003301",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "hsbc-india-negative-0",
+      "bank": "HSBC India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/HSBCBankParser.ts",
+      "kind": "otp",
+      "body": "HSBC India: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000003300.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "hsbc-india-negative-1",
+      "bank": "HSBC India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/HSBCBankParser.ts",
+      "kind": "failed",
+      "body": "HSBC India: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000003301.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "hsbc-india-negative-2",
+      "bank": "HSBC India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/HSBCBankParser.ts",
+      "kind": "future",
+      "body": "HSBC India: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000003302.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "hsbc-india-negative-3",
+      "bank": "HSBC India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/HSBCBankParser.ts",
+      "kind": "balance",
+      "body": "HSBC India: Available balance INR 1,234.50 in A/c XX4920. Ref 940000003303.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "standard-chartered-india-0",
+      "bank": "Standard Chartered India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/StandardCharteredBankParser.ts",
+      "kind": "debit",
+      "body": "Standard Chartered: INR 1,234.50 debited from your account 123xxxx4920 to DEMO MERCHANT on 29/10/2026. UTR 930000003400. Available Balance INR 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000003400",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "standard-chartered-india-1",
+      "bank": "Standard Chartered India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/StandardCharteredBankParser.ts",
+      "kind": "credit",
+      "body": "Standard Chartered: NEFT credit of INR 1,234.50 in your account 123xxxx4920 from DEMO MERCHANT on 29/10/2026. UTR 930000003401. Available Balance INR 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000003401",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "standard-chartered-india-negative-0",
+      "bank": "Standard Chartered India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/StandardCharteredBankParser.ts",
+      "kind": "otp",
+      "body": "Standard Chartered India: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000003400.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "standard-chartered-india-negative-1",
+      "bank": "Standard Chartered India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/StandardCharteredBankParser.ts",
+      "kind": "failed",
+      "body": "Standard Chartered India: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000003401.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "standard-chartered-india-negative-2",
+      "bank": "Standard Chartered India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/StandardCharteredBankParser.ts",
+      "kind": "future",
+      "body": "Standard Chartered India: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000003402.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "standard-chartered-india-negative-3",
+      "bank": "Standard Chartered India",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/StandardCharteredBankParser.ts",
+      "kind": "balance",
+      "body": "Standard Chartered India: Available balance INR 1,234.50 in A/c XX4920. Ref 940000003403.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "au-small-finance-bank-0",
+      "bank": "AU Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AUBankParser.ts",
+      "kind": "debit",
+      "body": "AU Bank: A/c XX4920 Dr INR 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000003500. Bal INR 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000003500",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "au-small-finance-bank-1",
+      "bank": "AU Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AUBankParser.ts",
+      "kind": "credit",
+      "body": "AU Bank: A/c XX4920 Cr INR 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. UPI Ref 930000003501. Bal INR 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000003501",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "au-small-finance-bank-negative-0",
+      "bank": "AU Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AUBankParser.ts",
+      "kind": "otp",
+      "body": "AU Small Finance Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000003500.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "au-small-finance-bank-negative-1",
+      "bank": "AU Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AUBankParser.ts",
+      "kind": "failed",
+      "body": "AU Small Finance Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000003501.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "au-small-finance-bank-negative-2",
+      "bank": "AU Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AUBankParser.ts",
+      "kind": "future",
+      "body": "AU Small Finance Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000003502.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "au-small-finance-bank-negative-3",
+      "bank": "AU Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AUBankParser.ts",
+      "kind": "balance",
+      "body": "AU Small Finance Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000003503.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "equitas-small-finance-bank-0",
+      "bank": "Equitas Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/EquitasBankParser.ts",
+      "kind": "debit",
+      "body": "Equitas: INR 1,234.50 debited from A/c XX4920 to DEMO MERCHANT on 29-Oct-2026. Ref 930000003600. Bal INR 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000003600",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "equitas-small-finance-bank-1",
+      "bank": "Equitas Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/EquitasBankParser.ts",
+      "kind": "credit",
+      "body": "Equitas: INR 1,234.50 credited to A/c XX4920 from DEMO MERCHANT on 29-Oct-2026. Ref 930000003601. Bal INR 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000003601",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "equitas-small-finance-bank-negative-0",
+      "bank": "Equitas Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/EquitasBankParser.ts",
+      "kind": "otp",
+      "body": "Equitas Small Finance Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000003600.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "equitas-small-finance-bank-negative-1",
+      "bank": "Equitas Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/EquitasBankParser.ts",
+      "kind": "failed",
+      "body": "Equitas Small Finance Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000003601.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "equitas-small-finance-bank-negative-2",
+      "bank": "Equitas Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/EquitasBankParser.ts",
+      "kind": "future",
+      "body": "Equitas Small Finance Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000003602.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "equitas-small-finance-bank-negative-3",
+      "bank": "Equitas Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/EquitasBankParser.ts",
+      "kind": "balance",
+      "body": "Equitas Small Finance Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000003603.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "utkarsh-small-finance-bank-0",
+      "bank": "Utkarsh Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UtkarshBankParser.ts",
+      "kind": "debit",
+      "body": "Utkarsh Small Finance Bank: INR 1,234.50 spent on card ending 4920 at DEMO MERCHANT on 29-Oct-2026. Ref 930000003700. Avl Lmt INR 1,42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000003700",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "utkarsh-small-finance-bank-1",
+      "bank": "Utkarsh Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UtkarshBankParser.ts",
+      "kind": "credit",
+      "body": "Utkarsh Small Finance Bank: INR 1,234.50 refunded to card ending 4920 from DEMO MERCHANT on 29-Oct-2026. Ref 930000003701. Avl Lmt INR 1,48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000003701",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "utkarsh-small-finance-bank-negative-0",
+      "bank": "Utkarsh Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UtkarshBankParser.ts",
+      "kind": "otp",
+      "body": "Utkarsh Small Finance Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000003700.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "utkarsh-small-finance-bank-negative-1",
+      "bank": "Utkarsh Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UtkarshBankParser.ts",
+      "kind": "failed",
+      "body": "Utkarsh Small Finance Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000003701.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "utkarsh-small-finance-bank-negative-2",
+      "bank": "Utkarsh Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UtkarshBankParser.ts",
+      "kind": "future",
+      "body": "Utkarsh Small Finance Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000003702.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "utkarsh-small-finance-bank-negative-3",
+      "bank": "Utkarsh Small Finance Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/UtkarshBankParser.ts",
+      "kind": "balance",
+      "body": "Utkarsh Small Finance Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000003703.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "jana-small-finance-bank-0",
+      "bank": "Jana Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "debit",
+      "body": "Jana Small Finance Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000003800. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000003800"
+      }
+    },
+    {
+      "id": "jana-small-finance-bank-1",
+      "bank": "Jana Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "credit",
+      "body": "Jana Small Finance Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000003801. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000003801"
+      }
+    },
+    {
+      "id": "jana-small-finance-bank-negative-0",
+      "bank": "Jana Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "otp",
+      "body": "Jana Small Finance Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000003800.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "jana-small-finance-bank-negative-1",
+      "bank": "Jana Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "failed",
+      "body": "Jana Small Finance Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000003801.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "jana-small-finance-bank-negative-2",
+      "bank": "Jana Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "future",
+      "body": "Jana Small Finance Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000003802.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "jana-small-finance-bank-negative-3",
+      "bank": "Jana Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "balance",
+      "body": "Jana Small Finance Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000003803.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "suryoday-small-finance-bank-0",
+      "bank": "Suryoday Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "debit",
+      "body": "Suryoday Small Finance Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000003900. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000003900"
+      }
+    },
+    {
+      "id": "suryoday-small-finance-bank-1",
+      "bank": "Suryoday Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "credit",
+      "body": "Suryoday Small Finance Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000003901. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000003901"
+      }
+    },
+    {
+      "id": "suryoday-small-finance-bank-negative-0",
+      "bank": "Suryoday Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "otp",
+      "body": "Suryoday Small Finance Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000003900.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "suryoday-small-finance-bank-negative-1",
+      "bank": "Suryoday Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "failed",
+      "body": "Suryoday Small Finance Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000003901.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "suryoday-small-finance-bank-negative-2",
+      "bank": "Suryoday Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "future",
+      "body": "Suryoday Small Finance Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000003902.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "suryoday-small-finance-bank-negative-3",
+      "bank": "Suryoday Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "balance",
+      "body": "Suryoday Small Finance Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000003903.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "ujjivan-small-finance-bank-0",
+      "bank": "Ujjivan Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "debit",
+      "body": "Ujjivan Small Finance Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000004000. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000004000"
+      }
+    },
+    {
+      "id": "ujjivan-small-finance-bank-1",
+      "bank": "Ujjivan Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "credit",
+      "body": "Ujjivan Small Finance Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000004001. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000004001"
+      }
+    },
+    {
+      "id": "ujjivan-small-finance-bank-negative-0",
+      "bank": "Ujjivan Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "otp",
+      "body": "Ujjivan Small Finance Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000004000.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "ujjivan-small-finance-bank-negative-1",
+      "bank": "Ujjivan Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "failed",
+      "body": "Ujjivan Small Finance Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000004001.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "ujjivan-small-finance-bank-negative-2",
+      "bank": "Ujjivan Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "future",
+      "body": "Ujjivan Small Finance Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000004002.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "ujjivan-small-finance-bank-negative-3",
+      "bank": "Ujjivan Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "balance",
+      "body": "Ujjivan Small Finance Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000004003.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "esaf-small-finance-bank-0",
+      "bank": "ESAF Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "debit",
+      "body": "ESAF Small Finance Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000004100. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000004100"
+      }
+    },
+    {
+      "id": "esaf-small-finance-bank-1",
+      "bank": "ESAF Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "credit",
+      "body": "ESAF Small Finance Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000004101. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000004101"
+      }
+    },
+    {
+      "id": "esaf-small-finance-bank-negative-0",
+      "bank": "ESAF Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "otp",
+      "body": "ESAF Small Finance Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000004100.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "esaf-small-finance-bank-negative-1",
+      "bank": "ESAF Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "failed",
+      "body": "ESAF Small Finance Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000004101.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "esaf-small-finance-bank-negative-2",
+      "bank": "ESAF Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "future",
+      "body": "ESAF Small Finance Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000004102.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "esaf-small-finance-bank-negative-3",
+      "bank": "ESAF Small Finance Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "balance",
+      "body": "ESAF Small Finance Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000004103.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "airtel-payments-bank-0",
+      "bank": "Airtel Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AirtelPaymentsBankParser.ts",
+      "kind": "debit",
+      "body": "Rs. 1,234.50 debited from Airtel Payments Bank a/c to DEMO MERCHANT. Txn ID 930000004200. Bal Rs.42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": null,
+        "reference": "930000004200"
+      }
+    },
+    {
+      "id": "airtel-payments-bank-1",
+      "bank": "Airtel Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AirtelPaymentsBankParser.ts",
+      "kind": "credit",
+      "body": "Airtel Payments Bank a/c is credited with Rs.1,234.50 from DEMO MERCHANT. Txn ID: 930000004201. Bal Rs.48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": null,
+        "reference": "930000004201"
+      }
+    },
+    {
+      "id": "airtel-payments-bank-negative-0",
+      "bank": "Airtel Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AirtelPaymentsBankParser.ts",
+      "kind": "otp",
+      "body": "Airtel Payments Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000004200.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "airtel-payments-bank-negative-1",
+      "bank": "Airtel Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AirtelPaymentsBankParser.ts",
+      "kind": "failed",
+      "body": "Airtel Payments Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000004201.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "airtel-payments-bank-negative-2",
+      "bank": "Airtel Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AirtelPaymentsBankParser.ts",
+      "kind": "future",
+      "body": "Airtel Payments Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000004202.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "airtel-payments-bank-negative-3",
+      "bank": "Airtel Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/AirtelPaymentsBankParser.ts",
+      "kind": "balance",
+      "body": "Airtel Payments Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000004203.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "india-post-payments-bank-0",
+      "bank": "India Post Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IPPBParser.ts",
+      "kind": "debit",
+      "body": "India Post Payments Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000004300. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000004300"
+      }
+    },
+    {
+      "id": "india-post-payments-bank-1",
+      "bank": "India Post Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IPPBParser.ts",
+      "kind": "credit",
+      "body": "India Post Payments Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000004301. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000004301"
+      }
+    },
+    {
+      "id": "india-post-payments-bank-negative-0",
+      "bank": "India Post Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IPPBParser.ts",
+      "kind": "otp",
+      "body": "India Post Payments Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000004300.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "india-post-payments-bank-negative-1",
+      "bank": "India Post Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IPPBParser.ts",
+      "kind": "failed",
+      "body": "India Post Payments Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000004301.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "india-post-payments-bank-negative-2",
+      "bank": "India Post Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IPPBParser.ts",
+      "kind": "future",
+      "body": "India Post Payments Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000004302.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "india-post-payments-bank-negative-3",
+      "bank": "India Post Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/IPPBParser.ts",
+      "kind": "balance",
+      "body": "India Post Payments Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000004303.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "jio-payments-bank-0",
+      "bank": "Jio Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/JioPaymentsBankParser.ts",
+      "kind": "debit",
+      "body": "Jio Payments Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000004400. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000004400"
+      }
+    },
+    {
+      "id": "jio-payments-bank-1",
+      "bank": "Jio Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/JioPaymentsBankParser.ts",
+      "kind": "credit",
+      "body": "Jio Payments Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000004401. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000004401"
+      }
+    },
+    {
+      "id": "jio-payments-bank-negative-0",
+      "bank": "Jio Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/JioPaymentsBankParser.ts",
+      "kind": "otp",
+      "body": "Jio Payments Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000004400.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "jio-payments-bank-negative-1",
+      "bank": "Jio Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/JioPaymentsBankParser.ts",
+      "kind": "failed",
+      "body": "Jio Payments Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000004401.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "jio-payments-bank-negative-2",
+      "bank": "Jio Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/JioPaymentsBankParser.ts",
+      "kind": "future",
+      "body": "Jio Payments Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000004402.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "jio-payments-bank-negative-3",
+      "bank": "Jio Payments Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/JioPaymentsBankParser.ts",
+      "kind": "balance",
+      "body": "Jio Payments Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000004403.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "nsdl-payments-bank-0",
+      "bank": "NSDL Payments Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "debit",
+      "body": "NSDL Payments Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000004500. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000004500"
+      }
+    },
+    {
+      "id": "nsdl-payments-bank-1",
+      "bank": "NSDL Payments Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "credit",
+      "body": "NSDL Payments Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000004501. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000004501"
+      }
+    },
+    {
+      "id": "nsdl-payments-bank-negative-0",
+      "bank": "NSDL Payments Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "otp",
+      "body": "NSDL Payments Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000004500.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "nsdl-payments-bank-negative-1",
+      "bank": "NSDL Payments Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "failed",
+      "body": "NSDL Payments Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000004501.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "nsdl-payments-bank-negative-2",
+      "bank": "NSDL Payments Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "future",
+      "body": "NSDL Payments Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000004502.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "nsdl-payments-bank-negative-3",
+      "bank": "NSDL Payments Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "balance",
+      "body": "NSDL Payments Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000004503.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "saraswat-co-operative-bank-0",
+      "bank": "Saraswat Co-operative Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SaraswatBankParser.ts",
+      "kind": "debit",
+      "body": "Saraswat Co-operative Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000004600. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000004600"
+      }
+    },
+    {
+      "id": "saraswat-co-operative-bank-1",
+      "bank": "Saraswat Co-operative Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SaraswatBankParser.ts",
+      "kind": "credit",
+      "body": "Saraswat Co-operative Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000004601. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000004601"
+      }
+    },
+    {
+      "id": "saraswat-co-operative-bank-negative-0",
+      "bank": "Saraswat Co-operative Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SaraswatBankParser.ts",
+      "kind": "otp",
+      "body": "Saraswat Co-operative Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000004600.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "saraswat-co-operative-bank-negative-1",
+      "bank": "Saraswat Co-operative Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SaraswatBankParser.ts",
+      "kind": "failed",
+      "body": "Saraswat Co-operative Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000004601.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "saraswat-co-operative-bank-negative-2",
+      "bank": "Saraswat Co-operative Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SaraswatBankParser.ts",
+      "kind": "future",
+      "body": "Saraswat Co-operative Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000004602.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "saraswat-co-operative-bank-negative-3",
+      "bank": "Saraswat Co-operative Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/SaraswatBankParser.ts",
+      "kind": "balance",
+      "body": "Saraswat Co-operative Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000004603.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "svc-co-operative-bank-0",
+      "bank": "SVC Co-operative Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "debit",
+      "body": "SVC Co-operative Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000004700. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000004700"
+      }
+    },
+    {
+      "id": "svc-co-operative-bank-1",
+      "bank": "SVC Co-operative Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "credit",
+      "body": "SVC Co-operative Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000004701. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000004701"
+      }
+    },
+    {
+      "id": "svc-co-operative-bank-negative-0",
+      "bank": "SVC Co-operative Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "otp",
+      "body": "SVC Co-operative Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000004700.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "svc-co-operative-bank-negative-1",
+      "bank": "SVC Co-operative Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "failed",
+      "body": "SVC Co-operative Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000004701.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "svc-co-operative-bank-negative-2",
+      "bank": "SVC Co-operative Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "future",
+      "body": "SVC Co-operative Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000004702.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "svc-co-operative-bank-negative-3",
+      "bank": "SVC Co-operative Bank",
+      "basis": "generic-synthetic-only",
+      "source": null,
+      "kind": "balance",
+      "body": "SVC Co-operative Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000004703.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "greater-bank-0",
+      "bank": "Greater Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/GreaterBankParser.ts",
+      "kind": "debit",
+      "body": "Your Account XXXX4920 had a DEBIT transaction of RS. 1,234.50 on 29-10-2026 at DEMO MERCHANT. Ref 930000004800. Available balance Rs.42,875.25 -GREATER BANK",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000004800",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "greater-bank-1",
+      "bank": "Greater Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/GreaterBankParser.ts",
+      "kind": "credit",
+      "body": "Your Account XXXX4920 had a CREDIT transaction of RS. 1,234.50 on 29-10-2026 from DEMO MERCHANT. Ref 930000004801. Available balance Rs.48,875.25 -GREATER BANK",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000004801",
+        "merchant": "DEMO MERCHANT"
+      }
+    },
+    {
+      "id": "greater-bank-negative-0",
+      "bank": "Greater Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/GreaterBankParser.ts",
+      "kind": "otp",
+      "body": "Greater Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000004800.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "greater-bank-negative-1",
+      "bank": "Greater Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/GreaterBankParser.ts",
+      "kind": "failed",
+      "body": "Greater Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000004801.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "greater-bank-negative-2",
+      "bank": "Greater Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/GreaterBankParser.ts",
+      "kind": "future",
+      "body": "Greater Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000004802.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "greater-bank-negative-3",
+      "bank": "Greater Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/GreaterBankParser.ts",
+      "kind": "balance",
+      "body": "Greater Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000004803.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "kerala-gramin-bank-0",
+      "bank": "Kerala Gramin Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KeralaGraminBankParser.ts",
+      "kind": "debit",
+      "body": "Kerala Gramin Bank: A/c XX4920 debited Rs. 1,234.50 on 29-Oct-2026 to DEMO MERCHANT. UPI Ref 930000004900. Avl Bal Rs. 42,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "EXPENSE",
+        "account_suffix": "4920",
+        "reference": "930000004900"
+      }
+    },
+    {
+      "id": "kerala-gramin-bank-1",
+      "bank": "Kerala Gramin Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KeralaGraminBankParser.ts",
+      "kind": "credit",
+      "body": "Kerala Gramin Bank: A/c XX4920 credited Rs. 1,234.50 on 29-Oct-2026 from DEMO MERCHANT. Ref 930000004901. Avl Bal Rs. 48,875.25.",
+      "expected": {
+        "bookable": true,
+        "amount_paise": 123450,
+        "type": "INCOME",
+        "account_suffix": "4920",
+        "reference": "930000004901"
+      }
+    },
+    {
+      "id": "kerala-gramin-bank-negative-0",
+      "bank": "Kerala Gramin Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KeralaGraminBankParser.ts",
+      "kind": "otp",
+      "body": "Kerala Gramin Bank: OTP 246810 to authorize INR 1,234.50 on A/c XX4920. Ref 940000004900.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "kerala-gramin-bank-negative-1",
+      "bank": "Kerala Gramin Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KeralaGraminBankParser.ts",
+      "kind": "failed",
+      "body": "Kerala Gramin Bank: INR 1,234.50 payment failed. A/c XX4920 not debited. Ref 940000004901.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "kerala-gramin-bank-negative-2",
+      "bank": "Kerala Gramin Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KeralaGraminBankParser.ts",
+      "kind": "future",
+      "body": "Kerala Gramin Bank: INR 1,234.50 will be debited from A/c XX4920 tomorrow. Ref 940000004902.",
+      "expected": {
+        "bookable": false
+      }
+    },
+    {
+      "id": "kerala-gramin-bank-negative-3",
+      "bank": "Kerala Gramin Bank",
+      "basis": "public-parser-grammar",
+      "source": "https://github.com/rahatsayyed/BankSMSParser/blob/30d1597685c4bccf4f1d4e7caf7ba1da2abece46/src/banks/KeralaGraminBankParser.ts",
+      "kind": "balance",
+      "body": "Kerala Gramin Bank: Available balance INR 1,234.50 in A/c XX4920. Ref 940000004903.",
+      "expected": {
+        "bookable": false
+      }
+    }
+  ]
+}

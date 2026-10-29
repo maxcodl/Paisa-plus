@@ -170,6 +170,7 @@ object Routes {
     const val BACKUP = "backup"
     const val DEBTS = "debts"
     const val SETTINGS = "settings"
+    const val IMPORT_MESSAGES = "import_messages"
     const val IMPORT_CSV = "import_csv"
     const val PROFILE = "profile"
     const val REPORTS = "reports"
@@ -356,6 +357,7 @@ private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () ->
             composable(Routes.RECURRING) { RecurringScreen(vm, back) }
             composable(Routes.BACKUP) { BackupScreen(vm, back) }
             composable(Routes.DEBTS) { DebtsScreen(vm, back) }
+            composable(Routes.IMPORT_MESSAGES) { com.paisaplus.compose.ui.settings.MessageImportScreen(vm, back) }
             composable(Routes.IMPORT_CSV) { ImportCsvScreen(vm, back) }
             composable(Routes.SETTINGS) { SettingsScreen(vm, back) { nav.navigate(it) } }
             composable("${Routes.SETTINGS}/{page}") { e ->

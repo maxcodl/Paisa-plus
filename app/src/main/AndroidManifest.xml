@@ -3,6 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Only optional model downloads use the network. Inference stays on device. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Required by Telephony.Sms.getDefaultSmsPackage on Android 11+. -->
+    <queries>
+        <intent>
+            <action android:name="android.provider.Telephony.SMS_DELIVER" />
+        </intent>
+    </queries>
 
     <application
         android:name=".PaisaApp"
@@ -70,6 +80,16 @@
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/quick_add_widget_info" />
         </receiver>
+
+        <service
+            android:name=".messages.BankNotificationListener"
+            android:label="@string/message_import_title"
+            android:exported="false"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
 
         <!-- WorkManager is initialised by PaisaApp (Hilt worker factory). -->
         <provider

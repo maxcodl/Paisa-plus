@@ -5,6 +5,7 @@ import com.paisaplus.compose.str
 
 import com.paisaplus.compose.data.currentPeriod
 import com.paisaplus.compose.data.periodRange
+import androidx.compose.material.icons.automirrored.rounded.Message
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
@@ -484,8 +485,10 @@ fun SettingsPageScreen(vm: AppViewModel, page: SettingsPage, onBack: () -> Unit,
                         }
                         if (backupDir != null) item { PrefRow(Icons.Rounded.Backup, 3, str(R.string.back_up_now), onClick = vm::backupNow) }
                         item { LinkRow(Icons.Rounded.Backup, 0, str(R.string.backup_restore), str(R.string.export_restore_daily_auto_backup)) { open(Routes.BACKUP) } }
+                        item { LinkRow(Icons.AutoMirrored.Rounded.Message, 2, str(R.string.message_import_title), "") { open(Routes.IMPORT_MESSAGES) } }
                         item { LinkRow(Icons.Rounded.UploadFile, 2, str(R.string.import_bank_statement), "CSV") { open(Routes.IMPORT_CSV) } }
                     }
+
                 }
             }
         }
