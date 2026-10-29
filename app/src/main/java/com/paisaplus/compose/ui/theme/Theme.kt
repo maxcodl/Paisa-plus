@@ -134,6 +134,7 @@ private fun ColorScheme.amoled() = copy(
     background = Color.Black,
     surface = Color.Black,
     surfaceContainerLowest = Color.Black,
+    surfaceContainerLow = Color.Black, // Home and the tab bar sit on this
 )
 
 /** The app's colour scheme for [settings] (accent / Monet, variant, contrast, colourful surfaces); also used by the widgets. */

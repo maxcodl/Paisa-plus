@@ -78,6 +78,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
@@ -408,11 +409,19 @@ private fun MonthStat(label: String, now: Double, before: Double, hidden: Boolea
         Row(verticalAlignment = Alignment.CenterVertically) {
             AmountText(now, Modifier.weight(1f, fill = false), style = MaterialTheme.typography.titleSmall, hidden = hidden)
             if (pct != null && !hidden) {
-                // Income going up is good; expense going up is bad.
-                val tint = if (pct == 0 || (pct > 0) == good) p.income else p.expense
-                Spacer(Modifier.width(4.dp))
-                Icon(if (pct >= 0) Icons.Rounded.ArrowUpward else Icons.Rounded.ArrowDownward, null, Modifier.size(14.dp), tint = tint)
-                Text("${abs(pct)}%", style = MaterialTheme.typography.bodySmall, color = tint)
+                // Income going up is good; expense going up is bad. A tonal chip toned for the card under it
+                // (dark text = light card, whatever the theme): readable even green-on-green on a bright accent card.
+                val onLight = LocalContentColor.current.luminance() < 0.5f
+                val t = com.paisaplus.compose.ui.theme.tonalColors(if (pct == 0 || (pct > 0) == good) p.income else p.expense, dark = !onLight)
+                Spacer(Modifier.width(6.dp))
+                Row(
+                    Modifier.background(t.container, CircleShape).padding(start = 4.dp, end = 6.dp, top = 1.dp, bottom = 1.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(if (pct >= 0) Icons.Rounded.ArrowUpward else Icons.Rounded.ArrowDownward, null, Modifier.size(12.dp), tint = t.content)
+                    Spacer(Modifier.width(2.dp))
+                    Text("${abs(pct)}%", style = MaterialTheme.typography.labelSmall, color = t.content)
+                }
             }
         }
         WrapText(str(R.string.last_month_x, moneyOrHidden(before, hidden)), style = MaterialTheme.typography.bodySmall, color = dim)
