@@ -7,7 +7,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.withTransaction
+import com.paisaplus.compose.data.AccountEntity
 import com.paisaplus.compose.data.ExpenseEntity
+import com.paisaplus.compose.data.groupKey
 import com.paisaplus.compose.data.ExpenseRepository
 import com.paisaplus.compose.data.SettingsStore
 import com.paisaplus.compose.data.PaisaDatabase
@@ -41,10 +43,13 @@ interface MessageInboxDao {
     suspend fun get(id: String): MessageInboxEntity?
     @Query("SELECT * FROM message_inbox WHERE status = 'PENDING' ORDER BY receivedAt DESC")
     suspend fun pendingList(): List<MessageInboxEntity>
+    @Query("SELECT * FROM message_inbox WHERE status = 'HINT' AND amountPaise = :amountPaise AND receivedAt BETWEEN :from AND :to ORDER BY abs(receivedAt - :at) LIMIT 1")
+    suspend fun hintNear(amountPaise: Long, from: Long, to: Long, at: Long): MessageInboxEntity?
     @Insert(onConflict = OnConflictStrategy.IGNORE) suspend fun insert(row: MessageInboxEntity): Long
     @Query("UPDATE message_inbox SET status = :status, body = '' WHERE fingerprint = :id")
     suspend fun finish(id: String, status: String)
     @Query("DELETE FROM message_inbox") suspend fun clear()
+    @Query("UPDATE message_inbox SET status = 'DISMISSED', body = '' WHERE status = 'PENDING'") suspend fun dismissAllPending(): Int
     // Discard oldest pending text but retain its fingerprint to avoid notification replay.
     @Query("UPDATE message_inbox SET status = 'DISMISSED', body = '' WHERE status = 'PENDING' AND fingerprint NOT IN (SELECT fingerprint FROM message_inbox WHERE status = 'PENDING' ORDER BY receivedAt DESC LIMIT 200)")
     suspend fun trim()
@@ -54,6 +59,12 @@ interface MessageInboxDao {
 const val ADDED_TO_REVIEW = "Transaction added to review inbox"
 const val AUTO_ADDED = "Transaction added automatically"
 const val DUPLICATE = "Already in your transactions"
+/** Older than your own records for that account (statement import or entries): already reflected in the balance. */
+const val COVERED = "Before your records"
+/** An older alert matched to its statement row, which got the alert's time, payee and app. */
+const val MERGED = "Matched to your statement"
+/** How far apart a UPI app's notice and the bank's alert for one payment may be. */
+private const val HINT_MS = 10 * 60_000L
 /** Alerts younger than this may be added unattended; anything older goes through Review. */
 private const val FRESH_MS = 2 * 86_400_000L
 
@@ -112,22 +123,95 @@ class MessageInboxRepository @Inject constructor(
 
     private suspend fun settle(fingerprint: String, scan: Boolean, notify: Boolean): String {
         val row = db.messageInbox().get(fingerprint)?.takeIf { it.status == "PENDING" } ?: return DUPLICATE
-        val account = AutoAdd.account(db.accounts().list(), row.accountSuffix, row.body)
+        val accounts = db.accounts().list()
+        val account = AutoAdd.account(accounts, row.accountSuffix, row.body)
+        val hint = hintFor(row)
+        val parsed = (BankMessageParser.parse(row.body) as? MessageParseResult.Candidate)?.transaction
+        val known = db.expenses().payeeNames()
+        val name = AutoAdd.complete(AutoAdd.payee(hint?.merchant, "") ?: AutoAdd.payee(parsed?.merchant ?: row.merchant, row.body), known)
+        val old = System.currentTimeMillis() - row.receivedAt >= FRESH_MS
+        if (old && account != null) {
+            // Before the account's first statement or entry: already counted in its opening balance.
+            val start = db.expenses().firstOwnRecord(account.id)
+            if (start != null && row.receivedAt < start) {
+                db.messageInbox().finish(fingerprint, "COVERED")
+                return COVERED
+            }
+            // The statement has it: give that row what statements lack (time, readable payee, method, app); balance unchanged.
+            statementRow(row, account, accounts)?.let { e ->
+                enrich(e, row, name, hint)
+                db.messageInbox().finish(fingerprint, "MERGED")
+                return MERGED
+            }
+        }
         if (recorded(row, account?.id, scan)) {
             db.messageInbox().finish(fingerprint, "DUPLICATE")
             return DUPLICATE
         }
-        val parsed = (BankMessageParser.parse(row.body) as? MessageParseResult.Candidate)?.transaction
-        // Only fresh alerts are added unattended. Older ones (history scan, backlog) overlap statements imported by CSV,
-        // which carry posting dates and sometimes another card of the group, so they always go through Review.
-        val fresh = System.currentTimeMillis() - row.receivedAt < FRESH_MS
-        if (!fresh || nearMatch(row)) return ADDED_TO_REVIEW
+        // Only fresh alerts are added unattended; older ones not in the statement wait in Review as possibly missed.
+        if (old || nearMatch(row)) return ADDED_TO_REVIEW
         if (account == null || parsed == null || parsed.hasLink || !settings.messages.first().autoAdd || settings.money.first().currency != "INR") return ADDED_TO_REVIEW
-        val name = AutoAdd.payee(parsed.merchant ?: row.merchant, row.body) ?: return ADDED_TO_REVIEW
+        name ?: return ADDED_TO_REVIEW
         val category = AutoAdd.category(name, row.body, db.categories().list(), db.expenses().list()) ?: return ADDED_TO_REVIEW
-        if (!confirm(fingerprint, account.id, category.id, name, auto = true)) return DUPLICATE
+        if (!confirm(fingerprint, account.id, category.id, name, auto = true, app = hint?.let { appOf(it.source) })) return DUPLICATE
         if (notify) AutoAddNotice.show(ctx, name, row.amountPaise / 100.0, row.type, account.name)
         return AUTO_ADDED
+    }
+
+    /**
+     * The statement row for an older alert: one you imported or entered, same direction and amount, within 3 days
+     * (statements use the posting date), on this account or another card of its group, and not matched yet
+     * (statement rows carry no time of day; a matched one gets the alert's).
+     */
+    private suspend fun statementRow(row: MessageInboxEntity, account: AccountEntity, accounts: List<AccountEntity>): ExpenseEntity? {
+        val group = groupKey(account)
+        val ids = accounts.filter { it.id == account.id || (group != null && groupKey(it) == group) }.map { it.id }
+        val days3 = 3 * 86_400_000L
+        val zone = java.time.ZoneId.systemDefault()
+        return db.expenses().ownNear(ids, row.type, row.amountPaise / 100.0, row.receivedAt - days3, row.receivedAt + days3)
+            .filter { java.time.Instant.ofEpochMilli(it.time).atZone(zone).toLocalTime() == java.time.LocalTime.MIDNIGHT }
+            .minByOrNull { kotlin.math.abs(it.time - row.receivedAt) }
+    }
+
+    /** Fills in a statement row from its alert. Amount and account are the same, so the balance doesn't move. */
+    private suspend fun enrich(e: ExpenseEntity, row: MessageInboxEntity, name: String?, hint: MessageInboxEntity?) {
+        val method = e.method ?: AutoAdd.method(row.body, row.isUpi)
+        val app = e.upiApp ?: hint?.let { appOf(it.source) } ?: if (method == "UPI") AutoAdd.upiApp(row.body)?.name else null
+        expenses.update(e.copy(
+            time = row.receivedAt,
+            name = if (name != null && AutoAdd.crypticName(e.name)) name else e.name,
+            method = method,
+            upiApp = if (method == "UPI") app else e.upiApp,
+        ))
+    }
+
+    /** A UPI app's own notice for the same payment (same amount within 10 minutes), if one was seen. */
+    private suspend fun hintFor(row: MessageInboxEntity): MessageInboxEntity? =
+        db.messageInbox().hintNear(row.amountPaise, row.receivedAt - HINT_MS, row.receivedAt + HINT_MS, row.receivedAt)
+
+    private fun appOf(source: String) = com.paisaplus.compose.data.UpiApp.entries.firstOrNull { it.label == source }?.name
+
+    /**
+     * A payment notice from a UPI app (GPay, PhonePe, ...). Never a transaction by itself: it is kept as a hint so the
+     * bank alert or statement row for the same payment gets the app and the full payee name. If that entry already
+     * exists (the bank alert came first), it is updated now.
+     */
+    suspend fun receiveHint(text: String, app: com.paisaplus.compose.data.UpiApp, postedAt: Long) {
+        val h = AutoAdd.upiNotice(text) ?: return
+        val fp = "hint:" + messageFingerprint(text, ParsedBankMessage(h.amountPaise, h.type, null, h.payee, null, true, 1.0), postedAt)
+        val row = MessageInboxEntity(fp, app.label, text.take(1000), postedAt, h.amountPaise, h.type, null, h.payee, null, true, 1.0, status = "HINT")
+        if (db.messageInbox().insert(row) == -1L) return
+        val from = postedAt - HINT_MS
+        val to = postedAt + HINT_MS
+        val known = db.expenses().payeeNames()
+        db.expenses().list().filter { e ->
+            e.time in from..to && kotlin.math.abs(e.amount - h.amountPaise / 100.0) < 0.005 && e.type == h.type && e.upiApp == null &&
+                listOf("Auto-added", "Reviewed").any { e.note?.startsWith(it) == true }
+        }.forEach { e ->
+            val full = AutoAdd.complete(AutoAdd.payee(h.payee, ""), known)
+            val better = full != null && (AutoAdd.crypticName(e.name) || full.startsWith(e.name, ignoreCase = true))
+            expenses.update(e.copy(method = "UPI", upiApp = app.name, name = if (better) full!! else e.name))
+        }
     }
 
     /**
@@ -159,12 +243,15 @@ class MessageInboxRepository @Inject constructor(
 
     suspend fun dismiss(id: String) = db.messageInbox().finish(id, "DISMISSED")
 
+    /** Clears Review in one go; fingerprints stay, so the same alerts aren't brought back by a later scan. */
+    suspend fun dismissAll(): Int = db.messageInbox().dismissAllPending()
+
     /**
      * Saves a waiting alert; status, expense and balance commit together, so repeated taps can't double-post.
      * A payment already in the ledger nearby isn't added again: the alert just leaves Review (returns false).
      * An account picked for alerts ending in digits it doesn't have yet learns them, so the next one is added on its own.
      */
-    suspend fun confirm(id: String, accountId: Long, categoryId: Long, name: String, auto: Boolean = false): Boolean = db.withTransaction {
+    suspend fun confirm(id: String, accountId: Long, categoryId: Long, name: String, auto: Boolean = false, app: String? = null): Boolean = db.withTransaction {
         val row = db.messageInbox().get(id) ?: return@withTransaction false
         if (row.status != "PENDING") return@withTransaction false
         require(settings.money.first().currency == "INR") { "INR alerts require INR as the app currency. Change it in Settings before importing." }
@@ -182,7 +269,7 @@ class MessageInboxRepository @Inject constructor(
             accountId = accountId, categoryId = categoryId,
             note = (if (auto) "Auto-added from ${row.source}" else "Reviewed ${row.source} alert") + (row.reference?.let { "; Ref $it" } ?: ""),
             method = method,
-            upiApp = if (method == "UPI") AutoAdd.upiApp(row.body)?.name else null,
+            upiApp = if (method == "UPI") app ?: hintFor(row)?.let { appOf(it.source) } ?: AutoAdd.upiApp(row.body)?.name else null,
         ))
         if (!auto && row.accountSuffix != null && account.number.none(Char::isDigit)) db.accounts().upsert(account.copy(number = "XX" + row.accountSuffix))
         db.messageInbox().finish(id, "IMPORTED")

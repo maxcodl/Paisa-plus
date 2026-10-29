@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.2
+
+- Scans reconcile with your statements: alerts before an account's statement start are skipped (already in the opening balance); alerts matching a statement row give it the real time, a readable payee, payment method and UPI app without changing balances; only unmatched ones go to Review
+- UPI app notices (GPay, PhonePe, Paytm, CRED, super.money, BHIM) tag the matching bank alert with the app and full payee name
+- Payee names cut off by bank SMS are completed from your saved payees
+- Scan result shows how many were already in your records; Review has Dismiss all
+- Update check on opening (unless updates are Off): new versions show their changelog with Install and Later; App updates shows the full notes
+- Profile: About section with version, app updates and source code
+
 ## 0.9.1
 
 - Review: payments already saved leave Review instead of getting stuck ("similar transaction exists"); opening Review clears them and adds ones that are now recognisable

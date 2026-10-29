@@ -53,6 +53,26 @@ class AutoAddTest {
 
     @Test fun payeeFromVpa() = assertEquals("Swiggy", AutoAdd.payee("swiggy@icici", ""))
 
+    @Test fun completesCutOffNames() {
+        val known = setOf("Karthik Janardanan", "Talk of Thrissur", "Karthik J", "Karthik Janardanan")
+        assertEquals("Karthik Janardanan", AutoAdd.complete("Karthik Janarda", known))
+        assertEquals("Swiggy", AutoAdd.complete("Swiggy", known))
+        assertEquals("Talk of Thrissur", AutoAdd.complete("Talk Of Thrissu", known))
+    }
+
+    @Test fun crypticStatementNames() {
+        assertEquals(true, AutoAdd.crypticName("UPI q692232694"))
+        assertEquals(true, AutoAdd.crypticName("Paytm d19587428510"))
+        assertEquals(false, AutoAdd.crypticName("Swiggy"))
+    }
+
+    @Test fun upiAppNotices() {
+        AutoAdd.upiNotice("Paid ₹250 to Swiggy successfully")!!.let { assertEquals(25000L, it.amountPaise); assertEquals("Swiggy", it.payee); assertEquals(TransactionType.EXPENSE, it.type) }
+        AutoAdd.upiNotice("₹1,200 received from Rahul Kumar")!!.let { assertEquals(120000L, it.amountPaise); assertEquals(TransactionType.INCOME, it.type) }
+        assertNull(AutoAdd.upiNotice("Rahul requested ₹500 from you"))
+        assertNull(AutoAdd.upiNotice("You won ₹10 cashback"))
+    }
+
     @Test fun payeeFromBankCodes() {
         assertEquals("Thrikkaka", AutoAdd.payee("VPS*Thrikkaka", "debited"))
         assertNull(AutoAdd.payee("BIL*INFT*FJD4", "debited"))

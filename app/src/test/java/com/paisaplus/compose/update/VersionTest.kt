@@ -11,3 +11,10 @@ class VersionTest {
     @Test fun olderIsNotNewer() = assertFalse(newer("v0.7.9", "0.8.1"))
     @Test fun missingPartIsZero() = assertFalse(newer("v1.0", "1.0.0"))
 }
+
+class ReleaseNotesTest {
+    @Test fun keepsChangelogDropsGeneratedParts() {
+        val body = "- Review fixes\n- **Bell** badge\n\n## Download\n\n- pick an APK\n\n## What's Changed\n* PR #1"
+        org.junit.Assert.assertEquals("• Review fixes\n• Bell badge", releaseNotes(body))
+    }
+}

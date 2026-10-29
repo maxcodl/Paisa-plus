@@ -132,6 +132,14 @@
     <string name="already_in_transactions">Já está nos lançamentos, saiu da revisão</string>
     <string name="cleared_x_from_review">%1$d já salvos ou reconhecidos agora, saíram da revisão</string>
     <string name="alerts_off_turn_on">O acesso às notificações está desligado, então pagamentos novos não são pegos. Toque pra ligar.</string>
+    <string name="sms_scan_result_xyzw">%1$d lançados · %2$d pra revisão · %3$d já nos seus registros · %4$d já varridos</string>
+    <string name="dismiss_all">Dispensar tudo</string>
+    <string name="dismiss_all_x">Dispensar %1$d pagamentos?</string>
+    <string name="dismiss_all_body">Eles saem da revisão sem serem salvos. Uma nova varredura não traz de volta.</string>
+    <string name="dismissed_x">%1$d dispensados</string>
+    <string name="whats_new">Novidades</string>
+    <string name="install">Instalar</string>
+    <string name="later">Depois</string>
     <string name="widget_style">Estilo do widget</string>
     <string name="widget_style_app">Cores do app</string>
     <string name="widget_style_nothing">Nothing</string>

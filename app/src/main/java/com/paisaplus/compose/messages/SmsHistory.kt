@@ -6,11 +6,11 @@ import android.provider.Telephony
 /**
  * Reads the last [days] of the SMS inbox (READ_SMS) and sends every bank message through the same parser and
  * review inbox as live alerts. Already-seen messages are skipped by their fingerprint.
- * Returns (added automatically, sent to review, already in transactions).
+ * Returns counts: added automatically, sent to review, already in transactions, seen by an earlier scan or alert.
  */
-suspend fun MessageInboxRepository.scanSmsHistory(ctx: Context, days: Int): Triple<Int, Int, Int> {
+suspend fun MessageInboxRepository.scanSmsHistory(ctx: Context, days: Int): IntArray {
     val since = System.currentTimeMillis() - days * 86_400_000L
-    var added = 0; var review = 0; var dupes = 0
+    var added = 0; var review = 0; var dupes = 0; var seen = 0
     ctx.contentResolver.query(
         Telephony.Sms.Inbox.CONTENT_URI,
         arrayOf(Telephony.Sms.BODY, Telephony.Sms.DATE),
@@ -25,9 +25,10 @@ suspend fun MessageInboxRepository.scanSmsHistory(ctx: Context, days: Int): Trip
             when (runCatching { receive(text, "SMS", c.getLong(date), scan = true) }.getOrNull()) {
                 AUTO_ADDED -> added++
                 ADDED_TO_REVIEW -> review++
-                DUPLICATE -> dupes++
+                DUPLICATE, COVERED, MERGED -> dupes++
+                "Message already detected" -> seen++
             }
         }
     }
-    return Triple(added, review, dupes)
+    return intArrayOf(added, review, dupes, seen)
 }

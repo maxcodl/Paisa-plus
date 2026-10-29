@@ -102,9 +102,11 @@ fun PaymentsInboxScreen(app: AppViewModel, onBack: () -> Unit, onOpenTx: (Long) 
     var access by remember { mutableStateOf(accessOn()) }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { access = accessOn() }
     var paste by rememberSaveable { mutableStateOf(false) }
+    var confirmClear by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(topBar = {
         BackTopBar(str(R.string.payments_to_review), onBack) {
+            if (pending.isNotEmpty()) TextButton({ confirmClear = true }, enabled = !inbox.busy) { Text(str(R.string.dismiss_all)) }
             IconButton({ paste = true }) { Icon(Icons.Rounded.ContentPaste, str(R.string.message_paste)) }
         }
     }) { pad ->
@@ -147,6 +149,14 @@ fun PaymentsInboxScreen(app: AppViewModel, onBack: () -> Unit, onOpenTx: (Long) 
         }
     }
 
+    if (confirmClear) androidx.compose.material3.AlertDialog(
+        onDismissRequest = { confirmClear = false },
+        title = { Text(str(R.string.dismiss_all_x, pending.size)) },
+        text = { Text(str(R.string.dismiss_all_body)) },
+        confirmButton = { TextButton({ confirmClear = false; inbox.dismissAll() }) { Text(str(R.string.dismiss_all)) } },
+        dismissButton = { TextButton({ confirmClear = false }) { Text(str(R.string.cancel)) } },
+    )
+
     if (paste) ModalBottomSheet({ paste = false }, sheetState = rememberSheetState()) {
         var text by remember { mutableStateOf("") }
         Column(Modifier.padding(16.dp, 0.dp, 16.dp, 24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -177,7 +187,7 @@ private fun <T> PickChip(label: String, options: List<T>, name: (T) -> String, o
 private fun ReviewCard(row: MessageInboxEntity, accounts: List<AccountEntity>, categories: List<CategoryEntity>, history: List<ExpenseEntity>, vm: MessageInboxViewModel) {
     val guessAccount = remember(row.fingerprint, accounts) { AutoAdd.account(accounts, row.accountSuffix, row.body)?.id ?: 0L }
     val merchant = remember(row.fingerprint) { (com.paisaplus.compose.messages.BankMessageParser.parse(row.body) as? com.paisaplus.compose.messages.MessageParseResult.Candidate)?.transaction?.merchant ?: row.merchant }
-    var name by rememberSaveable(row.fingerprint) { mutableStateOf(AutoAdd.payee(merchant, row.body) ?: merchant.orEmpty()) }
+    var name by rememberSaveable(row.fingerprint) { mutableStateOf(AutoAdd.complete(AutoAdd.payee(merchant, row.body), history.map { it.name }.toSet()) ?: merchant.orEmpty()) }
     val guessCategory = remember(row.fingerprint, categories) { AutoAdd.category(name, row.body, categories, history)?.id ?: 0L }
     var accountId by rememberSaveable(row.fingerprint, guessAccount) { mutableStateOf(guessAccount) }
     var categoryId by rememberSaveable(row.fingerprint, guessCategory) { mutableStateOf(guessCategory) }

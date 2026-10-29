@@ -46,6 +46,17 @@ interface ExpenseDao {
     @Query("SELECT EXISTS(SELECT 1 FROM expenses WHERE abs(amount - :amount) < 0.005 AND time BETWEEN :from AND :to)")
     suspend fun hasAmountNear(amount: Double, from: Long, to: Long): Boolean
 
+    /** Oldest transaction on the account that you entered or imported (not one made from a bank alert): its start. */
+    @Query("SELECT MIN(time) FROM expenses WHERE accountId = :accountId AND (note IS NULL OR (note NOT LIKE 'Reviewed%' AND note NOT LIKE 'Auto-added%' AND note NOT LIKE 'Added from%'))")
+    suspend fun firstOwnRecord(accountId: Long): Long?
+
+    /** Your own (imported or entered) transactions on [accountIds] with this direction and amount in [from]..[to]. */
+    @Query("SELECT * FROM expenses WHERE accountId IN (:accountIds) AND type = :type AND abs(amount - :amount) < 0.005 AND time BETWEEN :from AND :to AND (note IS NULL OR (note NOT LIKE 'Reviewed%' AND note NOT LIKE 'Auto-added%' AND note NOT LIKE 'Added from%'))")
+    suspend fun ownNear(accountIds: List<Long>, type: TransactionType, amount: Double, from: Long, to: Long): List<ExpenseEntity>
+
+    @Query("SELECT DISTINCT name FROM expenses WHERE name <> ''")
+    suspend fun payeeNames(): List<String>
+
     @Insert suspend fun insert(e: ExpenseEntity): Long
     @Insert suspend fun insertAll(e: List<ExpenseEntity>)
     @Update suspend fun update(e: ExpenseEntity)

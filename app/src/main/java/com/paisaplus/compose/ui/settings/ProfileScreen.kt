@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -113,6 +115,23 @@ fun ProfileScreen(vm: AppViewModel, onBack: () -> Unit, open: (String) -> Unit) 
                     item { LinkRow(Icons.Rounded.Backup, 0, str(R.string.backup_restore), str(R.string.export_restore_daily_auto_backup)) { open(Routes.BACKUP) } }
                     item { LinkRow(Icons.Rounded.UploadFile, 6, str(R.string.import_bank_statement), "CSV") { open(Routes.IMPORT_CSV) } }
                 }
+            }
+            item { ListHeader(str(R.string.about)) }
+            item {
+                val ctx = androidx.compose.ui.platform.LocalContext.current
+                val uri = androidx.compose.ui.platform.LocalUriHandler.current
+                val version = androidx.compose.runtime.remember { runCatching { ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName }.getOrNull().orEmpty() }
+                ListGroup {
+                    item { LinkRow(Icons.Rounded.SystemUpdate, 5, str(R.string.app_updates), str(R.string.version_x, version)) { open("${Routes.SETTINGS}/UPDATES") } }
+                    item { LinkRow(Icons.Rounded.Code, 2, str(R.string.source_code), "github.com/maxcodl/Paisa-plus") { uri.openUri("https://github.com/maxcodl/Paisa-plus/") } }
+                }
+            }
+            item {
+                Text(
+                    str(R.string.made_with_love), Modifier.fillMaxWidth().padding(top = 24.dp),
+                    style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                )
             }
         }
     }

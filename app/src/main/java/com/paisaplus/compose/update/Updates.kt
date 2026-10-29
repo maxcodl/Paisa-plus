@@ -263,6 +263,28 @@ class UpdatesViewModel @Inject constructor(
 
     fun setPrefs(p: com.paisaplus.compose.data.UpdatePrefs) = viewModelScope.launch { settings.setUpdates(p) }
 
+    /** A release to offer on opening ([UpdatePrompt]); null when none or already offered. */
+    private val _prompt = MutableStateFlow<AppRelease?>(null)
+    val prompt = _prompt.asStateFlow()
+
+    /** Opening check: skipped when updates are Off or a check ran in the last hour; silent on errors. */
+    fun checkOnOpen() = viewModelScope.launch {
+        val p = settings.updates.first()
+        if (p.frequency == com.paisaplus.compose.data.UpdateFrequency.OFF || System.currentTimeMillis() - p.lastCheck < 3_600_000L) return@launch
+        val r = runCatching { UpdateChecker.check(ctx, p.beta) }.getOrNull()
+        settings.setUpdates(settings.updates.first().copy(lastCheck = System.currentTimeMillis()))
+        if (r != null) {
+            _state.value = UpdateState.Available(r)
+            if (r.version != p.prompted) _prompt.value = r
+        }
+    }
+
+    /** Later: not offered on opening again for this version. */
+    fun later(r: AppRelease) = viewModelScope.launch {
+        _prompt.value = null
+        settings.setUpdates(settings.updates.first().copy(prompted = r.version))
+    }
+
     fun check() = viewModelScope.launch {
         _state.value = UpdateState.Checking
         _state.value = runCatching { UpdateChecker.check(ctx, prefs.value.beta) }

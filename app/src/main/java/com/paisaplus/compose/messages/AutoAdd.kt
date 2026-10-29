@@ -41,6 +41,54 @@ object AutoAdd {
     private val cardPayment = rx("""\bpayment\b.*\bcredit card\b.*\b(received|processed|credited)\b|\b(received|credited)\b.*\bpayment\b.*\bcredit card\b|\bpayment\b.*\b(received|credited)\b.*\bcredit card\b""")
     private val transferWords = rx("""\b(neft|rtgs|imps)\b|\bself\b|\bown account\b""")
 
+    /**
+     * Bank SMS cut payee names at 15 characters ("KARTHIK JANARDA"): the one saved payee that starts with it
+     * (ignoring case) becomes the name; none or several, the alert's own name stays.
+     */
+    fun complete(name: String?, known: Collection<String>): String? {
+        if (name == null || name.length < 5) return name
+        return known.filter { it.length > name.length && it.startsWith(name, ignoreCase = true) }.distinctBy { it.lowercase(Locale.ROOT) }.singleOrNull() ?: name
+    }
+
+    /** Statement names that say nothing about the payee: "UPI q692232694", "Paytm d19587428510", long id runs. */
+    fun crypticName(name: String) = name.isBlank() || Regex("""\d{6,}|^(upi|paytm|imps|neft|rtgs|pos|nach|ach)\b""", RegexOption.IGNORE_CASE).containsMatchIn(name.trim())
+
+    /** UPI apps by package, for their own payment notices. */
+    val appPackages = mapOf(
+        "com.google.android.apps.nbu.paisa.user" to UpiApp.GPAY,
+        "com.phonepe.app" to UpiApp.PHONEPE,
+        "net.one97.paytm" to UpiApp.PAYTM,
+        "com.dreamplug.androidapp" to UpiApp.CRED,
+        "money.super.payments" to UpiApp.SUPERMONEY,
+        "in.org.npci.upiapp" to UpiApp.BHIM,
+    )
+
+    data class UpiNotice(val amountPaise: Long, val type: com.paisaplus.compose.data.TransactionType, val payee: String)
+
+    private val noticeSkip = rx("""\b(request|requested|collect|failed|pending|declined|reminder|cashback|offer|reward|due|scratch|win|bill)\b""")
+    private val money = """(?:₹|rs\.?|inr)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)"""
+    private val paidTo = listOf(
+        rx("""(?:paid|sent)\s*$money\s*(?:to|for)\s+(.+?)(?=\s+(?:via|using|on|from|successfully|is|was)\b|[.!\n]|$)"""),
+        rx("""$money\s*(?:paid|sent)\s+(?:to|for)\s+(.+?)(?=\s+(?:via|using|on|from|successfully|is|was)\b|[.!\n]|$)"""),
+        rx("""(?:payment|transfer)\s+of\s*$money\s*(?:to|for)\s+(.+?)(?=\s+(?:via|using|on|from|successful|is|was)\b|[.!\n]|$)"""),
+    )
+    private val gotFrom = listOf(
+        rx("""(?:received|got)\s*$money\s*from\s+(.+?)(?=\s+(?:via|using|on|in|to|is)\b|[.!\n]|$)"""),
+        rx("""$money\s*received\s+from\s+(.+?)(?=\s+(?:via|using|on|in|to|is)\b|[.!\n]|$)"""),
+    )
+
+    /** "Paid ₹250 to Swiggy" / "₹1,200 received from Rahul": amount, direction and the full payee; null if it isn't one. */
+    fun upiNotice(text: String): UpiNotice? {
+        val t = text.replace('\u00a0', ' ')
+        if (noticeSkip.containsMatchIn(t)) return null
+        fun hit(list: List<Regex>, type: com.paisaplus.compose.data.TransactionType) = list.firstNotNullOfOrNull { it.find(t) }?.let { m ->
+            val paise = runCatching { java.math.BigDecimal(m.groupValues[1].replace(",", "")).movePointRight(2).longValueExact() }.getOrNull() ?: return@let null
+            val who = m.groupValues[2].trim().trimEnd('.', ',', '!').take(60)
+            if (paise <= 0 || who.isBlank()) null else UpiNotice(paise, type, who)
+        }
+        return hit(paidTo, com.paisaplus.compose.data.TransactionType.EXPENSE) ?: hit(gotFrom, com.paisaplus.compose.data.TransactionType.INCOME)
+    }
+
     fun upiApp(body: String): UpiApp? =
         appWords.firstOrNull { it.second.containsMatchIn(body) }?.first ?: handles.firstOrNull { it.second.containsMatchIn(body) }?.first
 

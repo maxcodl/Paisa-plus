@@ -287,6 +287,7 @@ private fun PaisaRoot(addRequested: Boolean, onAddHandled: () -> Unit, openReque
         else -> {
             LaunchedEffect(Unit) { if (!ob) vm.setOnboarded() }
             MainNav(vm, addRequested, onAddHandled, openRequested, onOpenHandled)
+            com.paisaplus.compose.update.UpdatePrompt()
         }
     }
 }

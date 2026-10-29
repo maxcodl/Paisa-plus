@@ -133,6 +133,14 @@
     <string name="already_in_transactions">Already in your transactions, removed from review</string>
     <string name="cleared_x_from_review">%1$d already saved or now recognised, cleared from review</string>
     <string name="alerts_off_turn_on">Notification access is off, so new payments are missed. Tap to turn it on.</string>
+    <string name="sms_scan_result_xyzw">%1$d added · %2$d to review · %3$d already in your records · %4$d scanned before</string>
+    <string name="dismiss_all">Dismiss all</string>
+    <string name="dismiss_all_x">Dismiss %1$d payments?</string>
+    <string name="dismiss_all_body">They leave Review without being saved. A later scan will not bring them back.</string>
+    <string name="dismissed_x">%1$d dismissed</string>
+    <string name="whats_new">What\'s new</string>
+    <string name="install">Install</string>
+    <string name="later">Later</string>
     <string name="widget_style">Widget style</string>
     <string name="widget_style_app">App colours</string>
     <string name="widget_style_nothing">Nothing</string>

@@ -28,6 +28,13 @@ class BankNotificationListener : NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         val smsPackage = Telephony.Sms.getDefaultSmsPackage(this)
+        // UPI apps' own "Paid ₹X to Y" notices: kept as hints that tag the matching bank alert with the app and full name.
+        AutoAdd.appPackages[sbn.packageName]?.let { app ->
+            val ex = sbn.notification.extras
+            val text = listOfNotNull(ex.getCharSequence(Notification.EXTRA_TITLE), ex.getCharSequence(Notification.EXTRA_BIG_TEXT) ?: ex.getCharSequence(Notification.EXTRA_TEXT)).joinToString(" ")
+            if (text.isNotBlank() && text.length < 2000) scope.launch { runCatching { inbox.receiveHint(text, app, sbn.postTime) } }
+            return
+        }
         val source = when (sbn.packageName) {
             "com.google.android.gm" -> if (prefs.gmail) "Gmail" else return
             smsPackage -> if (prefs.sms) "SMS" else return
