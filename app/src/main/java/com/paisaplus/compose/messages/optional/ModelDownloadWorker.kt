@@ -26,6 +26,8 @@ class ModelDownloadWorker @AssistedInject constructor(
         try {
             val spec = store.specification
             require(archive.parentFile!!.usableSpace > spec.bytes + spec.installedBytes + 32L * 1024 * 1024) { "Not enough free space for model download and installation" }
+            // Foreground with a progress notification so a slow 56 MB download isn't stopped; fine to skip if refused.
+            runCatching { setForeground(progressInfo(0, spec.bytes)) }
             setProgress(workDataOf("stage" to "Downloading", "bytes" to 0L, "total" to spec.bytes))
             download(spec.url, archive, spec.bytes)
             currentCoroutineContext().ensureActive()
@@ -66,6 +68,7 @@ class ModelDownloadWorker @AssistedInject constructor(
                             output.write(buffer, 0, n)
                             if (count - lastProgress >= 512 * 1024) {
                                 setProgress(workDataOf("stage" to "Downloading", "bytes" to count, "total" to expected)); lastProgress = count
+                                runCatching { setForeground(progressInfo(count, expected)) }
                             }
                         }
                         require(count == expected) { "Model download was interrupted; try again" }
@@ -75,5 +78,18 @@ class ModelDownloadWorker @AssistedInject constructor(
             } finally { connection.disconnect() }
         }
         error("Too many model download redirects")
+    }
+
+    private fun progressInfo(done: Long, total: Long): ForegroundInfo {
+        val nm = applicationContext.getSystemService(android.app.NotificationManager::class.java)
+        nm.createNotificationChannel(android.app.NotificationChannel("downloads", com.paisaplus.compose.str(com.paisaplus.compose.R.string.downloads), android.app.NotificationManager.IMPORTANCE_LOW))
+        val pct = if (total > 0) (done * 100 / total).toInt() else 0
+        val n = androidx.core.app.NotificationCompat.Builder(applicationContext, "downloads")
+            .setSmallIcon(com.paisaplus.compose.R.drawable.ic_stat_paisa)
+            .setContentTitle(com.paisaplus.compose.str(com.paisaplus.compose.R.string.optional_model_title))
+            .setProgress(100, pct, total <= 0)
+            .setOngoing(true).setOnlyAlertOnce(true)
+            .build()
+        return if (android.os.Build.VERSION.SDK_INT >= 29) ForegroundInfo(4202, n, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC) else ForegroundInfo(4202, n)
     }
 }

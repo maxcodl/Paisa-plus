@@ -11,6 +11,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.material.icons.rounded.Wifi
+import androidx.compose.material.icons.rounded.Mail
+import androidx.compose.material.icons.rounded.Sms
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -47,6 +50,27 @@ fun MessageImportScreen(app: AppViewModel, onBack: () -> Unit, vm: MessageInboxV
                 Text(str(R.string.message_import_limits), style = MaterialTheme.typography.bodySmall)
                 OutlinedButton(onClick = { ctx.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)) }) {
                     Text(str(if (access) R.string.message_access_enabled else R.string.message_enable_access))
+                }
+            }
+            // Android 13+ greys out notification access for sideloaded apps until "Allow restricted settings" is on.
+            if (!access && android.os.Build.VERSION.SDK_INT >= 33) item {
+                TintCard(Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.secondaryContainer) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(str(R.string.restricted_settings_title), style = MaterialTheme.typography.titleMedium)
+                        Text(str(R.string.restricted_settings_steps), style = MaterialTheme.typography.bodyMedium)
+                        OutlinedButton({ ctx.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, android.net.Uri.parse("package:${ctx.packageName}"))) }) {
+                            Text(str(R.string.open_app_info))
+                        }
+                    }
+                }
+            }
+            item {
+                val prefs by app.messagePrefs.collectAsStateWithLifecycle()
+                com.paisaplus.compose.ui.components.ListHeader(str(R.string.sources))
+                com.paisaplus.compose.ui.components.ListGroup {
+                    item { com.paisaplus.compose.ui.components.SwitchRow(androidx.compose.material.icons.Icons.Rounded.Sms, 1, "SMS", str(R.string.source_sms_summary), prefs.sms) { app.setMessagePrefs(prefs.copy(sms = it)) } }
+                    item { com.paisaplus.compose.ui.components.SwitchRow(androidx.compose.material.icons.Icons.Rounded.Mail, 3, "Gmail", str(R.string.source_gmail_summary), prefs.gmail) { app.setMessagePrefs(prefs.copy(gmail = it)) } }
+                    item { com.paisaplus.compose.ui.components.SwitchRow(androidx.compose.material.icons.Icons.Rounded.Wifi, 5, str(R.string.wifi_only_download), str(R.string.wifi_only_download_summary), prefs.wifiOnly) { app.setMessagePrefs(prefs.copy(wifiOnly = it)) } }
                 }
             }
             item {

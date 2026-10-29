@@ -6,6 +6,11 @@
     <!-- Only optional model downloads use the network. Inference stays on device. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Optional model download runs as a short foreground job with a progress notification. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <!-- In-app updates from GitHub releases: the system installer still asks the user. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <!-- Required by Telephony.Sms.getDefaultSmsPackage on Android 11+. -->
     <queries>
@@ -90,6 +95,13 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
+
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
+
+        <receiver android:name=".update.InstallResultReceiver" android:exported="false" />
 
         <!-- WorkManager is initialised by PaisaApp (Hilt worker factory). -->
         <provider

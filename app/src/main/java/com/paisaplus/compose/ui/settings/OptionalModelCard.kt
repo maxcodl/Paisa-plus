@@ -32,6 +32,8 @@ fun OptionalModelCard(vm: OptionalModelViewModel = hiltViewModel()) {
     val active = work?.state?.let { !it.isFinished } == true
     val ctx = LocalContext.current
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { it?.let(vm::importPack) }
+    // Download progress shows as a notification; ask first on Android 13+, then download either way.
+    val askNotify = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { vm.downloadModel() }
     val spec = vm.specification
     fun mb(bytes: Long) = String.format(Locale.ROOT, "%.1f MB", bytes / 1_000_000.0)
     TintCard(Modifier.fillMaxWidth()) {
@@ -48,7 +50,7 @@ fun OptionalModelCard(vm: OptionalModelViewModel = hiltViewModel()) {
                 TextButton(vm::cancelDownload) { Text(str(R.string.optional_model_cancel_download)) }
             } else {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (installed == null) Button(vm::downloadModel, enabled = !busy) { Text(str(R.string.optional_model_download)) }
+                    if (installed == null) Button({ if (android.os.Build.VERSION.SDK_INT >= 33) askNotify.launch(android.Manifest.permission.POST_NOTIFICATIONS) else vm.downloadModel() }, enabled = !busy) { Text(str(R.string.optional_model_download)) }
                     else OutlinedButton(vm::remove, enabled = !busy) { Text(str(R.string.optional_model_delete)) }
                     OutlinedButton({ pick.launch(arrayOf("application/zip", "application/octet-stream", "*/*")) }, enabled = !busy) { Text(str(R.string.optional_model_import)) }
                 }

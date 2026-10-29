@@ -86,6 +86,14 @@ enum class WidgetAccent { RED, WALLPAPER }
 /** Home-screen widget look: [opacity] 0.2–1 (1 = solid), [sheen] glass highlight (APP only), [addButton] on the balance widget. */
 data class WidgetPrefs(val style: WidgetStyle = WidgetStyle.APP, val opacity: Float = 0.85f, val sheen: Boolean = true, val addButton: Boolean = true, val accent: WidgetAccent = WidgetAccent.WALLPAPER)
 
+/** Message import: which notification sources to read; [wifiOnly] for the optional model download (~56 MB). */
+data class MessagePrefs(val sms: Boolean = true, val gmail: Boolean = true, val wifiOnly: Boolean = true)
+
+enum class UpdateFrequency(val days: Int) { OFF(0), DAILY(1), WEEKLY(7), MONTHLY(30) }
+
+/** In-app updates from GitHub releases. [notified]: last version a notification was shown for (once per version). */
+data class UpdatePrefs(val frequency: UpdateFrequency = UpdateFrequency.WEEKLY, val beta: Boolean = false, val lastCheck: Long = 0, val notified: String = "")
+
 private val Context.store by preferencesDataStore("settings")
 
 // Key names match the Flutter app's settings box (lib/src/core/constants.dart).
@@ -128,6 +136,13 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     private val widgetSheenKey = booleanPreferencesKey("key_widget_sheen")
     private val widgetAddKey = booleanPreferencesKey("key_widget_add_button")
     private val widgetAccentKey = stringPreferencesKey("key_widget_accent")
+    private val msgSmsKey = booleanPreferencesKey("key_msg_sms")
+    private val msgGmailKey = booleanPreferencesKey("key_msg_gmail")
+    private val modelWifiKey = booleanPreferencesKey("key_model_wifi_only")
+    private val updFreqKey = stringPreferencesKey("key_update_frequency")
+    private val updBetaKey = booleanPreferencesKey("key_update_beta")
+    private val updLastKey = longPreferencesKey("key_update_last_check")
+    private val updNotifiedKey = stringPreferencesKey("key_update_notified")
 
     private val userNameKey = stringPreferencesKey("key_user_name")
     private val currencyKey = stringPreferencesKey("key_currency")
@@ -155,6 +170,19 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     /** Balance card / widget pages, in order. */
     val balanceModes = ctx.store.data.map { BalanceMode.parse(it[balanceModesKey]) }
     suspend fun setBalanceModes(m: List<BalanceMode>) = ctx.store.edit { it[balanceModesKey] = BalanceMode.format(m) }
+
+    val messages = ctx.store.data.map { MessagePrefs(it[msgSmsKey] ?: true, it[msgGmailKey] ?: true, it[modelWifiKey] ?: true) }
+    suspend fun setMessages(m: MessagePrefs) = ctx.store.edit { it[msgSmsKey] = m.sms; it[msgGmailKey] = m.gmail; it[modelWifiKey] = m.wifiOnly }
+
+    val updates = ctx.store.data.map { p ->
+        UpdatePrefs(
+            UpdateFrequency.entries.firstOrNull { it.name == p[updFreqKey] } ?: UpdateFrequency.WEEKLY,
+            p[updBetaKey] ?: false, p[updLastKey] ?: 0L, p[updNotifiedKey].orEmpty(),
+        )
+    }
+    suspend fun setUpdates(u: UpdatePrefs) = ctx.store.edit {
+        it[updFreqKey] = u.frequency.name; it[updBetaKey] = u.beta; it[updLastKey] = u.lastCheck; it[updNotifiedKey] = u.notified
+    }
 
     val widget = ctx.store.data.map { p ->
         WidgetPrefs(

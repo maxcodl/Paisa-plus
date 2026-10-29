@@ -144,6 +144,7 @@ enum class SettingsPage(val icon: ImageVector, val hue: Int, val title: Int, val
     WIDGETS(Icons.Rounded.Widgets, 3, R.string.widgets, R.string.widgets_summary),
     PRIVACY(Icons.Rounded.Lock, 0, R.string.privacy_security, R.string.privacy_security_summary),
     DATA(Icons.Rounded.Backup, 7, R.string.backup_data, R.string.backup_data_summary),
+    UPDATES(Icons.Rounded.SystemUpdate, 5, R.string.app_updates, R.string.app_updates_summary),
 }
 
 /** Large collapsing title over a padded list; shared by the hub and every sub-page. */
@@ -208,6 +209,7 @@ fun SettingsScreen(vm: AppViewModel, onBack: () -> Unit, open: (String) -> Unit)
         item {
             ListGroup {
                 item { PrefRow(Icons.Rounded.Info, 4, "Paisa+", str(R.string.version_x, version)) }
+                page(SettingsPage.UPDATES)
                 item { LinkRow(Icons.Rounded.Code, 2, str(R.string.source_code), "github.com/maxcodl/Paisa-plus") { uri.openUri(SOURCE_URL) } }
             }
         }
@@ -477,6 +479,8 @@ fun SettingsPageScreen(vm: AppViewModel, page: SettingsPage, onBack: () -> Unit,
                 }
             }
 
+            SettingsPage.UPDATES -> item { UpdatesSection() }
+
             SettingsPage.DATA -> {
                 item {
                     ListGroup {
@@ -492,7 +496,7 @@ fun SettingsPageScreen(vm: AppViewModel, page: SettingsPage, onBack: () -> Unit,
                         }
                         if (backupDir != null) item { PrefRow(Icons.Rounded.Backup, 3, str(R.string.back_up_now), onClick = vm::backupNow) }
                         item { LinkRow(Icons.Rounded.Backup, 0, str(R.string.backup_restore), str(R.string.export_restore_daily_auto_backup)) { open(Routes.BACKUP) } }
-                        item { LinkRow(Icons.AutoMirrored.Rounded.Message, 2, str(R.string.message_import_title), "") { open(Routes.IMPORT_MESSAGES) } }
+                        item { LinkRow(Icons.AutoMirrored.Rounded.Message, 2, str(R.string.message_import_title), str(R.string.message_import_summary)) { open(Routes.IMPORT_MESSAGES) } }
                         item { LinkRow(Icons.Rounded.UploadFile, 2, str(R.string.import_bank_statement), "CSV") { open(Routes.IMPORT_CSV) } }
                     }
 

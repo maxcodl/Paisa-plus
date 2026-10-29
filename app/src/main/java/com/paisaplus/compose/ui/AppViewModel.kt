@@ -57,6 +57,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -182,6 +183,8 @@ class AppViewModel @Inject constructor(
     val excludeTransfers = settings.excludeTransfers.stateIn(viewModelScope, SharingStarted.Eagerly, true)
     fun setExcludeTransfers(v: Boolean) = viewModelScope.launch { settings.setExcludeTransfers(v) }
     val widget = settings.widget.stateIn(viewModelScope, SharingStarted.Eagerly, WidgetPrefs())
+    val messagePrefs = settings.messages.stateIn(viewModelScope, SharingStarted.Eagerly, com.paisaplus.compose.data.MessagePrefs())
+    fun setMessagePrefs(m: com.paisaplus.compose.data.MessagePrefs) = viewModelScope.launch { settings.setMessages(m) }
     fun setWidget(w: WidgetPrefs) = viewModelScope.launch { settings.setWidget(w) }
     val monthStart = settings.monthStart.stateIn(viewModelScope, SharingStarted.Eagerly, 1)
     fun setMonthStart(day: Int) = viewModelScope.launch { settings.setMonthStart(day) }
@@ -234,6 +237,9 @@ class AppViewModel @Inject constructor(
     val balanceModes = settings.balanceModes.stateIn(viewModelScope, SharingStarted.Eagerly, BalanceMode.DEFAULT)
 
     init {
+        viewModelScope.launch {
+            settings.updates.map { it.frequency }.distinctUntilChanged().collect { com.paisaplus.compose.update.scheduleUpdateChecks(ctx, it) }
+        }
         // Keep the home-screen widgets current: data, masking, currency, balance modes, month start, transfers, theme or opacity changed.
         @OptIn(kotlinx.coroutines.FlowPreview::class)
         viewModelScope.launch {
