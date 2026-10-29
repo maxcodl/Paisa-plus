@@ -17,6 +17,7 @@ import javax.inject.Inject
 class OptionalModelViewModel @Inject constructor(
     @ApplicationContext context: Context,
     private val store: OptionalModelStore,
+    private val settings: com.paisaplus.compose.data.SettingsStore,
 ) : ViewModel() {
     private val work = WorkManager.getInstance(context)
     val specification = store.specification
@@ -32,11 +33,15 @@ class OptionalModelViewModel @Inject constructor(
     val busy = _busy.asStateFlow()
     private var job: Job? = null
 
+    /** Waits for Wi-Fi (unmetered) when Settings › Message import › Wi-Fi only is on. */
     fun downloadModel() {
         _message.value = null
-        work.enqueueUniqueWork(MODEL_DOWNLOAD_WORK, ExistingWorkPolicy.KEEP,
-            OneTimeWorkRequestBuilder<ModelDownloadWorker>()
-                .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()).build())
+        viewModelScope.launch {
+            val net = if (settings.messages.first().wifiOnly) NetworkType.UNMETERED else NetworkType.CONNECTED
+            work.enqueueUniqueWork(MODEL_DOWNLOAD_WORK, ExistingWorkPolicy.KEEP,
+                OneTimeWorkRequestBuilder<ModelDownloadWorker>()
+                    .setConstraints(Constraints.Builder().setRequiredNetworkType(net).build()).build())
+        }
     }
     fun cancelDownload() { work.cancelUniqueWork(MODEL_DOWNLOAD_WORK) }
     fun cancelTask() { job?.cancel() }

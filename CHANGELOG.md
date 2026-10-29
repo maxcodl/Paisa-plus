@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- In-app updates: check GitHub releases daily, weekly or monthly (beta optional), notify once per version, download with SHA-256 check and install through the system installer
+- Message import settings: SMS and Gmail source switches, Wi-Fi-only model download
+- Model download runs in the foreground with a progress notification
+- Help for "Allow restricted settings" when notification access is greyed out on sideloaded installs
+
 ## 0.8.1
 
 - Keep pages full size during system Back gestures instead of shrinking into a floating rectangle

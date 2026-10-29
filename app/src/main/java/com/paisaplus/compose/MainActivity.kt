@@ -206,11 +206,14 @@ class MainActivity : FragmentActivity() {
     private var coldStart = true
     /** Set by the widget's "Add expense" deep link. */
     private var pendingAdd by mutableStateOf(false)
+    /** Route asked for by a notification (e.g. the update notice opens Settings › App updates). */
+    private var pendingOpen by mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         pendingAdd = intent?.getBooleanExtra(EXTRA_ADD, false) == true
+        pendingOpen = intent?.getStringExtra(EXTRA_OPEN)
         lifecycleScope.launch {
             settings.lock.collect { l ->
                 lockCfg = l
@@ -232,7 +235,7 @@ class MainActivity : FragmentActivity() {
                 // Recompose every amount when the currency/locale changes.
                 key(money) {
                     if (locked) LockScreen { AppLock.prompt(this) { locked = false } }
-                    else PaisaRoot(addRequested = pendingAdd, onAddHandled = { pendingAdd = false })
+                    else PaisaRoot(addRequested = pendingAdd, onAddHandled = { pendingAdd = false }, openRequested = pendingOpen, onOpenHandled = { pendingOpen = null })
                 }
             } }
         }
@@ -241,6 +244,7 @@ class MainActivity : FragmentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (intent.getBooleanExtra(EXTRA_ADD, false)) pendingAdd = true
+        intent.getStringExtra(EXTRA_OPEN)?.let { pendingOpen = it }
     }
 
     override fun onStop() {
@@ -257,11 +261,15 @@ class MainActivity : FragmentActivity() {
         }
     }
 
-    companion object { const val EXTRA_ADD = "add_expense" }
+    companion object {
+        const val EXTRA_ADD = "add_expense"
+        const val EXTRA_OPEN = "open_route"
+        const val OPEN_UPDATES = "${Routes.SETTINGS}/UPDATES"
+    }
 }
 
 @Composable
-private fun PaisaRoot(addRequested: Boolean, onAddHandled: () -> Unit, vm: AppViewModel = hiltViewModel()) {
+private fun PaisaRoot(addRequested: Boolean, onAddHandled: () -> Unit, openRequested: String? = null, onOpenHandled: () -> Unit = {}, vm: AppViewModel = hiltViewModel()) {
     val d by vm.data.collectAsStateWithLifecycle()
     val done by vm.onboarded.collectAsStateWithLifecycle()
     val automationIntroSeen by vm.automationIntroSeen.collectAsStateWithLifecycle()
@@ -277,14 +285,14 @@ private fun PaisaRoot(addRequested: Boolean, onAddHandled: () -> Unit, vm: AppVi
         automationIntroSeen == false && !quickAddLaunch -> com.paisaplus.compose.ui.onboarding.AutomationSetupScreen(onDone = { vm.finishAutomationIntro() })
         else -> {
             LaunchedEffect(Unit) { if (!ob) vm.setOnboarded() }
-            MainNav(vm, addRequested, onAddHandled)
+            MainNav(vm, addRequested, onAddHandled, openRequested, onOpenHandled)
         }
     }
 }
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
-private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () -> Unit) {
+private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () -> Unit, openRequested: String? = null, onOpenHandled: () -> Unit = {}) {
     val nav = rememberNavController()
     val snackbar = remember { SnackbarHostState() }
     val entry by nav.currentBackStackEntryAsState()
@@ -297,6 +305,7 @@ private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () ->
     val labels = LocalNavLabels.current
 
     LaunchedEffect(addRequested) { if (addRequested) { nav.editTransaction(); onAddHandled() } }
+    LaunchedEffect(openRequested) { openRequested?.let { nav.navigate(it); onOpenHandled() } }
     LaunchedEffect(Unit) {
         vm.messages.collect { m ->
             snackbar.currentSnackbarData?.dismiss()

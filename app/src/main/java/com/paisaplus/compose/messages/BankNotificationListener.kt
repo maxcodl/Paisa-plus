@@ -16,13 +16,21 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class BankNotificationListener : NotificationListenerService() {
     @Inject lateinit var inbox: MessageInboxRepository
+    @Inject lateinit var settings: com.paisaplus.compose.data.SettingsStore
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    /** Settings › Message import › Sources; read on every post, so a switch applies at once. */
+    @Volatile private var prefs = com.paisaplus.compose.data.MessagePrefs()
+
+    override fun onListenerConnected() {
+        super.onListenerConnected()
+        scope.launch { settings.messages.collect { prefs = it } }
+    }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         val smsPackage = Telephony.Sms.getDefaultSmsPackage(this)
         val source = when (sbn.packageName) {
-            "com.google.android.gm" -> "Gmail"
-            smsPackage -> "SMS"
+            "com.google.android.gm" -> if (prefs.gmail) "Gmail" else return
+            smsPackage -> if (prefs.sms) "SMS" else return
             else -> return
         }
         val notification = sbn.notification
