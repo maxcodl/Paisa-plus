@@ -5,5 +5,5 @@
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="₹18,400" android:textSize="22sp" android:textStyle="bold" android:textColor="@color/widget_preview_fg" />
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Budget · ₹25,000" android:textSize="12sp" android:textColor="@color/widget_preview_fg" />
     <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="6dp" android:layout_marginTop="10dp"
-        android:max="100" android:progress="74" android:progressTint="@color/widget_preview_btn" android:progressBackgroundTint="@color/widget_preview_fg" />
+        android:max="100" android:progress="74" android:progressTint="@color/widget_preview_btn" android:progressBackgroundTint="#33000000" />
 </LinearLayout>

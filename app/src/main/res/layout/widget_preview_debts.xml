@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent"
     android:background="@drawable/widget_preview_bg" android:orientation="vertical" android:padding="16dp">
     <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/debts" android:textSize="13sp" android:textColor="@color/widget_preview_fg" android:textStyle="bold" />
-    <Space android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+    <TextView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
     <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/owed_to_you" android:textSize="12sp" android:textColor="@color/widget_preview_fg"  />
     <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="₹12,000" android:textSize="18sp" android:textColor="@color/widget_preview_fg" android:textStyle="bold" />
     <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/you_owe" android:textSize="12sp" android:textColor="@color/widget_preview_fg"  />
