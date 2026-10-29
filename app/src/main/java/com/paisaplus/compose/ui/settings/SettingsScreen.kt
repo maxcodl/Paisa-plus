@@ -85,6 +85,7 @@ import com.paisaplus.compose.data.BgMode
 import com.paisaplus.compose.data.Money
 import com.paisaplus.compose.data.ThemeMode
 import com.paisaplus.compose.data.WidgetStyle
+import com.paisaplus.compose.data.WidgetAccent
 import com.paisaplus.compose.ui.AppViewModel
 import com.paisaplus.compose.ui.theme.LocalDarkTheme
 import com.paisaplus.compose.ui.theme.paisaScheme
@@ -437,6 +438,11 @@ fun SettingsPageScreen(vm: AppViewModel, page: SettingsPage, onBack: () -> Unit,
                         item {
                             PrefBlock(Icons.Rounded.Opacity, 7, str(R.string.widget_opacity), "${(widget.opacity * 100).toInt()}%") {
                                 SettingSlider(widget.opacity, 0.2f..1f, 7, str(R.string.widget_opacity)) { vm.setWidget(widget.copy(opacity = it)) }
+                            }
+                        }
+                        if (widget.style == WidgetStyle.NOTHING) item {
+                            PrefBlock(Icons.Rounded.ColorLens, 6, str(R.string.widget_accent), str(R.string.card_uses_wallpaper_neutral)) {
+                                SegmentedTabs(WidgetAccent.entries, widget.accent, { str(if (it == WidgetAccent.RED) R.string.nothing_red else R.string.wallpaper_colours) }, { vm.setWidget(widget.copy(accent = it)) })
                             }
                         }
                         if (widget.style == WidgetStyle.APP) item { SwitchRow(Icons.Rounded.AutoAwesome, 3, str(R.string.glass_sheen), null, widget.sheen) { vm.setWidget(widget.copy(sheen = it)) } }

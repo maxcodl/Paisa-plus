@@ -41,6 +41,12 @@
     <string name="version_x">Versão %1$s</string>
     <string name="source_code">Código-fonte</string>
     <string name="made_with_love">Feito com ❤️ e ☕ por Max</string>
+    <string name="widget_accent">Destaque</string>
+    <string name="card_uses_wallpaper_neutral">O cartão usa o neutro do papel de parede, como os widgets da Nothing</string>
+    <string name="nothing_red">Vermelho Nothing</string>
+    <string name="overview_tile">Bloco do resumo</string>
+    <string name="widget_overview_tile_description">Qualquer card do resumo ou saldo; ‹ › pra trocar</string>
+    <string name="widget_overview_grid_description">Todos os cards do resumo, como no Início</string>
     <string name="widget_style">Estilo do widget</string>
     <string name="widget_style_app">Cores do app</string>
     <string name="widget_style_nothing">Nothing</string>

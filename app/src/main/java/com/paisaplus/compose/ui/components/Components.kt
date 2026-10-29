@@ -287,10 +287,10 @@ fun IconBadge(icon: ImageVector, tint: Color? = null, size: Dp = 40.dp, autoHue:
     }
 }
 
-private val iconHues = longArrayOf(0xFF4285F4, 0xFF34A853, 0xFFF29900, 0xFFEA4335, 0xFF9C27B0, 0xFF00ACC1, 0xFFE91E63, 0xFF5C6BC0)
+internal val iconHues = longArrayOf(0xFF4285F4, 0xFF34A853, 0xFFF29900, 0xFFEA4335, 0xFF9C27B0, 0xFF00ACC1, 0xFFE91E63, 0xFF5C6BC0)
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
-private val iconShapes = listOf(
+internal val iconShapes = listOf(
     MaterialShapes.Cookie9Sided, MaterialShapes.Clover4Leaf, MaterialShapes.Sunny, MaterialShapes.Cookie6Sided,
     MaterialShapes.Gem, MaterialShapes.Pentagon, MaterialShapes.SoftBurst, MaterialShapes.Arch,
 )

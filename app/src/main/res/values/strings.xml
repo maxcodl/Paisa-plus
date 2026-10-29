@@ -41,6 +41,13 @@
     <string name="version_x">Version %1$s</string>
     <string name="source_code">Source code</string>
     <string name="made_with_love">Made with ❤️ and ☕ by Max</string>
+    <string name="widget_accent">Accent</string>
+    <string name="card_uses_wallpaper_neutral">Card uses the wallpaper neutral, like Nothing widgets</string>
+    <string name="nothing_red">Nothing red</string>
+    <string name="overview_tile">Overview tile</string>
+    <string name="widget_overview_tile_description">Any overview card or balance; ‹ › to switch</string>
+    <string name="overview">Overview</string>
+    <string name="widget_overview_grid_description">All overview cards, like Home</string>
     <string name="widget_style">Widget style</string>
     <string name="widget_style_app">App colours</string>
     <string name="widget_style_nothing">Nothing</string>
@@ -165,7 +172,6 @@
     <string name="loans">Loans</string>
     <string name="x_active">%1$s active</string>
     <string name="recurring">Recurring</string>
-    <string name="overview">Overview</string>
     <string name="recent_transactions">Recent transactions</string>
     <string name="see_all">See all</string>
     <string name="bank_cash">Bank &amp; cash</string>

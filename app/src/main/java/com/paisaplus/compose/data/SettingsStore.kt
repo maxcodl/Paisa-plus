@@ -80,8 +80,11 @@ data class LockSettings(val enabled: Boolean = false, val afterMinutes: Int = 1,
 /** APP: the app's accent colours under glass. NOTHING: flat monochrome card with a red accent, like Nothing OS widgets. */
 enum class WidgetStyle { APP, NOTHING }
 
+/** Nothing style's accent: Nothing red or the wallpaper's (Monet) primary. */
+enum class WidgetAccent { RED, WALLPAPER }
+
 /** Home-screen widget look: [opacity] 0.2–1 (1 = solid), [sheen] glass highlight (APP only), [addButton] on the balance widget. */
-data class WidgetPrefs(val style: WidgetStyle = WidgetStyle.APP, val opacity: Float = 0.85f, val sheen: Boolean = true, val addButton: Boolean = true)
+data class WidgetPrefs(val style: WidgetStyle = WidgetStyle.APP, val opacity: Float = 0.85f, val sheen: Boolean = true, val addButton: Boolean = true, val accent: WidgetAccent = WidgetAccent.RED)
 
 private val Context.store by preferencesDataStore("settings")
 
@@ -124,6 +127,7 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     private val widgetStyleKey = stringPreferencesKey("key_widget_style")
     private val widgetSheenKey = booleanPreferencesKey("key_widget_sheen")
     private val widgetAddKey = booleanPreferencesKey("key_widget_add_button")
+    private val widgetAccentKey = stringPreferencesKey("key_widget_accent")
 
     private val userNameKey = stringPreferencesKey("key_user_name")
     private val currencyKey = stringPreferencesKey("key_currency")
@@ -158,6 +162,7 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
             opacity = (p[widgetOpacityKey] ?: 0.85f).coerceIn(0.2f, 1f),
             sheen = p[widgetSheenKey] ?: true,
             addButton = p[widgetAddKey] ?: true,
+            accent = WidgetAccent.entries.firstOrNull { it.name == p[widgetAccentKey] } ?: WidgetAccent.RED,
         )
     }
     suspend fun setWidget(w: WidgetPrefs) = ctx.store.edit {
@@ -165,6 +170,7 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
         it[widgetOpacityKey] = w.opacity
         it[widgetSheenKey] = w.sheen
         it[widgetAddKey] = w.addButton
+        it[widgetAccentKey] = w.accent.name
     }
 
     /** Bottom-bar tabs, comma-separated Tab names; null = default set. */

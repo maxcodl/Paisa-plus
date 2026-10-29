@@ -63,58 +63,40 @@ interface WidgetEntryPoint {
 }
 
 /** One widget page: title, big amount, one detail line. */
-private data class Page(val title: String, val amount: String, val detail: String?)
+class Page internal constructor(val mode: BalanceMode, val title: String, val amount: String, val detail: String?)
 
 /**
- * Home-screen card: the balance pages chosen in Settings › Balance card (masked when "Hide amounts" is on),
+ * Home-screen card: the balance pages chosen in Settings › Home & navigation (masked when "Hide amounts" is on),
  * › cycles them (widgets can't take swipes; the page is per widget), Add expense.
  */
-class BalanceWidget : GlanceAppWidget() {
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val p = palette(context)
-        val ep = EntryPointAccessors.fromApplication(context, WidgetEntryPoint::class.java)
-        val hidden = ep.settings().hideBalance.first()
-        Money.use(ep.settings().money.first())
-        val modes = ep.settings().balanceModes.first()
+/** The balance pages chosen in settings, formatted (shared with the overview tile widget). */
+internal suspend fun balancePages(context: Context): List<Page> {
+        val ep = entryPoint(context)
+        val m = moneyOf(context)
         val zone = ZoneId.systemDefault()
-        val expenses = ep.db().expenses().list()
-        val s = balanceSummary(ep.db().accounts().list(), expenses, ep.db().loans().list(), LocalDate.now(zone), zone)
-        val start = ep.settings().monthStart.first()
-        val month = currentPeriod(start, zone)
-        val categories = ep.db().categories().list()
-        val skip = if (ep.settings().excludeTransfers.first()) transferIds(categories) else emptySet()
-        val spent = monthTotals(expenses, month, zone, skip = skip, salary = salaryIds(categories), start = start).expense
-        fun m(v: Double) = if (hidden) "••••••" else Money.format(v)
-        val pages = modes.map { mode ->
+        val s = balanceSummary(ep.db().accounts().list(), ep.db().expenses().list(), ep.db().loans().list(), LocalDate.now(zone), zone)
+        val spent = monthOf(context).expense
+        return ep.settings().balanceModes.first().map { mode ->
             when (mode) {
-                BalanceMode.BANK -> Page(mode.label, m(s.bank), str(R.string.spent_this_month_x, m(spent)))
-                BalanceMode.TOTAL -> Page(mode.label, m(s.total), str(R.string.bank_x_cards_owed_x, m(s.bank), m(s.cardOwed)))
-                BalanceMode.CREDIT -> Page(mode.label, m(s.cardOwed), str(R.string.available_x_due_x, m(s.cardAvailable), m(s.due)) + (s.dueDate?.let { " · ${it.format(dueFmt)}" } ?: ""))
-                BalanceMode.NET_WORTH -> Page(mode.label, m(s.netWorth), str(R.string.assets_x_owed_x, m(s.bank), m(s.liabilities)))
+                BalanceMode.BANK -> Page(mode, mode.label, m(s.bank), str(R.string.spent_this_month_x, m(spent)))
+                BalanceMode.TOTAL -> Page(mode, mode.label, m(s.total), str(R.string.bank_x_cards_owed_x, m(s.bank), m(s.cardOwed)))
+                BalanceMode.CREDIT -> Page(mode, mode.label, m(s.cardOwed), str(R.string.available_x_due_x, m(s.cardAvailable), m(s.due)) + (s.dueDate?.let { " · ${it.format(dayFmt)}" } ?: ""))
+                BalanceMode.NET_WORTH -> Page(mode, mode.label, m(s.netWorth), str(R.string.assets_x_owed_x, m(s.bank), m(s.liabilities)))
             }
         }
-        provideContent {
-            val index = currentState(PageKey) ?: 0
-            WidgetTheme(p) {
-                Content(
-                    page = pages[index.mod(pages.size)],
-                    paged = pages.size > 1,
-                    open = openApp(context),
-                    add = addExpense(context),
-                )
-            }
-        }
-    }
+}
+
+class BalanceWidget : PaisaWidget<List<Page>>() {
+    override suspend fun load(context: Context) = balancePages(context)
 
     @Composable
-    private fun Content(page: Page, paged: Boolean, open: Intent, add: Intent) {
+    override fun Content(context: Context, data: List<Page>) {
+        val page = data[(currentState(PageKey) ?: 0).mod(data.size)]
         val fg = WidgetFg
-        val btn = WidgetBtn
-        val onBtn = WidgetOnBtn
-        Card(open) {
+        Card(openApp(context)) {
             Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(page.title, GlanceModifier.defaultWeight(), style = TextStyle(color = fg, fontSize = 13.sp))
-                if (paged) Box(
+                if (data.size > 1) Box(
                     GlanceModifier.size(48.dp).cornerRadius(24.dp).clickable(actionRunCallback<NextPage>()),
                     contentAlignment = Alignment.Center,
                 ) { Text("›", style = TextStyle(color = fg, fontSize = 22.sp, fontWeight = FontWeight.Bold)) }
@@ -123,30 +105,21 @@ class BalanceWidget : GlanceAppWidget() {
             if (page.detail != null) Text(page.detail, style = TextStyle(color = fg, fontSize = 12.sp), maxLines = 1)
             Spacer(GlanceModifier.defaultWeight())
             if (LocalPalette.current.addButton) Box(
-                GlanceModifier.fillMaxWidth().height(44.dp).background(btn).cornerRadius(22.dp).clickable(actionStartActivity(add)),
+                GlanceModifier.fillMaxWidth().height(44.dp).background(WidgetBtn).cornerRadius(22.dp).clickable(actionStartActivity(addExpense(context))),
                 contentAlignment = Alignment.Center,
-            ) { Text(str(R.string.add_expense), style = TextStyle(color = onBtn, fontSize = 14.sp, fontWeight = FontWeight.Medium)) }
+            ) { Text(str(R.string.add_expense), style = TextStyle(color = WidgetOnBtn, fontSize = 14.sp, fontWeight = FontWeight.Medium)) }
         }
     }
 
     companion object {
-        /** Redraws every data widget (Quick add has no data). */
-        suspend fun refresh(context: Context) = runCatching {
-            BalanceWidget().updateAll(context)
-            TotalBalanceWidget().updateAll(context)
-            BudgetTrackerWidget().updateAll(context)
-            BudgetSummaryWidget().updateAll(context)
-            ThisMonthWidget().updateAll(context)
-            UpcomingWidget().updateAll(context)
-            DebtsWidget().updateAll(context)
-        }
+        suspend fun refresh(context: Context) = refreshWidgets(context)
     }
 }
 
-private val PageKey = intPreferencesKey("page")
-private val dueFmt = java.time.format.DateTimeFormatter.ofPattern("d MMM")
+/** This widget instance's page (balance widget, overview tile); each instance keeps its own. */
+internal val PageKey = intPreferencesKey("page")
 
-/** › on the widget: next balance page for this widget instance. */
+/** › on the balance widget: next page for this widget instance. */
 class NextPage : ActionCallback {
     override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
         updateAppWidgetState(context, glanceId) { it[PageKey] = (it[PageKey] ?: 0) + 1 }
