@@ -149,6 +149,7 @@ class BackupManager @Inject constructor(
     /** Atomic replace of every table, then settings. */
     suspend fun restore(s: Snapshot) {
         db.withTransaction {
+            db.messageInbox().clear()
             db.expenses().clear(); db.accounts().clear(); db.categories().clear()
             db.debts().clear(); db.debts().clearTransactions()
             db.loans().clear(); db.recurring().clear(); db.deleted().clear()

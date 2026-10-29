@@ -1,5 +1,7 @@
 package com.paisaplus.compose.data
 
+import com.paisaplus.compose.messages.MessageInboxEntity
+import com.paisaplus.compose.messages.MessageInboxDao
 import android.content.Context
 import androidx.room.AutoMigration
 import androidx.room.Dao
@@ -34,6 +36,9 @@ interface ExpenseDao {
     suspend fun get(id: Long): ExpenseEntity?
 
     @Query("SELECT * FROM expenses ORDER BY id") suspend fun list(): List<ExpenseEntity>
+
+    @Query("SELECT EXISTS(SELECT 1 FROM expenses WHERE accountId = :accountId AND type = :type AND amount = :amount AND time BETWEEN :from AND :to)")
+    suspend fun hasSimilar(accountId: Long, type: TransactionType, amount: Double, from: Long, to: Long): Boolean
 
     @Insert suspend fun insert(e: ExpenseEntity): Long
     @Insert suspend fun insertAll(e: List<ExpenseEntity>)
@@ -182,13 +187,14 @@ class Migration1To2(private val zone: ZoneId = ZoneId.systemDefault()) : Migrati
     entities = [
         ExpenseEntity::class, AccountEntity::class, CategoryEntity::class,
         DebtEntity::class, DebtTransactionEntity::class, LoanEntity::class,
-        RecurringRuleEntity::class, DeletedExpenseEntity::class,
+        RecurringRuleEntity::class, DeletedExpenseEntity::class, MessageInboxEntity::class,
     ],
-    version = 6,
+    version = 7,
     // accounts.statementDay, accounts.network, expenses/deleted_expenses .note, then .method + .upiApp
-    autoMigrations = [AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5), AutoMigration(from = 5, to = 6)],
+    autoMigrations = [AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5), AutoMigration(from = 5, to = 6), AutoMigration(from = 6, to = 7)],
 )
 abstract class PaisaDatabase : RoomDatabase() {
+    abstract fun messageInbox(): MessageInboxDao
     abstract fun expenses(): ExpenseDao
     abstract fun accounts(): AccountDao
     abstract fun categories(): CategoryDao

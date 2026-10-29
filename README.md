@@ -12,6 +12,7 @@ paisa+ is based on [Paisa](https://github.com/h4h13/paisa) by Hemanth S. The ori
 - Loans and card EMIs, debts (lending/borrowing), recurring rules
 - Monthly reports
 - Statement CSV import
+- Offline SMS/Gmail notification parsing with a trained local model and review inbox
 - Versioned JSON backup and restore, plus restore from Flutter Paisa backups
 - App lock, home-screen widgets, Material You theming
 - Everything stays on your device. No account and no cloud.
@@ -24,6 +25,10 @@ Requires JDK 17 and the Android SDK.
 ./gradlew installDebug       # debug build on a connected device
 ./gradlew testDebugUnitTest  # unit tests
 ```
+
+## Local message parsing
+
+Open **Settings → Backup & data → SMS & Gmail import** to enable notification access or paste an INR banking alert. Review detected payments and choose an account/category before saving. This supports new notifications, not full Gmail inbox sync. No message text is sent to a server. An [optional downloadable AI model](tools/message_model/optional-model.md) can produce experimental local drafts; the built-in parser works without it. See [model training and limitations](tools/message_model/README.md) and [mock messages for 50 Indian banks](tools/message_model/bank-mock-messages.md).
 
 ## License
 
