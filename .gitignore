@@ -1,0 +1,37 @@
+# Gradle / build
+.gradle/
+build/
+.kotlin/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local config and secrets
+local.properties
+secrets.properties
+*.env
+.env*
+*.jks
+*.keystore
+keystore.properties
+google-services.json
+
+# IDE / editor
+.idea/
+*.iml
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Dev tooling
+.ua/
+graphify-out/

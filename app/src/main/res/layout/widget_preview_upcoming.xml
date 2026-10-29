@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@drawable/widget_preview_bg" android:orientation="vertical" android:padding="16dp">
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/upcoming" android:textSize="13sp" android:textColor="@color/widget_preview_fg" android:textStyle="bold" />
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="2 Nov · Rent        ₹18,000" android:textSize="12sp" android:textColor="@color/widget_preview_fg" android:layout_marginTop="8dp" />
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="5 Nov · Phone EMI   ₹4,250" android:textSize="12sp" android:textColor="@color/widget_preview_fg"  />
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="12 Nov · Card bill   ₹24,800" android:textSize="12sp" android:textColor="@color/widget_preview_fg"  />
+</LinearLayout>

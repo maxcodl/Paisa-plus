@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_preview_card">#D9C8E6C9</color>
+    <color name="widget_preview_fg">#0B2010</color>
+    <color name="widget_preview_btn">#386A20</color>
+</resources>

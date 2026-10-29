@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@drawable/widget_preview_bg" android:orientation="vertical" android:padding="16dp">
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/budgets" android:textSize="13sp" android:textStyle="bold" android:textColor="@color/widget_preview_fg" />
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Food" android:textSize="12sp" android:textColor="@color/widget_preview_fg" />
+    <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="6dp" android:max="100" android:progress="62" android:progressTint="@color/widget_preview_btn" android:progressBackgroundTint="@color/widget_preview_fg" />
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Shopping" android:textSize="12sp" android:textColor="@color/widget_preview_fg" />
+    <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="6dp" android:max="100" android:progress="100" android:progressTint="#BA1A1A" android:progressBackgroundTint="@color/widget_preview_fg" />
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Travel" android:textSize="12sp" android:textColor="@color/widget_preview_fg" />
+    <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="6dp" android:max="100" android:progress="35" android:progressTint="@color/widget_preview_btn" android:progressBackgroundTint="@color/widget_preview_fg" />
+</LinearLayout>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_preview_card">@android:color/system_accent1_100</color>
+    <color name="widget_preview_fg">@android:color/system_accent1_900</color>
+    <color name="widget_preview_btn">@android:color/system_accent1_600</color>
+</resources>

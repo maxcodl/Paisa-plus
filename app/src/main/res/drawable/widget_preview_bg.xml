@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Widget-picker preview card: wallpaper (Monet) accent on Android 12+, where previews are shown. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item><shape><corners android:radius="28dp" /><solid android:color="@color/widget_preview_card" /></shape></item>
+    <item android:drawable="@drawable/widget_glass" />
+</layer-list>
