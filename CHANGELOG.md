@@ -6,6 +6,11 @@
 - Accounts without saved digits are matched by bank name (an ICICI alert goes to your only ICICI account); confirming a review teaches the account its last digits so the next alert is added automatically
 - Review redesigned: amount and direction up top, payee, two-line message (tap for more), account and category pre-filled as chips, paste moved to the top bar
 - Transactions: import notes ("Reviewed SMS alert; Ref …") no longer clutter the list
+- Alerts: ICICI card merchants ("…on MAKEMYTRIP INDI") and Federal card merchants after a terminal id are read; salary credits are named Salary, credit card bill payments "Credit card payment" (Transfer); bank codes like INF*INFT* are not used as names; ALL-CAPS names are title-cased; card alerts no longer guess Swipe
+- Accounts: alerts without digits (SBI card payments) match by bank name
+- Only alerts under 2 days old are added unattended; older ones, or any with a same-amount transaction within 3 days on any account, go to Review (statement rows carry posting dates and may sit on another card of the group)
+- One-time repair removes auto-added entries that duplicated imported transactions (restorable from Recently deleted)
+- Home: the bell badge no longer clips; more space around the greeting
 - Home: bell with a count replaces Search; opens Payments to review (new alerts, plus auto-added payments missing a category, payment method or UPI app, with Edit and Looks right)
 - Onboarding asks for notification access (with restricted-settings help), SMS access for past payments and a daily backup folder; each can be skipped
 

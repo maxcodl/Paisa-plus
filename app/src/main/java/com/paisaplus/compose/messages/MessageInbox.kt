@@ -54,6 +54,8 @@ interface MessageInboxDao {
 const val ADDED_TO_REVIEW = "Transaction added to review inbox"
 const val AUTO_ADDED = "Transaction added automatically"
 const val DUPLICATE = "Already in your transactions"
+/** Alerts younger than this may be added unattended; anything older goes through Review. */
+private const val FRESH_MS = 2 * 86_400_000L
 
 @Singleton
 class MessageInboxRepository @Inject constructor(
@@ -85,7 +87,28 @@ class MessageInboxRepository @Inject constructor(
     }
 
     /** Re-checks everything waiting (Review opens with this): recorded payments leave, recognisable ones are added. */
-    suspend fun sweep(): Int = db.messageInbox().pendingList().count { settle(it.fingerprint, scan = true, notify = false) != ADDED_TO_REVIEW }
+    suspend fun sweep(): Int {
+        val repaired = if (settings.autoAddRepaired.first()) 0 else repairAutoDuplicates().also { settings.setAutoAddRepaired() }
+        return repaired + db.messageInbox().pendingList().count { settle(it.fingerprint, scan = true, notify = false) != ADDED_TO_REVIEW }
+    }
+
+    /**
+     * One-time fix for 0.9.1 test builds, which added old alerts unattended: removes auto-added entries that duplicate
+     * a transaction you entered or imported (same amount within 3 days, any account), e.g. a statement row with
+     * another posting date or card. Deleted through the repository, so balances are reversed and the entries stay
+     * restorable in Recently deleted.
+     */
+    private suspend fun repairAutoDuplicates(): Int {
+        val all = db.expenses().list()
+        val imported = listOf("Auto-added", "Added from", "Reviewed")
+        val yours = all.filter { e -> imported.none { e.note?.startsWith(it) == true } }
+        val days3 = 3 * 86_400_000L
+        val dupes = all.filter { a ->
+            a.note?.startsWith("Auto-added") == true && yours.any { kotlin.math.abs(it.amount - a.amount) < 0.005 && kotlin.math.abs(it.time - a.time) <= days3 }
+        }
+        dupes.forEach { expenses.delete(it) }
+        return dupes.size
+    }
 
     private suspend fun settle(fingerprint: String, scan: Boolean, notify: Boolean): String {
         val row = db.messageInbox().get(fingerprint)?.takeIf { it.status == "PENDING" } ?: return DUPLICATE
@@ -95,8 +118,12 @@ class MessageInboxRepository @Inject constructor(
             return DUPLICATE
         }
         val parsed = (BankMessageParser.parse(row.body) as? MessageParseResult.Candidate)?.transaction
+        // Only fresh alerts are added unattended. Older ones (history scan, backlog) overlap statements imported by CSV,
+        // which carry posting dates and sometimes another card of the group, so they always go through Review.
+        val fresh = System.currentTimeMillis() - row.receivedAt < FRESH_MS
+        if (!fresh || nearMatch(row)) return ADDED_TO_REVIEW
         if (account == null || parsed == null || parsed.hasLink || !settings.messages.first().autoAdd || settings.money.first().currency != "INR") return ADDED_TO_REVIEW
-        val name = AutoAdd.payee(row.merchant, row.body) ?: return ADDED_TO_REVIEW
+        val name = AutoAdd.payee(parsed.merchant ?: row.merchant, row.body) ?: return ADDED_TO_REVIEW
         val category = AutoAdd.category(name, row.body, db.categories().list(), db.expenses().list()) ?: return ADDED_TO_REVIEW
         if (!confirm(fingerprint, account.id, category.id, name, auto = true)) return DUPLICATE
         if (notify) AutoAddNotice.show(ctx, name, row.amountPaise / 100.0, row.type, account.name)
@@ -117,6 +144,17 @@ class MessageInboxRepository @Inject constructor(
             day.atStartOfDay(zone).toInstant().toEpochMilli() to day.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli() - 1
         } else row.receivedAt - 30 * 60_000L to row.receivedAt + 30 * 60_000L
         return db.expenses().hasSimilar(accountId, row.type, row.amountPaise / 100.0, from, to)
+    }
+
+    /**
+     * Something that may be this payment is already saved: same amount and direction within 3 days on any account
+     * (a statement's posting date, a card of the same group, or the bank side of a card bill payment). Not certain
+     * enough to drop the alert, but enough to never add it unattended.
+     */
+    private suspend fun nearMatch(row: MessageInboxEntity): Boolean {
+        val amount = row.amountPaise / 100.0
+        val days3 = 3 * 86_400_000L
+        return db.expenses().hasAmountNear(amount, row.receivedAt - days3, row.receivedAt + days3)
     }
 
     suspend fun dismiss(id: String) = db.messageInbox().finish(id, "DISMISSED")

@@ -62,6 +62,10 @@ android {
     }
 
     buildTypes {
+        // With keystore.properties present, debug builds use the release key too, so they install over GitHub releases.
+        debug {
+            if (hasReleaseSigning) signingConfig = signingConfigs.getByName("release")
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true

@@ -43,6 +43,9 @@ interface ExpenseDao {
     @Query("SELECT EXISTS(SELECT 1 FROM expenses WHERE note LIKE '%' || :text || '%')")
     suspend fun hasNote(text: String): Boolean
 
+    @Query("SELECT EXISTS(SELECT 1 FROM expenses WHERE abs(amount - :amount) < 0.005 AND time BETWEEN :from AND :to)")
+    suspend fun hasAmountNear(amount: Double, from: Long, to: Long): Boolean
+
     @Insert suspend fun insert(e: ExpenseEntity): Long
     @Insert suspend fun insertAll(e: List<ExpenseEntity>)
     @Update suspend fun update(e: ExpenseEntity)

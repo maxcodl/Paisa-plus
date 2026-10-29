@@ -36,25 +36,36 @@ object AutoAdd {
     private val upiWords = rx("""\b(upi|vpa|imps|bhim)\b|@[a-z]{2,}\b""")
     private val cardWords = rx("""\b(credit|debit)\s+card\b|\bcard\s*(no\.?|ending|xx)""")
     private val tap = rx("""\b(contactless|tap(ped)?\s*(and|&|to)?\s*pay|nfc)\b""")
+    private val salary = rx("""\bsalary\b""")
+    /** A bill payment reaching a credit card: a transfer between your own accounts, not income. */
+    private val cardPayment = rx("""\bpayment\b.*\bcredit card\b.*\b(received|processed|credited)\b|\b(received|credited)\b.*\bpayment\b.*\bcredit card\b|\bpayment\b.*\b(received|credited)\b.*\bcredit card\b""")
     private val transferWords = rx("""\b(neft|rtgs|imps)\b|\bself\b|\bown account\b""")
 
     fun upiApp(body: String): UpiApp? =
         appWords.firstOrNull { it.second.containsMatchIn(body) }?.first ?: handles.firstOrNull { it.second.containsMatchIn(body) }?.first
 
-    /** PaymentMethod name for the expense: UPI (with app), tap for contactless card use, swipe for other card spends. */
+    /**
+     * PaymentMethod name: UPI (with app) or tap for contactless. Card alerts don't say swipe vs online,
+     * and a card bill payment isn't a card purchase, so those stay unset rather than guessed.
+     */
     fun method(body: String, isUpi: Boolean): String? = when {
+        cardPayment.containsMatchIn(body) -> null
         isUpi || upiWords.containsMatchIn(body) -> PaymentMethod.UPI.name
         tap.containsMatchIn(body) -> PaymentMethod.TAP.name
-        cardWords.containsMatchIn(body) -> PaymentMethod.SWIPE.name
         else -> null
     }
 
     /** "swiggy@icici" → "Swiggy"; trims bank boilerplate. */
     fun payee(merchant: String?, body: String): String? {
-        val m = merchant?.trim()?.trimEnd('.', ',')?.takeIf { it.length in 2..60 } ?: return null
+        if (salary.containsMatchIn(body)) return "Salary"
+        if (cardPayment.containsMatchIn(body)) return "Credit card payment"
+        val raw = merchant?.trim()?.trimEnd('.', ',')?.takeIf { it.length in 2..60 } ?: return null
+        // Bank codes: "VPS*Thrikkaka" -> Thrikkaka; "INF*INFT*046078" / "BIL*INFT*FJD4" carry no name -> ask.
+        val m = if ('*' in raw) raw.substringAfterLast('*').takeIf { s -> s.count(Char::isLetter) >= 5 } ?: return null else raw
         val name = if ('@' in m) m.substringBefore('@').replace(Regex("[._-]+"), " ") else m
+        // Banks shout names ("ANUSURI SRI KOU", "OYOROOMS"): title-case them; keep 1–2 letter initials ("K S").
         return name.split(' ').filter { it.isNotBlank() }.joinToString(" ") { w ->
-            if (w.length <= 3 && w.all { it.isUpperCase() }) w else w.lowercase(Locale.ROOT).replaceFirstChar { it.titlecase(Locale.ROOT) }
+            if (w.length <= 2 && w.all { it.isUpperCase() }) w else w.lowercase(Locale.ROOT).replaceFirstChar { it.titlecase(Locale.ROOT) }
         }.takeIf { it.isNotBlank() }
     }
 
@@ -71,7 +82,7 @@ object AutoAdd {
             if (matches.isNotEmpty()) return pick(matches)
         }
         val named = accounts.filter { a ->
-            a.number.none(Char::isDigit) && a.cardType != CardType.CASH &&
+            (tail == null || a.number.none(Char::isDigit)) && a.cardType != CardType.CASH &&
                 (a.bankName.ifBlank { a.name }).split(' ').first().takeIf { it.length >= 3 }?.let { Regex("\\b" + Regex.escape(it) + "\\b", RegexOption.IGNORE_CASE).containsMatchIn(body) } == true
         }
         return pick(named)
@@ -82,7 +93,8 @@ object AutoAdd {
         val byId = categories.associateBy { it.id }
         name?.let { n -> history.filter { it.name.equals(n, ignoreCase = true) }.maxByOrNull { it.time }?.let { byId[it.categoryId] }?.let { return it } }
         fun named(vararg n: String) = categories.firstOrNull { c -> n.any { c.name.trim().equals(it, ignoreCase = true) } }
-        if (transferWords.containsMatchIn(body)) named("Transfer")?.let { return it }
+        if (salary.containsMatchIn(body)) named("Salary", "Income")?.let { return it }
+        if (cardPayment.containsMatchIn(body) || transferWords.containsMatchIn(body)) named("Transfer")?.let { return it }
         return named("Other", "Others", "Miscellaneous", "Misc")
     }
 }

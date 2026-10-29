@@ -140,6 +140,7 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     private val msgGmailKey = booleanPreferencesKey("key_msg_gmail")
     private val modelWifiKey = booleanPreferencesKey("key_model_wifi_only")
     private val msgAutoKey = booleanPreferencesKey("key_msg_auto_add")
+    private val autoRepairKey = booleanPreferencesKey("key_auto_add_repaired_v1")
     private val updFreqKey = stringPreferencesKey("key_update_frequency")
     private val updBetaKey = booleanPreferencesKey("key_update_beta")
     private val updLastKey = longPreferencesKey("key_update_last_check")
@@ -174,6 +175,9 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
 
     val messages = ctx.store.data.map { MessagePrefs(it[msgSmsKey] ?: true, it[msgGmailKey] ?: true, it[modelWifiKey] ?: true, it[msgAutoKey] ?: true) }
     suspend fun setMessages(m: MessagePrefs) = ctx.store.edit { it[msgSmsKey] = m.sms; it[msgGmailKey] = m.gmail; it[modelWifiKey] = m.wifiOnly; it[msgAutoKey] = m.autoAdd }
+
+    val autoAddRepaired = ctx.store.data.map { it[autoRepairKey] ?: false }
+    suspend fun setAutoAddRepaired() = ctx.store.edit { it[autoRepairKey] = true }
 
     val updates = ctx.store.data.map { p ->
         UpdatePrefs(

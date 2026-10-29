@@ -78,15 +78,15 @@ private const val AUTO = "Auto-added"
 private val whenFmt = DateTimeFormatter.ofPattern("d MMM, h:mm a")
 
 /**
- * An automatically added payment still missing something you'd want to know: a real category (not the "Other" /
- * "Transfer" fallback), how it was paid, or which UPI app. Cleared by editing it or by "Looks right".
+ * An automatically added payment still missing something you'd want to know: a real category (not the "Other"
+ * fallback) or, for UPI, which app. Cleared by editing it or by "Looks right".
  */
 fun needsTagging(e: ExpenseEntity, fallbackCategories: Set<Long>) =
-    e.note?.startsWith(AUTO) == true && (e.categoryId in fallbackCategories || e.method == null || (e.method == "UPI" && e.upiApp == null))
+    e.note?.startsWith(AUTO) == true && (e.categoryId in fallbackCategories || (e.method == "UPI" && e.upiApp == null))
 
 /** The categories auto-add falls back to when it can't tell what a payment was for. */
 fun fallbackCategoryIds(categories: List<CategoryEntity>) =
-    categories.filter { c -> listOf("Other", "Others", "Miscellaneous", "Misc", "Transfer").any { c.name.trim().equals(it, ignoreCase = true) } }.map { it.id }.toSet()
+    categories.filter { c -> listOf("Other", "Others", "Miscellaneous", "Misc").any { c.name.trim().equals(it, ignoreCase = true) } }.map { it.id }.toSet()
 
 /** Home's bell and Settings › SMS & AI › Review: new alerts to confirm, then auto-added payments missing details. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -134,7 +134,6 @@ fun PaymentsInboxScreen(app: AppViewModel, onBack: () -> Unit, onOpenTx: (Long) 
                                 Text(
                                     listOfNotNull(
                                         str(R.string.category).takeIf { e.categoryId in fallback },
-                                        str(R.string.payment_method).takeIf { e.method == null },
                                         str(R.string.upi_app).takeIf { e.method == "UPI" && e.upiApp == null },
                                     ).joinToString(" · ", prefix = str(R.string.missing) + ": "),
                                     Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -177,7 +176,8 @@ private fun <T> PickChip(label: String, options: List<T>, name: (T) -> String, o
 @Composable
 private fun ReviewCard(row: MessageInboxEntity, accounts: List<AccountEntity>, categories: List<CategoryEntity>, history: List<ExpenseEntity>, vm: MessageInboxViewModel) {
     val guessAccount = remember(row.fingerprint, accounts) { AutoAdd.account(accounts, row.accountSuffix, row.body)?.id ?: 0L }
-    var name by rememberSaveable(row.fingerprint) { mutableStateOf(AutoAdd.payee(row.merchant, row.body) ?: row.merchant.orEmpty()) }
+    val merchant = remember(row.fingerprint) { (com.paisaplus.compose.messages.BankMessageParser.parse(row.body) as? com.paisaplus.compose.messages.MessageParseResult.Candidate)?.transaction?.merchant ?: row.merchant }
+    var name by rememberSaveable(row.fingerprint) { mutableStateOf(AutoAdd.payee(merchant, row.body) ?: merchant.orEmpty()) }
     val guessCategory = remember(row.fingerprint, categories) { AutoAdd.category(name, row.body, categories, history)?.id ?: 0L }
     var accountId by rememberSaveable(row.fingerprint, guessAccount) { mutableStateOf(guessAccount) }
     var categoryId by rememberSaveable(row.fingerprint, guessCategory) { mutableStateOf(guessCategory) }

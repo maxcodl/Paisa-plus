@@ -45,12 +45,20 @@ class AutoAddTest {
 
     @Test fun methodFromText() {
         assertEquals("UPI", AutoAdd.method("UPI Ref 1234", isUpi = false))
-        assertEquals("SWIPE", AutoAdd.method("Spent on Credit Card XX4006", isUpi = false))
+        assertNull(AutoAdd.method("Spent on Credit Card XX4006", isUpi = false))
+        assertNull(AutoAdd.method("Payment of INR 34,000.00 has been received on your ICICI Bank Credit Card", isUpi = false))
         assertEquals("TAP", AutoAdd.method("contactless payment on card XX1", isUpi = false))
         assertNull(AutoAdd.method("NEFT credit", isUpi = false))
     }
 
     @Test fun payeeFromVpa() = assertEquals("Swiggy", AutoAdd.payee("swiggy@icici", ""))
+
+    @Test fun payeeFromBankCodes() {
+        assertEquals("Thrikkaka", AutoAdd.payee("VPS*Thrikkaka", "debited"))
+        assertNull(AutoAdd.payee("BIL*INFT*FJD4", "debited"))
+        assertEquals("Salary", AutoAdd.payee("INF*INFT*046078", "Acc XX002 is credited with salary of Rs. 1,999.00"))
+        assertEquals("Credit card payment", AutoAdd.payee(null, "Payment of INR 34,000.00 has been received on your ICICI Bank Credit Card Account 5xxx1007"))
+    }
 
     @Test fun categoryFollowsPayeeHistory() {
         val cats = listOf(CategoryEntity(1, "Food", icon = 0), CategoryEntity(2, "Other", icon = 0))

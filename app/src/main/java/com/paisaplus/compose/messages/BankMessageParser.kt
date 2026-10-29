@@ -33,7 +33,7 @@ object BankMessageParser {
     private val validMoney = Regex("""(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+|[0-9]{1,2}(?:,[0-9]{2})*,[0-9]{3})(?:\.[0-9]{1,2})?""")
     private val account = rx("""\b(?:a/c|acct|account|acc|card|ac)\s*(?:(?:no\.?|number|ending(?:\s+with)?|ends?\s+with|xx)\s*[:.-]?\s*)*(?:[0-9]*[xX*•]+)*(\d{3,18})\b""")
     private val reference = rx("""\b(?:upi\s+ref(?:erence)?|rrn|ref(?:erence)?|utr|txn\s*(?:id|no)|transaction\s*(?:id|no))\s*(?:no\.?)?\s*[:#.-]?\s*([a-z0-9]{6,40})\b|\bUPI\s*[:#-]?\s*(\d{8,20})\b""")
-    private val payee = rx("""(?:\bInfo\s*:\s*|\bat\s+|\bto\s+(?!your\b|(?:a/c|account|acct|card|ac)(?=\b|[xX*•0-9]))|\bfrom\s+(?!your\b|(?:a/c|account|acct|card|ac)(?=\b|[xX*•0-9])))(.+?)(?=\s+(?:on|using|via|from|to|at|ref|upi|avl|available|balance)\b|[.;\n]|$)""")
+    private val payee = rx("""(?:\bInfo\s*:\s*|\bat\s+|\bon\s+(?=[A-Za-z])|\bto\s+(?!your\b|(?:a/c|account|acct|card|ac)(?=\b|[xX*•0-9]))|\bfrom\s+(?!your\b|(?:a/c|account|acct|card|ac)(?=\b|[xX*•0-9])))(.+?)(?=\s+(?:on|using|via|from|to|at|ref|upi|avl|available|balance)\b|[.;\n]|$)""")
     private val beneficiaryCredit = rx(""";\s*([a-z][a-z0-9 @&'_/-]{1,90}?)\s+credited(?=[.;])|\band\s+credited\s+to\s+(.+?)(?=\s+(?:via|on|ref)\b|[.;]|$)""")
     private val ownedAccountWords = rx("""\b(account|a/c|acct|card|bank|your|my|own|another)\b""")
     private val reversal = rx("""\brevers(?:al|ed)\b""")
@@ -95,7 +95,7 @@ object BankMessageParser {
         val score = MessageModel.score(text)
         if (score < MessageModel.THRESHOLD) return ignored("Local model is uncertain; enter manually")
         val beneficiaryName = beneficiary?.groupValues?.drop(1)?.firstOrNull { it.isNotBlank() }?.trim()
-        val merchant = beneficiaryName ?: payee.findAll(text).map { it.groupValues[1].trim().take(100) }
+        val merchant = beneficiaryName ?: payee.findAll(text).map { it.groupValues[1].trim().replace(Regex("^\\d{6,}\\s+"), "").take(100) }
             .firstOrNull { it.isNotBlank() && !it.startsWith("INR", true) && !it.startsWith("Rs", true) && !it.first().isDigit() && it.first() != '+' && !ownedAccountWords.containsMatchIn(it) }
         return MessageParseResult.Candidate(ParsedBankMessage(
             money, if (cardPaid || isCredit(firstAction.value)) TransactionType.INCOME else TransactionType.EXPENSE,

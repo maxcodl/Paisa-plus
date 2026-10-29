@@ -55,6 +55,8 @@ class BankMessageParserTest {
         assertEquals("0324", parsed("Payment of Rs 5,838.83 is received towards your credit card number ending with 0324 on 22/09/26.").accountSuffix)
         assertEquals(TransactionType.INCOME, parsed("Dear Customer, your ICICI Bank Account XXX002 has been credited with Rs 300.00 on 08-Oct-26 as reversal of transaction with UPI: 664779930898.").type)
         assertEquals(200L, parsed("Debited Rs 2.00 from a/c X6405 for UPI mandate towards Google Cloud on 06-10-2026 17:28:47. Ref: 664570602553.").amountPaise)
+        assertEquals("MAKEMYTRIP INDI", parsed("INR 837.00 spent using ICICI Bank Card XX1007 on 21-Oct-26 on MAKEMYTRIP INDI. Avl Limit: INR 32,545.40.").merchant)
+        assertEquals("barkat", parsed("INR 176.00 spent on your credit card ending with 0584 at 666685016689    barkat on 27-10-2026. Available limit Rs.280.41.").merchant)
         ignored("UPI ASPRESENTED mandate created towards Google Cloud till 31-12-2036. Max amount Rs 15000.00. Ref: 627978413797.")
     }
 

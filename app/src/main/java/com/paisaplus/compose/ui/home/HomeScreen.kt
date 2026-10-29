@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -163,6 +164,7 @@ fun HomeScreen(vm: AppViewModel, nav: NavHostController, outer: PaddingValues) {
         topBar = {
             TopAppBar(
                 scrollBehavior = LocalTopBarBehavior.current,
+                expandedHeight = 96.dp,
                 title = {
                     Text(
                         buildAnnotatedString {
@@ -176,6 +178,7 @@ fun HomeScreen(vm: AppViewModel, nav: NavHostController, outer: PaddingValues) {
                         style = MaterialTheme.typography.headlineMediumEmphasized,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(start = 8.dp),
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = if (homeBg.alpha == 0f) topBarContainer() else homeBg, scrolledContainerColor = c.surfaceContainer),
@@ -188,13 +191,17 @@ fun HomeScreen(vm: AppViewModel, nav: NavHostController, outer: PaddingValues) {
                         d.expenses.count { com.paisaplus.compose.ui.settings.needsTagging(it, fallback) }
                     }
                     val count = pending.size + toTag
-                    IconButton(onClick = { nav.go(Routes.PAYMENTS) }, Modifier.semantics { contentDescription = str(R.string.payments_to_review_x, count) }) {
-                        androidx.compose.material3.BadgedBox(badge = { if (count > 0) androidx.compose.material3.Badge { Text(if (count > 99) "99+" else "$count") } }) {
+                    // Badge outside the button: an IconButton clips to its circle and would cut the count off.
+                    androidx.compose.material3.BadgedBox(
+                        badge = { if (count > 0) androidx.compose.material3.Badge(Modifier.offset(x = (-10).dp, y = 8.dp)) { Text(if (count > 99) "99+" else "$count") } },
+                        modifier = Modifier.padding(end = 4.dp),
+                    ) {
+                        IconButton(onClick = { nav.go(Routes.PAYMENTS) }, Modifier.semantics { contentDescription = str(R.string.payments_to_review_x, count) }) {
                             Icon(if (count > 0) Icons.Rounded.NotificationsActive else Icons.Rounded.Notifications, null)
                         }
                     }
                     Box(
-                        Modifier.padding(end = 4.dp).size(52.dp).clip(CircleShape)
+                        Modifier.padding(end = 12.dp).size(52.dp).clip(CircleShape)
                             .clickable(role = Role.Button) { nav.navigate(Routes.PROFILE) }
                             .semantics { contentDescription = str(R.string.profile) },
                         Alignment.Center,
