@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NewReleases
+import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Science
@@ -24,6 +26,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -72,6 +75,27 @@ fun UpdatesSection(vm: UpdatesViewModel = hiltViewModel()) {
             }
             item { SwitchRow(Icons.Rounded.Science, 3, str(R.string.beta_releases), str(R.string.beta_releases_summary), prefs.beta) { vm.setPrefs(prefs.copy(beta = it)) } }
             item {
+                // Shizuku state is re-read on resume and when its permission prompt answers.
+                var shizukuState by androidx.compose.runtime.remember { androidx.compose.runtime.mutableIntStateOf(0) }
+                androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_RESUME) { shizukuState++ }
+                androidx.compose.runtime.DisposableEffect(Unit) {
+                    val l = rikka.shizuku.Shizuku.OnRequestPermissionResultListener { _, _ -> shizukuState++ }
+                    runCatching { rikka.shizuku.Shizuku.addRequestPermissionResultListener(l) }
+                    onDispose { runCatching { rikka.shizuku.Shizuku.removeRequestPermissionResultListener(l) } }
+                }
+                val status = androidx.compose.runtime.remember(shizukuState) {
+                    when {
+                        !com.paisaplus.compose.update.ShizukuInstall.running() -> str(R.string.shizuku_not_running)
+                        !com.paisaplus.compose.update.ShizukuInstall.granted() -> str(R.string.shizuku_needs_permission)
+                        else -> str(R.string.shizuku_ready)
+                    }
+                }
+                SwitchRow(Icons.Rounded.Bolt, 6, str(R.string.install_with_shizuku), status, prefs.shizuku) { on ->
+                    if (on && com.paisaplus.compose.update.ShizukuInstall.running() && !com.paisaplus.compose.update.ShizukuInstall.granted()) com.paisaplus.compose.update.ShizukuInstall.request()
+                    vm.setPrefs(prefs.copy(shizuku = on))
+                }
+            }
+            item {
                 PrefRow(
                     Icons.Rounded.Refresh, 1, str(R.string.check_now),
                     when (val s = state) {
@@ -93,27 +117,33 @@ fun UpdatesSection(vm: UpdatesViewModel = hiltViewModel()) {
             else -> null
         }
         if (release != null) {
+            // One card: version and "What's new" up top, the notes at full width (no icon column eating space), then the actions.
             ListHeader(str(R.string.update_x_available, release.version))
-            ListGroup {
-                item { PrefRow(Icons.Rounded.NewReleases, 6, release.name, str(R.string.whats_new)) }
-                item { com.paisaplus.compose.update.ReleaseNotesText(com.paisaplus.compose.update.releaseNotes(release.notes), Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) }
-                item {
-                    Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        val s = state
-                        if (s is UpdateState.Downloading) {
-                            LinearWavyProgressIndicator({ s.progress }, Modifier.fillMaxWidth())
-                            Text(str(R.string.downloading_x, (s.progress * 100).toInt()), style = MaterialTheme.typography.bodyMedium)
-                        } else Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button({
-                                // Android asks once to allow installs from Paisa+; send the user there first.
-                                if (!vm.canInstall()) ctx.startActivity(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:${ctx.packageName}")))
-                                else vm.install(release)
-                            }, enabled = release.sha256 != null) { Text(str(R.string.download_and_install)) }
-                            OutlinedButton({ ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(release.page))) }) { Text(str(R.string.release_notes)) }
+            com.paisaplus.compose.ui.components.TintCard(Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large) {
+                Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                        com.paisaplus.compose.ui.components.ExpressiveIcon(Icons.Rounded.NewReleases, 6, 40.dp)
+                        androidx.compose.foundation.layout.Spacer(Modifier.width(12.dp))
+                        Column {
+                            Text(release.name, style = MaterialTheme.typography.titleMedium)
+                            Text(str(R.string.whats_new), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
-                        if (release.sha256 == null) Text(str(R.string.update_no_checksum), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
-                        else Text(str(R.string.update_install_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
+                    com.paisaplus.compose.update.ReleaseNotesText(com.paisaplus.compose.update.releaseNotes(release.notes))
+                    val s = state
+                    if (s is UpdateState.Downloading) {
+                        LinearWavyProgressIndicator({ s.progress }, Modifier.fillMaxWidth())
+                        Text(str(R.string.downloading_x, (s.progress * 100).toInt()), style = MaterialTheme.typography.bodyMedium)
+                    } else Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button({
+                            // Android asks once to allow installs from Paisa+; send the user there first.
+                            if (!vm.canInstall()) ctx.startActivity(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:${ctx.packageName}")))
+                            else vm.install(release)
+                        }, Modifier.weight(1f), enabled = release.sha256 != null) { Text(str(R.string.install)) }
+                        OutlinedButton({ ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(release.page))) }, Modifier.weight(1f)) { Text(str(R.string.on_github)) }
+                    }
+                    if (release.sha256 == null) Text(str(R.string.update_no_checksum), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                    else Text(str(R.string.update_install_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }

@@ -143,6 +143,11 @@
     <string name="later">Later</string>
     <string name="sms_scan_result_v">%1$d statement entries filled in (time, payee, app) · %2$d added · %3$d to review · %4$d already done</string>
     <string name="scan_all_messages">Scan all messages</string>
+    <string name="on_github">On GitHub</string>
+    <string name="install_with_shizuku">Install with Shizuku</string>
+    <string name="shizuku_not_running">No confirmation prompt. Shizuku is not running, so the normal installer is used</string>
+    <string name="shizuku_needs_permission">No confirmation prompt. Tap to allow Paisa+ in Shizuku</string>
+    <string name="shizuku_ready">No confirmation prompt. Shizuku is ready</string>
     <string name="widget_style">Widget style</string>
     <string name="widget_style_app">App colours</string>
     <string name="widget_style_nothing">Nothing</string>

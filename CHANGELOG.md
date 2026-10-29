@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Updates install without a confirmation prompt once Paisa+ has installed itself (Android 12+); the first in-app update still asks
+- Optional "Install with Shizuku" (Settings › About › App updates): no prompt at all while Shizuku runs; falls back to the normal installer otherwise
+- App updates: the new version shows as one card with its changelog at full width, Install and On GitHub
+
 ## 0.9.3
 
 - Updates: the app checks for a new version every time it opens (it used to skip if it had checked within the hour), and the changelog shows as a tidy list in the update dialog and in App updates

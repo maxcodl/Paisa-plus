@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <!-- In-app updates from GitHub releases: the system installer still asks the user. -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Android 12+: once Paisa+ installed itself, later updates may skip the confirmation prompt. -->
+    <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
 
     <!-- Required by Telephony.Sms.getDefaultSmsPackage on Android 11+. -->
     <queries>
@@ -104,6 +106,15 @@
             tools:node="merge" />
 
         <receiver android:name=".update.InstallResultReceiver" android:exported="false" />
+
+        <!-- Optional Shizuku installs (Settings › App updates). -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
         <!-- WorkManager is initialised by PaisaApp (Hilt worker factory). -->
         <provider

@@ -178,15 +178,18 @@ object UpdateInstaller {
     private val trustedHosts = setOf("github.com", "objects.githubusercontent.com", "release-assets.githubusercontent.com")
 
     /** Downloads, checks size and GitHub's SHA-256, then hands the APK to the system installer (it asks the user). */
-    suspend fun install(ctx: Context, r: AppRelease, progress: (Float) -> Unit) = withContext(Dispatchers.IO) {
+    suspend fun install(ctx: Context, r: AppRelease, shizuku: Boolean = false, progress: (Float) -> Unit) = withContext(Dispatchers.IO) {
         val expected = r.sha256 ?: error(str(R.string.update_no_checksum))
         val apk = File(ctx.cacheDir, "update-${r.version}.apk")
         try {
             download(r.apkUrl, apk, r.apkBytes, progress)
             require(sha256(apk).equals(expected, ignoreCase = true)) { str(R.string.update_checksum_failed) }
+            if (shizuku && ShizukuInstall.install(ctx, apk)) return@withContext
             val pi = ctx.packageManager.packageInstaller
             val params = PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL).apply {
                 setAppPackageName(ctx.packageName)
+                // Silent when Paisa+ installed the current version itself (Android 12+); otherwise Android still asks.
+                if (Build.VERSION.SDK_INT >= 31) setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED)
             }
             val id = pi.createSession(params)
             pi.openSession(id).use { s ->
@@ -297,7 +300,7 @@ class UpdatesViewModel @Inject constructor(
 
     fun install(r: AppRelease) = viewModelScope.launch {
         _state.value = UpdateState.Downloading(r, 0f)
-        runCatching { UpdateInstaller.install(ctx, r) { p -> _state.value = UpdateState.Downloading(r, p) } }
+        runCatching { UpdateInstaller.install(ctx, r, prefs.value.shizuku) { p -> _state.value = UpdateState.Downloading(r, p) } }
             .onSuccess { _state.value = UpdateState.Available(r) }
             .onFailure { _state.value = UpdateState.Failed(it.message ?: str(R.string.update_install_failed), r) }
     }

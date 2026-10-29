@@ -142,6 +142,11 @@
     <string name="later">Depois</string>
     <string name="sms_scan_result_v">%1$d lançamentos do extrato completados (hora, recebedor, app) · %2$d lançados · %3$d pra revisão · %4$d já feitos</string>
     <string name="scan_all_messages">Varrer todas as mensagens</string>
+    <string name="on_github">No GitHub</string>
+    <string name="install_with_shizuku">Instalar com Shizuku</string>
+    <string name="shizuku_not_running">Sem pedido de confirmação. O Shizuku não está rodando; usa o instalador normal</string>
+    <string name="shizuku_needs_permission">Sem pedido de confirmação. Toque pra liberar o Paisa+ no Shizuku</string>
+    <string name="shizuku_ready">Sem pedido de confirmação. Shizuku pronto</string>
     <string name="widget_style">Estilo do widget</string>
     <string name="widget_style_app">Cores do app</string>
     <string name="widget_style_nothing">Nothing</string>
