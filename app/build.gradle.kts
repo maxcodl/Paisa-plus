@@ -64,6 +64,8 @@ android {
     buildTypes {
         // With keystore.properties present, debug builds use the release key too, so they install over GitHub releases.
         debug {
+            // "0.9.3-dev": the in-app updater treats the release of the same number as newer, so debug installs can update.
+            versionNameSuffix = "-dev"
             if (hasReleaseSigning) signingConfig = signingConfigs.getByName("release")
         }
         release {

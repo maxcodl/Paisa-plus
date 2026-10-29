@@ -198,7 +198,8 @@ private fun DebtSheet(d: DebtEntity, row: DebtRow?, vm: AppViewModel, onClose: (
         Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp).navigationBarsPadding(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(if (d.id == 0L) str(R.string.new_debt) else str(R.string.edit_debt), style = MaterialTheme.typography.headlineSmall)
             SegmentedTabs(DebtType.entries.reversed(), type, { if (it == DebtType.CREDIT) str(R.string.i_lent) else str(R.string.i_borrowed) }, { type = it })
-            OutlinedTextField(name, { name = it }, label = { Text(if (type == DebtType.CREDIT) str(R.string.who_owes_you) else str(R.string.who_you_owe)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            val names by vm.names.collectAsStateWithLifecycle()
+            com.paisaplus.compose.ui.components.NameField(name, { name = it }, if (type == DebtType.CREDIT) str(R.string.who_owes_you) else str(R.string.who_you_owe), names)
             OutlinedTextField(desc, { desc = it }, label = { Text(str(R.string.note_optional)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
             AmountField(amount, { amount = it }, str(R.string.amount), isError = amount.isNotEmpty() && (value == null || value <= 0))
             DateField(str(R.string.started), start, { start = it }, Modifier.fillMaxWidth())

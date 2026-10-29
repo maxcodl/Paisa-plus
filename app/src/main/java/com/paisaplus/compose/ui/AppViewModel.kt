@@ -155,6 +155,13 @@ class AppViewModel @Inject constructor(
         d.map { DebtRow(it, byDebt[it.id].orEmpty()) }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+    /** Every name you've used, most used first: payees, people in Debts, recurring and loan names. For [NameField]. */
+    val names by lazy { combine(data, debts) { d, debts ->
+        (d.expenses.map { it.name } + debts.map { it.debt.name } + d.rules.map { it.name } + d.loans.map { it.name })
+            .map { it.trim() }.filter { it.isNotEmpty() }
+            .groupingBy { it }.eachCount().entries.sortedByDescending { it.value }.map { it.key }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList()) }
+
     fun saveDebt(d: DebtEntity) = viewModelScope.launch { debtRepo.save(d) }
     fun deleteDebt(d: DebtEntity) = viewModelScope.launch {
         debtRepo.delete(d)

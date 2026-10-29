@@ -69,8 +69,9 @@ private val appTag = Regex("""^v(\d+(?:\.\d+)*)$""")
 
 private fun versionParts(v: String) = v.removePrefix("v").substringBefore('-').split('.').map { it.toIntOrNull() ?: 0 }
 
-/** Numeric dotted compare: 0.10.0 > 0.9.2. */
+/** Numeric dotted compare: 0.10.0 > 0.9.2. A "-dev" (debug) install counts as older than the release of its number. */
 internal fun newer(candidate: String, installed: String): Boolean {
+    if (installed.endsWith("-dev") && versionParts(candidate) == versionParts(installed)) return true
     val a = versionParts(candidate)
     val b = versionParts(installed)
     for (i in 0 until maxOf(a.size, b.size)) {

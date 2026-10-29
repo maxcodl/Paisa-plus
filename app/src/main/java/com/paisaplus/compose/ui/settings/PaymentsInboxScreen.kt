@@ -203,7 +203,7 @@ private fun ReviewCard(row: MessageInboxEntity, accounts: List<AccountEntity>, c
                 Spacer(Modifier.weight(1f))
                 Text(Instant.ofEpochMilli(row.receivedAt).atZone(ZoneId.systemDefault()).format(whenFmt), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            OutlinedTextField(name, { name = it }, Modifier.fillMaxWidth(), singleLine = true, placeholder = { Text(str(R.string.message_payee)) })
+            com.paisaplus.compose.ui.components.NameField(name, { name = it }, str(R.string.message_payee), remember(history) { history.map { it.name }.filter { it.isNotBlank() }.groupingBy { it }.eachCount().entries.sortedByDescending { it.value }.map { it.key } })
             Text(
                 row.body, Modifier.clickable { expanded = !expanded }, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = if (expanded) Int.MAX_VALUE else 2, overflow = TextOverflow.Ellipsis,

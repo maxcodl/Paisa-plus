@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.People
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material.icons.rounded.Notifications
@@ -103,6 +104,7 @@ fun ProfileScreen(vm: AppViewModel, onBack: () -> Unit, open: (String) -> Unit) 
                     item { LinkRow(Icons.Rounded.RequestQuote, 2, str(R.string.loans_emis), str(R.string.instalments_and_what_s_left)) { open(Routes.LOANS) } }
                     item { LinkRow(Icons.Rounded.Handshake, 3, str(R.string.debts), str(R.string.money_lent_and_borrowed)) { open(Routes.DEBTS) } }
                     item { LinkRow(Icons.Rounded.EventRepeat, 4, str(R.string.recurring), str(R.string.bills_and_income_that_repeat)) { open(Routes.RECURRING) } }
+                    item { LinkRow(Icons.Rounded.People, 0, str(R.string.people), str(R.string.people_summary)) { open(Routes.PEOPLE) } }
                     item { LinkRow(Icons.Rounded.Category, 5, str(R.string.categories), str(R.string.icons_colours_budgets)) { open(Routes.CATEGORIES) } }
                     item { LinkRow(Icons.Rounded.AutoAwesome, 6, str(R.string.sms_ai), str(R.string.sms_ai_summary)) { open("${Routes.SETTINGS}/AUTOMATION") } }
                     item { LinkRow(Icons.Rounded.Notifications, 0, str(R.string.notifications), str(R.string.notifications_summary)) { open("${Routes.SETTINGS}/NOTIFICATIONS") } }

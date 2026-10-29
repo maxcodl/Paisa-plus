@@ -148,6 +148,12 @@
     <string name="shizuku_not_running">No confirmation prompt. Shizuku is not running, so the normal installer is used</string>
     <string name="shizuku_needs_permission">No confirmation prompt. Tap to allow Paisa+ in Shizuku</string>
     <string name="shizuku_ready">No confirmation prompt. Shizuku is ready</string>
+    <string name="people">People</string>
+    <string name="people_summary">Everyone you pay or get paid by</string>
+    <string name="search_people_x">Search %1$d people</string>
+    <string name="no_people">No one yet. Names from your transactions and debts show up here.</string>
+    <string name="in_debts">In Debts</string>
+    <string name="x_transactions_last_x">%1$d transactions · last %2$s</string>
     <string name="widget_style">Widget style</string>
     <string name="widget_style_app">App colours</string>
     <string name="widget_style_nothing">Nothing</string>

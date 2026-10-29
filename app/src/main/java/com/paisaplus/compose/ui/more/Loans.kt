@@ -113,6 +113,7 @@ fun LoansScreen(vm: AppViewModel, onBack: () -> Unit) {
             onDismiss = { editing = null },
             onSave = { vm.saveLoan(it); editing = null },
             onDelete = { vm.deleteLoan(l); editing = null },
+            names = vm.names.collectAsStateWithLifecycle().value,
         )
     }
 }
@@ -153,7 +154,7 @@ private fun LoanCard(l: LoanEntity, onClick: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-private fun LoanSheet(l: LoanEntity, accounts: List<String>, onDismiss: () -> Unit, onSave: (LoanEntity) -> Unit, onDelete: () -> Unit) {
+private fun LoanSheet(l: LoanEntity, accounts: List<String>, onDismiss: () -> Unit, onSave: (LoanEntity) -> Unit, onDelete: () -> Unit, names: List<String> = emptyList()) {
     val isNew = l.id == 0L
     var kind by rememberSaveable { mutableStateOf(l.kind) }
     var name by rememberSaveable { mutableStateOf(l.name) }
@@ -177,7 +178,7 @@ private fun LoanSheet(l: LoanEntity, accounts: List<String>, onDismiss: () -> Un
         ) {
             Text(if (isNew) str(R.string.new_loan_emi) else str(R.string.edit_loan), style = MaterialTheme.typography.titleLarge)
             SegmentedTabs(LoanKind.entries, kind, { if (it == LoanKind.EMI) str(R.string.card_emi) else str(R.string.loan) }, { kind = it })
-            OutlinedTextField(name, { name = it }, label = { Text(str(R.string.name)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            com.paisaplus.compose.ui.components.NameField(name, { name = it }, str(R.string.name), names)
             Text(if (kind == LoanKind.EMI) str(R.string.card) else str(R.string.paid_from), style = MaterialTheme.typography.titleSmall)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 (if (account.isBlank() || accounts.any { it.equals(account, true) }) accounts else accounts + account).forEach { a ->

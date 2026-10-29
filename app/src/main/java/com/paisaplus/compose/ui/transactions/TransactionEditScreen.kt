@@ -147,7 +147,17 @@ fun TransactionEditScreen(vm: AppViewModel, id: Long, initialType: TransactionTy
                 textStyle = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.fillMaxWidth(),
             )
-            OutlinedTextField(name, { name = it }, label = { Text(str(R.string.name)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            val names by vm.names.collectAsStateWithLifecycle()
+            com.paisaplus.compose.ui.components.NameField(name, { name = it }, str(R.string.name), names, onPick = { picked ->
+                name = picked
+                // A new entry for a known payee starts like the last one: category, account, how it was paid.
+                if (original == null) d.expenses.filter { it.name.equals(picked, ignoreCase = true) }.maxByOrNull { it.time }?.let { last ->
+                    categoryId = last.categoryId
+                    if (d.accountById.containsKey(last.accountId)) accountId = last.accountId
+                    method = last.method.orEmpty()
+                    upiApp = last.upiApp.orEmpty()
+                }
+            })
             OutlinedTextField(note, { note = it }, label = { Text(str(R.string.note_optional)) }, minLines = 2, maxLines = 5, modifier = Modifier.fillMaxWidth())
             // Payment method (optional): tap the chosen one again to clear it.
             Text(str(R.string.paid_with), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)

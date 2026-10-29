@@ -172,6 +172,7 @@ object Routes {
     const val SETTINGS = "settings"
     const val IMPORT_MESSAGES = "import_messages"
     const val PAYMENTS = "payments"
+    const val PEOPLE = "people"
     const val IMPORT_CSV = "import_csv"
     const val PROFILE = "profile"
     const val REPORTS = "reports"
@@ -415,6 +416,7 @@ private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () ->
             composable(Routes.RECURRING) { RecurringScreen(vm, back) }
             composable(Routes.BACKUP) { BackupScreen(vm, back) }
             composable(Routes.DEBTS) { DebtsScreen(vm, back) }
+            composable(Routes.PEOPLE) { com.paisaplus.compose.ui.settings.PeopleScreen(vm, back, onOpenPayee = { nav.navigate("payee/$it") }, onOpenDebts = { nav.navigate(Routes.DEBTS) }) }
             composable(Routes.PAYMENTS) { com.paisaplus.compose.ui.settings.PaymentsInboxScreen(vm, back, onOpenTx = { nav.editTransaction(it) }) }
             composable(Routes.IMPORT_MESSAGES) { com.paisaplus.compose.ui.settings.PaymentsInboxScreen(vm, back, onOpenTx = { nav.editTransaction(it) }) }
             composable(Routes.IMPORT_CSV) { ImportCsvScreen(vm, back) }

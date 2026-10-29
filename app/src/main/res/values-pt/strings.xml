@@ -147,6 +147,12 @@
     <string name="shizuku_not_running">Sem pedido de confirmação. O Shizuku não está rodando; usa o instalador normal</string>
     <string name="shizuku_needs_permission">Sem pedido de confirmação. Toque pra liberar o Paisa+ no Shizuku</string>
     <string name="shizuku_ready">Sem pedido de confirmação. Shizuku pronto</string>
+    <string name="people">Pessoas</string>
+    <string name="people_summary">Todo mundo que você paga ou que te paga</string>
+    <string name="search_people_x">Buscar entre %1$d pessoas</string>
+    <string name="no_people">Ninguém ainda. Os nomes dos lançamentos e dívidas aparecem aqui.</string>
+    <string name="in_debts">Nas dívidas</string>
+    <string name="x_transactions_last_x">%1$d lançamentos · último %2$s</string>
     <string name="widget_style">Estilo do widget</string>
     <string name="widget_style_app">Cores do app</string>
     <string name="widget_style_nothing">Nothing</string>

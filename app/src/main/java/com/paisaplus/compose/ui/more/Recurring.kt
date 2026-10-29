@@ -132,6 +132,7 @@ fun RecurringScreen(vm: AppViewModel, onBack: () -> Unit) {
                 vm.saveRule(it); editing = null
             },
             onDelete = { vm.deleteRule(r); editing = null },
+            names = vm.names.collectAsStateWithLifecycle().value,
         )
     }
 }
@@ -141,6 +142,7 @@ fun RecurringScreen(vm: AppViewModel, onBack: () -> Unit) {
 private fun RuleSheet(
     r: RecurringRuleEntity, accounts: List<String>, categories: List<String>,
     onDismiss: () -> Unit, onSave: (RecurringRuleEntity) -> Unit, onDelete: () -> Unit,
+    names: List<String> = emptyList(),
 ) {
     val isNew = r.id == 0L
     var name by rememberSaveable { mutableStateOf(r.name) }
@@ -169,7 +171,7 @@ private fun RuleSheet(
         ) {
             Text(if (isNew) str(R.string.new_recurring_transaction) else str(R.string.edit_recurring), style = MaterialTheme.typography.titleLarge)
             SegmentedTabs(TransactionType.entries, type, { if (it == TransactionType.EXPENSE) str(R.string.expense) else str(R.string.income) }, { type = it })
-            OutlinedTextField(name, { name = it }, label = { Text(str(R.string.name)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            com.paisaplus.compose.ui.components.NameField(name, { name = it }, str(R.string.name), names)
             AmountField(amount, { amount = it }, str(R.string.amount))
             SegmentedTabs(Frequency.entries, freq, { it.label }, { freq = it })
             DateField(str(R.string.next), next, { next = it }, Modifier.fillMaxWidth())

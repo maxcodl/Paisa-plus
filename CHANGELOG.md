@@ -4,6 +4,9 @@
 
 - Updates install without a confirmation prompt once Paisa+ has installed itself (Android 12+); the first in-app update still asks
 - Optional "Install with Shizuku" (Settings › About › App updates): no prompt at all while Shizuku runs; falls back to the normal installer otherwise
+- Name fields suggest names you have used (payees, people in Debts, recurring and loan names) as you type; picking a payee on a new transaction fills in its last category, account and payment method
+- Profile › Manage › People: everyone you pay or get paid by (and people in Debts), searchable, with totals; tap to open their payee page
+- Debug builds are named x.y.z-dev and can update to the release of the same number
 - Debts: totals in visible cards (they vanished with Pure black on) and net in its own card
 - App updates: the new version shows as one card with its changelog at full width, Install and On GitHub
 

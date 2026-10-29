@@ -10,6 +10,8 @@ class VersionTest {
     @Test fun sameIsNotNewer() = assertFalse(newer("v0.8.1", "0.8.1"))
     @Test fun olderIsNotNewer() = assertFalse(newer("v0.7.9", "0.8.1"))
     @Test fun missingPartIsZero() = assertFalse(newer("v1.0", "1.0.0"))
+    @Test fun releaseReplacesItsDebugBuild() = assertTrue(newer("v0.9.3", "0.9.3-dev"))
+    @Test fun olderReleaseDoesNotReplaceDebug() = assertFalse(newer("v0.9.2", "0.9.3-dev"))
 }
 
 class ReleaseNotesTest {
