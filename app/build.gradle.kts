@@ -1,8 +1,41 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+}
+
+// Paths in keystore.properties are relative to the repository root, not app/.
+val keystoreProperties = Properties().apply {
+    rootProject.file("keystore.properties").takeIf { it.isFile }?.inputStream()?.use { load(it) }
+}
+fun signingValue(name: String, environmentName: String): String? =
+    providers.environmentVariable(environmentName).orNull
+        ?: providers.gradleProperty(name).orNull
+        ?: keystoreProperties.getProperty(name)
+
+val releaseSigningValues = mapOf(
+    "storeFile" to signingValue("storeFile", "RELEASE_STORE_FILE"),
+    "storePassword" to signingValue("storePassword", "RELEASE_STORE_PASSWORD"),
+    "keyAlias" to signingValue("keyAlias", "RELEASE_KEY_ALIAS"),
+    "keyPassword" to signingValue("keyPassword", "RELEASE_KEY_PASSWORD"),
+)
+val hasReleaseSigning = releaseSigningValues.values.any { it != null }
+val requireReleaseSigning = providers.gradleProperty("requireReleaseSigning").orNull.toBoolean()
+if (hasReleaseSigning || requireReleaseSigning) {
+    val missing = releaseSigningValues.filterValues { it.isNullOrBlank() }.keys
+    require(missing.isEmpty()) { "Missing release signing settings: ${missing.joinToString()}. See docs/release-builds.md." }
+    require(rootProject.file(releaseSigningValues.getValue("storeFile")!!).isFile) {
+        "Release keystore file does not exist. Check storeFile / RELEASE_STORE_FILE."
+    }
+}
+
+// ABI-split resource shrinking and bundles need separate build outputs.
+val bundleBuild = providers.gradleProperty("bundleBuild").orNull.toBoolean()
+if (bundleBuild) {
+    layout.buildDirectory.set(rootProject.layout.buildDirectory.dir("app-bundle"))
 }
 
 android {
@@ -17,13 +50,24 @@ android {
         versionName = "0.8.1"
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = rootProject.file(releaseSigningValues.getValue("storeFile")!!)
+                storePassword = releaseSigningValues.getValue("storePassword")
+                keyAlias = releaseSigningValues.getValue("keyAlias")
+                keyPassword = releaseSigningValues.getValue("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // Personal sideload build: sign release with the debug key.
-            signingConfig = signingConfigs.getByName("debug")
+            // Keep the local sideload fallback; CI requires real credentials explicitly.
+            signingConfig = signingConfigs.getByName(if (hasReleaseSigning) "release" else "debug")
         }
     }
 
@@ -34,7 +78,7 @@ android {
 
     splits {
         abi {
-            isEnable = true
+            isEnable = !bundleBuild
             reset()
             include("arm64-v8a", "armeabi-v7a", "x86_64")
             isUniversalApk = false

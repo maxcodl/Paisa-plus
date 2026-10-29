@@ -19,12 +19,14 @@ paisa+ is based on [Paisa](https://github.com/h4h13/paisa) by Hemanth S. The ori
 
 ## Build
 
-Requires JDK 17 and the Android SDK.
+Requires JDK 21 and Android SDK 37.
 
 ```sh
 ./gradlew installDebug       # debug build on a connected device
 ./gradlew testDebugUnitTest  # unit tests
 ```
+
+For signed APKs/AABs, local `keystore.properties`, or an existing signing key in the manually triggered GitHub Actions workflow, see [release builds](docs/release-builds.md).
 
 ## Local message parsing
 
