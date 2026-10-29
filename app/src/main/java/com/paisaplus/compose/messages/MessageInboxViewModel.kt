@@ -39,7 +39,11 @@ class MessageInboxViewModel @Inject constructor(
     fun scanSms(days: Int) = run { inbox.scanSmsHistory(ctx, days).let { (a, r, d) -> com.paisaplus.compose.str(com.paisaplus.compose.R.string.sms_scan_result_xyz, a, r, d) } }
     fun dismiss(id: String) = run { inbox.dismiss(id); "Message dismissed" }
     fun confirm(id: String, account: Long, category: Long, name: String) = run {
-        inbox.confirm(id, account, category, name)
-        "Transaction saved"
+        com.paisaplus.compose.str(if (inbox.confirm(id, account, category, name)) com.paisaplus.compose.R.string.transaction_saved else com.paisaplus.compose.R.string.already_in_transactions)
+    }
+
+    init {
+        // Opening Review tidies it: payments already saved leave, ones now recognisable are added.
+        viewModelScope.launch { runCatching { withContext(Dispatchers.IO) { inbox.sweep() } }.onSuccess { n -> if (n > 0) feedback = com.paisaplus.compose.str(com.paisaplus.compose.R.string.cleared_x_from_review, n) } }
     }
 }

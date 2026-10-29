@@ -58,13 +58,23 @@ object AutoAdd {
         }.takeIf { it.isNotBlank() }
     }
 
-    /** The one account whose number ends with the alert's digits; credit cards preferred when the alert names a card. */
+    /**
+     * The one account the alert is about: by its last digits; failing that, by the bank's name ("ICICI") among accounts
+     * with no number saved yet. Bank account vs credit card follows whether the alert mentions a card. Null = ask.
+     */
     fun account(accounts: List<AccountEntity>, suffix: String?, body: String): AccountEntity? {
-        val tail = suffix?.filter(Char::isDigit)?.takeLast(4)?.takeIf { it.length >= 3 } ?: return null
-        val matches = accounts.filter { a -> a.number.filter(Char::isDigit).let { it.length >= tail.length && it.endsWith(tail) } }
-        if (matches.size <= 1) return matches.singleOrNull()
         val card = cardWords.containsMatchIn(body)
-        return matches.filter { (it.cardType == CardType.CREDIT) == card }.singleOrNull()
+        fun pick(list: List<AccountEntity>) = if (list.size <= 1) list.singleOrNull() else list.filter { (it.cardType == CardType.CREDIT) == card }.singleOrNull()
+        val tail = suffix?.filter(Char::isDigit)?.takeLast(4)?.takeIf { it.length >= 3 }
+        if (tail != null) {
+            val matches = accounts.filter { a -> a.number.filter(Char::isDigit).let { it.length >= tail.length && it.endsWith(tail) } }
+            if (matches.isNotEmpty()) return pick(matches)
+        }
+        val named = accounts.filter { a ->
+            a.number.none(Char::isDigit) && a.cardType != CardType.CASH &&
+                (a.bankName.ifBlank { a.name }).split(' ').first().takeIf { it.length >= 3 }?.let { Regex("\\b" + Regex.escape(it) + "\\b", RegexOption.IGNORE_CASE).containsMatchIn(body) } == true
+        }
+        return pick(named)
     }
 
     /** Same payee's last category; else Transfer for bank transfers; else "Other(s)". Null = can't choose, so review. */

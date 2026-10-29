@@ -29,6 +29,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CloudSync
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Sms
 import androidx.compose.material.icons.rounded.AccountBalanceWallet
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.EventRepeat
@@ -100,7 +103,10 @@ import java.util.Currency
 import java.util.Locale
 
 // Restore / import / start fresh comes last, once name, currency and theme are set.
-private enum class Page { WELCOME, FEATURES, NOTIFY, AGREE, THEME, NAME, CURRENCY, SETUP }
+private enum class Page { WELCOME, FEATURES, NOTIFY, ALERTS, SMS, AGREE, BACKUP, THEME, NAME, CURRENCY, SETUP }
+
+/** Pages with a Not now: each asks for one optional permission or choice. */
+private val optional = setOf(Page.NOTIFY, Page.ALERTS, Page.SMS, Page.BACKUP)
 
 /** First run only (no accounts yet). Restoring a backup ends onboarding as soon as data lands. */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -124,6 +130,15 @@ fun OnboardingScreen(vm: AppViewModel) {
     val next: () -> Unit = { scope.launch { pager.animateScrollToPage(pager.currentPage + 1) } }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { it?.let(vm::import) }
     val notify = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { next() }
+    val ctx = androidx.compose.ui.platform.LocalContext.current
+    val askSms = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { next() }
+    val backupFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri -> uri?.let(vm::setBackupDir); next() }
+    fun listenerOn() = ctx.getSystemService(android.app.NotificationManager::class.java)
+        .isNotificationListenerAccessGranted(android.content.ComponentName(ctx, com.paisaplus.compose.messages.BankNotificationListener::class.java))
+    // Coming back from Android's notification-access screen with access granted moves on by itself.
+    androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+        if (pages.getOrNull(pager.currentPage) == Page.ALERTS && listenerOn()) next()
+    }
     BackHandler(pager.currentPage > 0) { scope.launch { pager.animateScrollToPage(pager.currentPage - 1) } }
 
     val hasData = vm.data.collectAsStateWithLifecycle().value.accounts.isNotEmpty()
@@ -189,6 +204,25 @@ fun OnboardingScreen(vm: AppViewModel) {
                             Hero(Icons.Rounded.NotificationsActive)
                             Copy(str(R.string.reminders), str(R.string.on_the_day_a_payment))
                         }
+                        Page.ALERTS -> {
+                            Hero(Icons.Rounded.Sms)
+                            Copy(str(R.string.onb_alerts_title), str(R.string.onb_alerts_body))
+                            if (Build.VERSION.SDK_INT >= 33) {
+                                Spacer(Modifier.size(12.dp))
+                                Text(str(R.string.restricted_settings_steps), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+                                TextButton({ ctx.startActivity(android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, android.net.Uri.parse("package:${ctx.packageName}"))) }, Modifier.heightIn(min = 48.dp)) {
+                                    Text(str(R.string.open_app_info))
+                                }
+                            }
+                        }
+                        Page.SMS -> {
+                            Hero(Icons.Rounded.History)
+                            Copy(str(R.string.onb_sms_title), str(R.string.onb_sms_body))
+                        }
+                        Page.BACKUP -> {
+                            Hero(Icons.Rounded.CloudSync)
+                            Copy(str(R.string.onb_backup_title), str(R.string.onb_backup_body))
+                        }
                         Page.AGREE -> {
                             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                                 listOf(
@@ -243,13 +277,18 @@ fun OnboardingScreen(vm: AppViewModel) {
                 // After a CSV import the data is already here: startFresh only adds what is missing.
                 Page.SETUP -> Triple(str(if (hasData) R.string.get_started else R.string.start_fresh), true) { vm.startFresh() }
                 Page.NOTIFY -> Triple(str(R.string.allow_notifications), true) { notify.launch(Manifest.permission.POST_NOTIFICATIONS) }
+                Page.ALERTS -> Triple(str(R.string.allow_access), true) {
+                    if (listenerOn()) next() else ctx.startActivity(android.content.Intent(android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+                }
+                Page.SMS -> Triple(str(R.string.allow_sms_access), true) { askSms.launch(Manifest.permission.READ_SMS) }
+                Page.BACKUP -> Triple(str(R.string.choose_backup_folder), true) { backupFolder.launch(null) }
                 Page.AGREE -> Triple(str(R.string.i_agree), agreed.size == 2, next)
                 Page.NAME -> Triple(str(R.string.next), name.isNotBlank()) { keyboard?.hide(); vm.setUserName(name); next() }
                 else -> Triple(str(R.string.next), true, next)
             }
             val (label, enabled, action) = cta
             Column(Modifier.fillMaxWidth().padding(bottom = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                if (page == Page.NOTIFY) TextButton(next, Modifier.heightIn(min = 48.dp)) { Text(str(R.string.not_now)) }
+                if (page in optional) TextButton(next, Modifier.heightIn(min = 48.dp)) { Text(str(R.string.not_now)) }
                 PillButton(label, action, enabled = enabled)
             }
         }

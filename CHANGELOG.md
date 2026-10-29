@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.1
+
+- Review: payments already saved leave Review instead of getting stuck ("similar transaction exists"); opening Review clears them and adds ones that are now recognisable
+- Accounts without saved digits are matched by bank name (an ICICI alert goes to your only ICICI account); confirming a review teaches the account its last digits so the next alert is added automatically
+- Review redesigned: amount and direction up top, payee, two-line message (tap for more), account and category pre-filled as chips, paste moved to the top bar
+- Transactions: import notes ("Reviewed SMS alert; Ref …") no longer clutter the list
+- Home: bell with a count replaces Search; opens Payments to review (new alerts, plus auto-added payments missing a category, payment method or UPI app, with Edit and Looks right)
+- Onboarding asks for notification access (with restricted-settings help), SMS access for past payments and a daily backup folder; each can be skipped
+
 ## 0.9.0
 
 - In-app updates: check GitHub releases daily, weekly or monthly (beta optional), notify once per version, download with SHA-256 check and install through the system installer

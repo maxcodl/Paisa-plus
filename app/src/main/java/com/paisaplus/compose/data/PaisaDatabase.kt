@@ -40,6 +40,9 @@ interface ExpenseDao {
     @Query("SELECT EXISTS(SELECT 1 FROM expenses WHERE accountId = :accountId AND type = :type AND amount = :amount AND time BETWEEN :from AND :to)")
     suspend fun hasSimilar(accountId: Long, type: TransactionType, amount: Double, from: Long, to: Long): Boolean
 
+    @Query("SELECT EXISTS(SELECT 1 FROM expenses WHERE note LIKE '%' || :text || '%')")
+    suspend fun hasNote(text: String): Boolean
+
     @Insert suspend fun insert(e: ExpenseEntity): Long
     @Insert suspend fun insertAll(e: List<ExpenseEntity>)
     @Update suspend fun update(e: ExpenseEntity)

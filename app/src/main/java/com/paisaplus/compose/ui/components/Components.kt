@@ -392,6 +392,9 @@ fun EmptyState(icon: ImageVector, text: String, modifier: Modifier = Modifier, a
     }
 }
 
+/** Notes the alert importer writes ("Reviewed SMS alert; Ref …"): kept for de-duplication, hidden in lists. */
+private val systemNote = Regex("""^(Reviewed \S+ alert|Auto-added from \S+|Added from \S+)(; Ref \S+)?$""")
+
 @Composable
 fun TransactionRow(e: ExpenseEntity, category: CategoryEntity?, accountName: String?, modifier: Modifier = Modifier, badge: (@Composable () -> Unit)? = null) {
     Row(modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 16.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -412,7 +415,7 @@ fun TransactionRow(e: ExpenseEntity, category: CategoryEntity?, accountName: Str
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            e.note?.let {
+            e.note?.takeUnless { systemNote.matches(it) }?.let {
                 Text(it, style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic), color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
         }

@@ -39,6 +39,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.NotificationsActive
+import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.AccountBalance
 import androidx.compose.material.icons.rounded.ArrowDownward
@@ -178,7 +180,19 @@ fun HomeScreen(vm: AppViewModel, nav: NavHostController, outer: PaddingValues) {
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = if (homeBg.alpha == 0f) topBarContainer() else homeBg, scrolledContainerColor = c.surfaceContainer),
                 actions = {
-                    IconButton(onClick = { nav.go(Routes.SEARCH) }) { Icon(Icons.Rounded.Search, str(R.string.search)) }
+                    // Payments waiting for review plus auto-added ones still missing a category, method or app.
+                    val inbox: com.paisaplus.compose.messages.MessageInboxViewModel = androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel()
+                    val pending by inbox.pending.collectAsStateWithLifecycle()
+                    val toTag = remember(d.expenses, d.categories) {
+                        val fallback = com.paisaplus.compose.ui.settings.fallbackCategoryIds(d.categories)
+                        d.expenses.count { com.paisaplus.compose.ui.settings.needsTagging(it, fallback) }
+                    }
+                    val count = pending.size + toTag
+                    IconButton(onClick = { nav.go(Routes.PAYMENTS) }, Modifier.semantics { contentDescription = str(R.string.payments_to_review_x, count) }) {
+                        androidx.compose.material3.BadgedBox(badge = { if (count > 0) androidx.compose.material3.Badge { Text(if (count > 99) "99+" else "$count") } }) {
+                            Icon(if (count > 0) Icons.Rounded.NotificationsActive else Icons.Rounded.Notifications, null)
+                        }
+                    }
                     Box(
                         Modifier.padding(end = 4.dp).size(52.dp).clip(CircleShape)
                             .clickable(role = Role.Button) { nav.navigate(Routes.PROFILE) }

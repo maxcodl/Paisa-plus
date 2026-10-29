@@ -24,6 +24,12 @@ class AutoAddTest {
         assertNull(AutoAdd.account(list, null, "x"))
     }
 
+    @Test fun noDigitsSavedFallsBackToBankName() {
+        val list = listOf(AccountEntity(1, "ICICI Savings", 0, "ICICI Bank", "", CardType.BANK), AccountEntity(2, "Federal Savings", 0, "Federal Bank", "", CardType.BANK))
+        assertEquals(1L, AutoAdd.account(list, "002", "ICICI Bank Acct XX002 debited for Rs 10.00")?.id)
+        assertNull(AutoAdd.account(list, "002", "HDFC Bank A/c XX002 debited"))
+    }
+
     @Test fun sameDigitsPreferCardWhenAlertSaysCard() {
         val list = listOf(acct(1, "4006"), acct(2, "4006", CardType.CREDIT))
         assertEquals(2L, AutoAdd.account(list, "4006", "Spent on ICICI Bank Credit Card XX4006")?.id)
