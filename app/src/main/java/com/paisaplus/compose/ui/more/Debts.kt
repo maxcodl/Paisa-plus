@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -98,19 +99,19 @@ fun DebtsScreen(vm: AppViewModel, onBack: () -> Unit) {
         },
     ) { pad ->
         LazyColumn(contentPadding = PaddingValues(16.dp, pad.calculateTopPadding() + 8.dp, 16.dp, pad.calculateBottomPadding() + 96.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            // Two cards side by side, then net: the old single card used surfaceContainerLow, which is pure black (invisible)
+            // with Pure black on.
             item {
-                TintCard(Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surfaceContainerLow) {
-                    Column(Modifier.padding(16.dp)) {
-                        Row(Modifier.fillMaxWidth().height(androidx.compose.foundation.layout.IntrinsicSize.Min)) {
-                            Total(str(R.string.owed_to_you), lent, p.income, Modifier.weight(1f))
-                            VerticalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                            Total(str(R.string.you_owe), owed, p.expense, Modifier.weight(1f))
-                        }
-                        HorizontalDivider(Modifier.padding(vertical = 12.dp), color = MaterialTheme.colorScheme.outlineVariant)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(str(R.string.net), Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
-                            AmountText(lent - owed, color = if (lent >= owed) p.income else p.expense, modifier = Modifier.padding(start = 8.dp))
-                        }
+                Row(Modifier.fillMaxWidth().height(androidx.compose.foundation.layout.IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    TintCard(Modifier.weight(1f).fillMaxHeight()) { Total(str(R.string.owed_to_you), lent, p.income, Modifier.fillMaxWidth().padding(vertical = 20.dp)) }
+                    TintCard(Modifier.weight(1f).fillMaxHeight()) { Total(str(R.string.you_owe), owed, p.expense, Modifier.fillMaxWidth().padding(vertical = 20.dp)) }
+                }
+            }
+            item {
+                TintCard(Modifier.fillMaxWidth()) {
+                    Row(Modifier.padding(horizontal = 20.dp, vertical = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(str(R.string.net), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+                        AmountText(lent - owed, color = if (lent >= owed) p.income else p.expense, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(start = 8.dp))
                     }
                 }
             }

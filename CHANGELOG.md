@@ -4,6 +4,7 @@
 
 - Updates install without a confirmation prompt once Paisa+ has installed itself (Android 12+); the first in-app update still asks
 - Optional "Install with Shizuku" (Settings › About › App updates): no prompt at all while Shizuku runs; falls back to the normal installer otherwise
+- Debts: totals in visible cards (they vanished with Pure black on) and net in its own card
 - App updates: the new version shows as one card with its changelog at full width, Install and On GitHub
 
 ## 0.9.3
