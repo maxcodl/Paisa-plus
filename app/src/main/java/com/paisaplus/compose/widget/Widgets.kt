@@ -165,6 +165,9 @@ suspend fun refreshWidgets(context: Context) = runCatching {
  * so a session that is still running (Glance keeps them alive for a while) never shows stale numbers or colours.
  */
 abstract class PaisaWidget<T> : GlanceAppWidget() {
+    /** Exact: layouts read [LocalSize] and drop or shrink parts that won't fit (launcher cells vary a lot). */
+    override val sizeMode: SizeMode = SizeMode.Exact
+
     protected abstract suspend fun load(context: Context): T
 
     @Composable
@@ -232,8 +235,6 @@ private suspend fun budgetSummary(context: Context): BudgetSummary {
 
 /** 1×1: total balance; the amount shrinks to fit the cell. */
 class TotalBalanceWidget : PaisaWidget<String>() {
-    override val sizeMode = SizeMode.Exact
-
     override suspend fun load(context: Context): String {
         val ep = entryPoint(context)
         val zone = ZoneId.systemDefault()
@@ -275,7 +276,7 @@ class BudgetTrackerWidget : PaisaWidget<Budgets>() {
         val b = data.summary
         val m = data.m
         val left = b.budget - b.spent
-        Card(openApp(context)) {
+        Card(openApp(context), padding = if (LocalSize.current.height < 160.dp) 12.dp else 16.dp) {
             Text(str(R.string.budgets), style = TextStyle(color = WidgetFg, fontSize = 13.sp))
             Spacer(GlanceModifier.defaultWeight())
             if (b.rows.isEmpty()) NoBudgets() else {
@@ -361,14 +362,18 @@ class ThisMonthWidget : PaisaWidget<Month>() {
     override fun Content(context: Context, data: Month) {
         val t = data.t
         val m = data.m
-        Card(openApp(context)) {
-            Title(str(R.string.this_month))
+        // Short cells drop the "Net" line and the bar.
+        val tight = LocalSize.current.height < 170.dp
+        Card(openApp(context), padding = if (tight) 12.dp else 16.dp) {
+            Title(if (tight) str(R.string.this_month) + " · " + str(R.string.net) else str(R.string.this_month))
             Spacer(GlanceModifier.defaultWeight())
-            Text(m(t.net), style = TextStyle(color = if (t.net < 0) WidgetError else WidgetFg, fontSize = 22.sp, fontWeight = FontWeight.Bold), maxLines = 1)
-            Text(str(R.string.net), style = TextStyle(color = WidgetFg, fontSize = 12.sp))
-            Spacer(GlanceModifier.height(8.dp))
-            Bar(t.expense, t.income)
-            Spacer(GlanceModifier.height(8.dp))
+            Text(m(t.net), style = TextStyle(color = if (t.net < 0) WidgetError else WidgetFg, fontSize = if (tight) 20.sp else 22.sp, fontWeight = FontWeight.Bold), maxLines = 1)
+            if (!tight) {
+                Text(str(R.string.net), style = TextStyle(color = WidgetFg, fontSize = 12.sp))
+                Spacer(GlanceModifier.height(8.dp))
+                Bar(t.expense, t.income)
+            }
+            Spacer(GlanceModifier.height(if (tight) 4.dp else 8.dp))
             Line(str(R.string.income), m(t.income))
             Line(str(R.string.expense), m(t.expense))
         }

@@ -84,7 +84,7 @@ enum class WidgetStyle { APP, NOTHING }
 enum class WidgetAccent { RED, WALLPAPER }
 
 /** Home-screen widget look: [opacity] 0.2–1 (1 = solid), [sheen] glass highlight (APP only), [addButton] on the balance widget. */
-data class WidgetPrefs(val style: WidgetStyle = WidgetStyle.APP, val opacity: Float = 0.85f, val sheen: Boolean = true, val addButton: Boolean = true, val accent: WidgetAccent = WidgetAccent.RED)
+data class WidgetPrefs(val style: WidgetStyle = WidgetStyle.APP, val opacity: Float = 0.85f, val sheen: Boolean = true, val addButton: Boolean = true, val accent: WidgetAccent = WidgetAccent.WALLPAPER)
 
 private val Context.store by preferencesDataStore("settings")
 
@@ -162,7 +162,7 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
             opacity = (p[widgetOpacityKey] ?: 0.85f).coerceIn(0.2f, 1f),
             sheen = p[widgetSheenKey] ?: true,
             addButton = p[widgetAddKey] ?: true,
-            accent = WidgetAccent.entries.firstOrNull { it.name == p[widgetAccentKey] } ?: WidgetAccent.RED,
+            accent = WidgetAccent.entries.firstOrNull { it.name == p[widgetAccentKey] } ?: WidgetAccent.WALLPAPER,
         )
     }
     suspend fun setWidget(w: WidgetPrefs) = ctx.store.edit {

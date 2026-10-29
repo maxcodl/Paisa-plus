@@ -129,14 +129,11 @@ private val DarkPaisa = PaisaColors(Color(0xFF4EDE80), Color(0xFFFFB4AB), Color(
 val LocalPaisaColors = staticCompositionLocalOf { LightPaisa }
 val LocalDarkTheme = staticCompositionLocalOf { false }
 
+/** Pure black behind everything; cards keep the scheme's (Monet-tinted) containers, like Nothing's widgets. */
 private fun ColorScheme.amoled() = copy(
     background = Color.Black,
     surface = Color.Black,
     surfaceContainerLowest = Color.Black,
-    surfaceContainerLow = Color(0xFF0A0A0A),
-    surfaceContainer = Color(0xFF111111),
-    surfaceContainerHigh = Color(0xFF181818),
-    surfaceContainerHighest = Color(0xFF202020),
 )
 
 /** The app's colour scheme for [settings] (accent / Monet, variant, contrast, colourful surfaces); also used by the widgets. */
@@ -146,9 +143,9 @@ fun paisaScheme(ctx: android.content.Context, settings: ThemeSettings, dark: Boo
     // Untouched Monet keeps the system's own scheme (which also honours Android 14+ system contrast);
     // any variant/contrast change regenerates from the wallpaper seed.
     val systemMonet = monet && style == PaletteStyle.TonalSpot && settings.contrast == 0f
-    val scheme = when {
-        systemMonet && dark -> dynamicDarkColorScheme(ctx)
-        systemMonet -> dynamicLightColorScheme(ctx)
+    val system = if (monet) (if (dark) dynamicDarkColorScheme(ctx) else dynamicLightColorScheme(ctx)) else null
+    var scheme = when {
+        systemMonet -> system!!
         else -> dynamicColorScheme(
             seedColor = when {
                 monet -> Color(ctx.getColor(android.R.color.system_accent1_500))
@@ -161,6 +158,17 @@ fun paisaScheme(ctx: android.content.Context, settings: ThemeSettings, dark: Boo
             specVersion = if (settings.expressiveSpec) ColorSpec.SpecVersion.SPEC_2025 else ColorSpec.SpecVersion.SPEC_2021,
         )
     }
+    // With wallpaper colours, backgrounds and cards stay the system's own Monet neutrals whatever the colour style,
+    // so the app matches the launcher and Nothing-style widgets; the style still shapes the accents.
+    if (system != null && !systemMonet) scheme = scheme.copy(
+        background = system.background, onBackground = system.onBackground,
+        surface = system.surface, onSurface = system.onSurface,
+        surfaceVariant = system.surfaceVariant, onSurfaceVariant = system.onSurfaceVariant,
+        surfaceContainerLowest = system.surfaceContainerLowest, surfaceContainerLow = system.surfaceContainerLow,
+        surfaceContainer = system.surfaceContainer, surfaceContainerHigh = system.surfaceContainerHigh,
+        surfaceContainerHighest = system.surfaceContainerHighest, surfaceBright = system.surfaceBright, surfaceDim = system.surfaceDim,
+        outline = system.outline, outlineVariant = system.outlineVariant,
+    )
     return scheme.saturateSurfaces(scheme.primary, settings.surfaceTint)
 }
 

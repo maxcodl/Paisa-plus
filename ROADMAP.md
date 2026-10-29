@@ -25,6 +25,11 @@ Checklist of planned features, open checks and known gaps. Tick items as they sh
 - [x] Reports: Spend summary card (month total, six-month bars, tap a bar to pick the month, dashed average).
 - [x] Reports: account filter chips (All, Bank, Credit cards, each card group, each account) applied to the whole page.
 - [x] Widget customisation (Settings › Home-screen widgets): style App colours (accent / Monet, light / dark) or Nothing (flat monochrome, red accent), opacity, glass sheen, Add expense button on the balance widget; corners follow the launcher radius.
+- [x] Widgets reload data and colours on every refresh (running Glance sessions used to keep stale values); Nothing style uses the wallpaper (Monet) neutral like Nothing widgets, accent Nothing red or wallpaper.
+- [x] Overview tile 2×2 (any overview card or balance page, ‹ › per widget) and Overview grid 4×3 (all overview cards, like Home).
+- [x] Widgets adapt to the real cell size (short cells: slimmer Add button, then a round + by the title; compact overview tile; This month drops the bar).
+- [x] Pure black keeps Monet-tinted cards (was fixed greys), so the app matches Nothing-style widgets.
+- [x] With wallpaper colours, app backgrounds and cards use the system Monet neutrals for every colour style (matches launcher and Nothing widgets); Nothing-style widget accent defaults to wallpaper.
 - [ ] Widgets: per-widget setup screen when placed (balance pages per widget, style per widget).
 - [x] Settings reorganised: hub (profile, Money & totals, Appearance ×3, Home & widgets, Security & data, About) with sub-pages; dropdowns for number format, language, lock after; colour-style carousel with live previews.
 

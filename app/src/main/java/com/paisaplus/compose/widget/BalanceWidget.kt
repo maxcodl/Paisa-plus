@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.LocalSize
 
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
@@ -93,19 +94,29 @@ class BalanceWidget : PaisaWidget<List<Page>>() {
     override fun Content(context: Context, data: List<Page>) {
         val page = data[(currentState(PageKey) ?: 0).mod(data.size)]
         val fg = WidgetFg
-        Card(openApp(context)) {
+        // The full layout needs ~190dp; shorter cells get a slimmer button, then a round + beside the title instead.
+        val h = LocalSize.current.height
+        val tight = h < 175.dp
+        val tiny = h < 135.dp
+        val add = LocalPalette.current.addButton
+        Card(openApp(context), padding = if (tight) 12.dp else 16.dp) {
             Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(page.title, GlanceModifier.defaultWeight(), style = TextStyle(color = fg, fontSize = 13.sp))
+                Text(page.title, GlanceModifier.defaultWeight(), style = TextStyle(color = fg, fontSize = 13.sp), maxLines = 1)
+                if (add && tiny) Box(
+                    GlanceModifier.size(36.dp).background(WidgetBtn).cornerRadius(18.dp).clickable(actionStartActivity(addExpense(context))),
+                    contentAlignment = Alignment.Center,
+                ) { Text("+", style = TextStyle(color = WidgetOnBtn, fontSize = 20.sp, fontWeight = FontWeight.Bold)) }
                 if (data.size > 1) Box(
-                    GlanceModifier.size(48.dp).cornerRadius(24.dp).clickable(actionRunCallback<NextPage>()),
+                    GlanceModifier.size(40.dp).cornerRadius(20.dp).clickable(actionRunCallback<NextPage>()),
                     contentAlignment = Alignment.Center,
                 ) { Text("›", style = TextStyle(color = fg, fontSize = 22.sp, fontWeight = FontWeight.Bold)) }
             }
-            Text(page.amount, style = TextStyle(color = fg, fontSize = 26.sp, fontWeight = FontWeight.Bold), maxLines = 1)
+            Text(page.amount, style = TextStyle(color = fg, fontSize = if (tight) 22.sp else 26.sp, fontWeight = FontWeight.Bold), maxLines = 1)
             if (page.detail != null) Text(page.detail, style = TextStyle(color = fg, fontSize = 12.sp), maxLines = 1)
             Spacer(GlanceModifier.defaultWeight())
-            if (LocalPalette.current.addButton) Box(
-                GlanceModifier.fillMaxWidth().height(44.dp).background(WidgetBtn).cornerRadius(22.dp).clickable(actionStartActivity(addExpense(context))),
+            if (add && !tiny) Box(
+                GlanceModifier.fillMaxWidth().height(if (tight) 36.dp else 44.dp).background(WidgetBtn).cornerRadius(if (tight) 18.dp else 22.dp)
+                    .clickable(actionStartActivity(addExpense(context))),
                 contentAlignment = Alignment.Center,
             ) { Text(str(R.string.add_expense), style = TextStyle(color = WidgetOnBtn, fontSize = 14.sp, fontWeight = FontWeight.Medium)) }
         }

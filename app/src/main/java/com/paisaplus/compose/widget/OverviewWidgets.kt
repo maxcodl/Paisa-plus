@@ -27,6 +27,7 @@ import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.LocalSize
 import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
@@ -124,7 +125,7 @@ private fun iconBitmap(icon: ImageVector, index: Int, colorful: Boolean, r: Widg
 
 /** Icon row (with optional [nav] at the end), title, caption, amount; [compact] for grid cells. */
 @Composable
-private fun ColumnScope.TileBody(context: Context, t: Tile, compact: Boolean, nav: (@Composable () -> Unit)? = null) {
+private fun ColumnScope.TileBody(context: Context, t: Tile, compact: Boolean, nav: (@Composable () -> Unit)? = null, caption: Boolean = true) {
     val p = LocalPalette.current
     val size = if (compact) 36 else 44
     val px = (size * context.resources.displayMetrics.density).toInt()
@@ -136,7 +137,7 @@ private fun ColumnScope.TileBody(context: Context, t: Tile, compact: Boolean, na
     Spacer(GlanceModifier.height(if (compact) 6.dp else 10.dp))
     Text(t.title, style = TextStyle(color = WidgetFg, fontSize = if (compact) 15.sp else 20.sp, fontWeight = FontWeight.Medium), maxLines = 1)
     Spacer(GlanceModifier.defaultWeight())
-    if (t.caption != null) Text(t.caption, style = TextStyle(color = WidgetFg, fontSize = if (compact) 11.sp else 13.sp), maxLines = if (t.amount == null) 2 else 1)
+    if (caption && t.caption != null) Text(t.caption, style = TextStyle(color = WidgetFg, fontSize = if (compact) 11.sp else 13.sp), maxLines = if (t.amount == null) 2 else 1)
     if (t.amount != null) Text(t.amount, style = TextStyle(color = p.amount, fontSize = if (compact) 16.sp else 22.sp, fontWeight = FontWeight.Bold), maxLines = 1)
 }
 
@@ -157,8 +158,11 @@ class OverviewTileWidget : PaisaWidget<List<Tile>>() {
     @Composable
     override fun Content(context: Context, data: List<Tile>) {
         val t = data[(currentState(PageKey) ?: 0).mod(data.size)]
-        Card(openApp(context)) {
-            TileBody(context, t, compact = false) { Arrow("‹", -1); Arrow("›", 1) }
+        // Full size needs ~190dp tall; smaller cells go compact, then drop the caption.
+        val h = LocalSize.current.height
+        val compact = h < 190.dp || LocalSize.current.width < 160.dp
+        Card(openApp(context), padding = if (compact) 12.dp else 16.dp) {
+            TileBody(context, t, compact, nav = { Arrow("‹", -1); Arrow("›", 1) }, caption = h >= 140.dp)
         }
     }
 }
