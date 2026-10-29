@@ -1,5 +1,7 @@
 # Optional downloadable model
 
+The one-time Auto startup screen offers Download model, Import ZIP and Skip for now. Dismissing it is remembered on this device; all model controls remain available in Settings.
+
 The normal app includes the small built-in classifier and bank parser. The larger generative banking model is a separate optional download. It is **experimental**: see [the evaluation](hf-model-assessment.md) for incorrect amounts, dates, transaction directions and nontransaction detection.
 
 Settings → Backup & data → SMS & Gmail import → Optional AI model offers Download model, Import ZIP, Delete model and a local draft test. Installing does not switch the ledger parser or enable unattended transaction posting. The generator only displays unverified text and has no repository/database write path.

@@ -11,6 +11,7 @@ import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -38,6 +39,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -146,20 +148,25 @@ enum class SettingsPage(val icon: ImageVector, val hue: Int, val title: Int, val
 
 /** Large collapsing title over a padded list; shared by the hub and every sub-page. */
 @Composable
-private fun SettingsScaffold(title: String, onBack: () -> Unit, content: LazyListScope.() -> Unit) {
-    val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+private fun SettingsScaffold(title: String, onBack: () -> Unit, largeTitle: Boolean = false, content: LazyListScope.() -> Unit) {
+    val list = rememberLazyListState()
+    val scroll = if (largeTitle) TopAppBarDefaults.exitUntilCollapsedScrollBehavior() else TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
         Modifier.nestedScroll(scroll.nestedScrollConnection),
         topBar = {
-            LargeTopAppBar(
+            if (largeTitle) LargeTopAppBar(
                 title = { Text(title) },
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, str(R.string.back)) } },
                 scrollBehavior = scroll,
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent, scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer),
+            ) else TopAppBar(
+                title = { Text(title) },
+                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, str(R.string.back)) } },
+                scrollBehavior = scroll,
             )
         },
     ) { pad ->
-        LazyColumn(contentPadding = PaddingValues(16.dp, pad.calculateTopPadding(), 16.dp, pad.calculateBottomPadding() + 24.dp), content = content)
+        LazyColumn(state = list, contentPadding = PaddingValues(16.dp, pad.calculateTopPadding(), 16.dp, pad.calculateBottomPadding() + 24.dp), content = content)
     }
 }
 
@@ -173,7 +180,7 @@ fun SettingsScreen(vm: AppViewModel, onBack: () -> Unit, open: (String) -> Unit)
     val version = remember { runCatching { ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName }.getOrNull().orEmpty() }
     fun ListGroupScope.page(p: SettingsPage) = item { LinkRow(p.icon, p.hue, str(p.title), str(p.summary)) { open("${Routes.SETTINGS}/${p.name}") } }
 
-    SettingsScaffold(str(R.string.settings), onBack) {
+    SettingsScaffold(str(R.string.settings), onBack, largeTitle = true) {
         // Account-style card on top, like phone settings.
         item {
             TintCard(Modifier.fillMaxWidth(), onClick = { open(Routes.PROFILE) }, shape = MaterialTheme.shapes.extraLarge) {

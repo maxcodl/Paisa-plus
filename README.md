@@ -28,6 +28,8 @@ Requires JDK 17 and the Android SDK.
 
 ## Local message parsing
 
+The one-time **Auto** setup lets you download the optional model, import its ZIP, or skip and use the built-in parser. You can change this later.
+
 Open **Settings → Backup & data → SMS & Gmail import** to enable notification access or paste an INR banking alert. Review detected payments and choose an account/category before saving. This supports new notifications, not full Gmail inbox sync. No message text is sent to a server. An [optional downloadable AI model](tools/message_model/optional-model.md) can produce experimental local drafts; the built-in parser works without it. See [model training and limitations](tools/message_model/README.md) and [mock messages for 50 Indian banks](tools/message_model/bank-mock-messages.md).
 
 ## License

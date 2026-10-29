@@ -592,4 +592,14 @@
     <string name="optional_model_cancel">Cancel</string>
     <string name="optional_model_generate">Generate local draft</string>
     <string name="optional_model_draft">Unverified AI draft</string>
+    <string name="auto_setup_label">AUTO</string>
+    <string name="auto_setup_title">Less typing. More clarity.</string>
+    <string name="auto_setup_intro">Turn banking alerts into transactions you can review. Choose whether to add the optional AI model.</string>
+    <string name="auto_setup_builtin">SMS and Gmail alert import works with the built-in parser. Enable notification access later in Settings.</string>
+    <string name="auto_setup_optional">The optional AI model creates experimental drafts. It can make mistakes; check every amount and account.</string>
+    <string name="auto_setup_private">Parsing stays on your phone. Downloading the model never uploads your messages.</string>
+    <string name="auto_setup_size">Optional download: %1$s MB. You can add or delete it later in Settings → Backup &amp; data → SMS &amp; Gmail import.</string>
+    <string name="auto_setup_continue">Continue to Paisa+</string>
+    <string name="auto_setup_skip">Skip for now</string>
+    <string name="auto_setup_background">Continue in background</string>
 </resources>

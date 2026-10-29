@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0
+
+- One-time Auto setup with optional model Download, Import ZIP and Skip choices
+- Mirrored Settings navigation transitions, stable subpage headers and restored list position on Back
+- Ignore repeated navigation taps while a Settings transition is running
+- Offline SMS/Gmail alert review inbox and bank-format parser
+- Optional downloadable INT4 model for experimental local drafts
+
 ## 0.7.0
 
 - Home-screen widgets follow the app theme (accent or Monet, light and dark)

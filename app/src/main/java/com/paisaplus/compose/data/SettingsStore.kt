@@ -180,6 +180,10 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     val lock = ctx.store.data.map { LockSettings(it[lockKey] ?: false, it[lockMinutesKey] ?: 1, it[secureKey] ?: false) }
     suspend fun setLock(l: LockSettings) = ctx.store.edit { it[lockKey] = l.enabled; it[lockMinutesKey] = l.afterMinutes; it[secureKey] = l.secure }
 
+    private val automationIntroKey = booleanPreferencesKey("key_automation_intro_seen")
+    val automationIntroSeen = ctx.store.data.map { it[automationIntroKey] ?: false }
+    suspend fun finishAutomationIntro() = ctx.store.edit { it[automationIntroKey] = true }
+
     val onboarded = ctx.store.data.map { it[onboardedKey] ?: false }
     suspend fun setOnboarded(v: Boolean) = ctx.store.edit { it[onboardedKey] = v }
 
@@ -187,7 +191,7 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     private val backupDirKey = stringPreferencesKey("key_backup_dir")
     private val lastBackupKey = longPreferencesKey("key_last_backup")
     // Image files live in app storage / device URIs, not in the backup.
-    private val local = setOf(backupDirKey.name, lastBackupKey.name, "key_background_image", "key_user_image")
+    private val local = setOf(automationIntroKey.name, backupDirKey.name, lastBackupKey.name, "key_background_image", "key_user_image")
 
     val backupDir = ctx.store.data.map { it[backupDirKey]?.ifEmpty { null } }
     suspend fun setBackupDir(uri: String?) = ctx.store.edit { if (uri == null) it.remove(backupDirKey) else it[backupDirKey] = uri }

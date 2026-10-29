@@ -264,14 +264,17 @@ class MainActivity : FragmentActivity() {
 private fun PaisaRoot(addRequested: Boolean, onAddHandled: () -> Unit, vm: AppViewModel = hiltViewModel()) {
     val d by vm.data.collectAsStateWithLifecycle()
     val done by vm.onboarded.collectAsStateWithLifecycle()
+    val automationIntroSeen by vm.automationIntroSeen.collectAsStateWithLifecycle()
+    val quickAddLaunch = androidx.compose.runtime.saveable.rememberSaveable { addRequested }
     val ob = done
     // Decided once at launch: existing users (data already here) never see onboarding, but data
     // arriving mid-onboarding (CSV import) must not cut the flow short.
     var existing by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf<Boolean?>(null) }
     if (existing == null && ob != null && !d.loading) existing = d.accounts.isNotEmpty()
     when {
-        ob == null || existing == null -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+        ob == null || existing == null || automationIntroSeen == null -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
         !ob && existing == false -> OnboardingScreen(vm)
+        automationIntroSeen == false && !quickAddLaunch -> com.paisaplus.compose.ui.onboarding.AutomationSetupScreen(onDone = { vm.finishAutomationIntro() })
         else -> {
             LaunchedEffect(Unit) { if (!ob) vm.setOnboarded() }
             MainNav(vm, addRequested, onAddHandled)
@@ -332,11 +335,47 @@ private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () ->
             }
         },
     ) { pad ->
-        val back = { nav.popBackStack(); Unit }
+        // Ignore a second Back tap while the current destination is entering or leaving.
+        // Lifecycle state also covers predictive/system navigation managed by NavHost.
+        val back = {
+            if (nav.currentBackStackEntry?.lifecycle?.currentState == androidx.lifecycle.Lifecycle.State.RESUMED) nav.popBackStack()
+            Unit
+        }
+        val openSettings: (String) -> Unit = { destination ->
+            if (nav.currentBackStackEntry?.lifecycle?.currentState == androidx.lifecycle.Lifecycle.State.RESUMED) {
+                nav.navigate(destination) { launchSingleTop = true }
+            }
+        }
         // Tabs in the bar get no back arrow.
         fun up(t: Tab) = if (t in tabs) null else back
         androidx.compose.runtime.CompositionLocalProvider(com.paisaplus.compose.ui.components.LocalTopBarBehavior provides topBar) {
-        NavHost(nav, startDestination = Tab.HOME.route, Modifier.nestedScroll(topBar.nestedScrollConnection).then(if (bg != null) Modifier.layerBackdrop(screens) else Modifier)) {
+        NavHost(
+            nav, startDestination = Tab.HOME.route,
+            modifier = (if (isSettingsDestination(route)) Modifier else Modifier.nestedScroll(topBar.nestedScrollConnection))
+                .then(if (bg != null) Modifier.layerBackdrop(screens) else Modifier),
+            enterTransition = {
+                if (isSettingsDestination(initialState.destination.route) || isSettingsDestination(targetState.destination.route)) {
+                    slideIntoContainer(androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Start, androidx.compose.animation.core.tween(260))
+                } else androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(220))
+            },
+            exitTransition = {
+                if (isSettingsDestination(initialState.destination.route) || isSettingsDestination(targetState.destination.route)) {
+                    slideOutOfContainer(androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Start, androidx.compose.animation.core.tween(260), targetOffset = { it / 4 }) +
+                        androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(180))
+                } else androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(220))
+            },
+            popEnterTransition = {
+                if (isSettingsDestination(initialState.destination.route) || isSettingsDestination(targetState.destination.route)) {
+                    slideIntoContainer(androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.End, androidx.compose.animation.core.tween(260), initialOffset = { it / 4 }) +
+                        androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(180))
+                } else androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(220))
+            },
+            popExitTransition = {
+                if (isSettingsDestination(initialState.destination.route) || isSettingsDestination(targetState.destination.route)) {
+                    slideOutOfContainer(androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.End, androidx.compose.animation.core.tween(260))
+                } else androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(220))
+            },
+        ) {
             composable(Tab.HOME.route) { HomeScreen(vm, nav, pad) }
             composable(Tab.ACCOUNTS.route) { AccountsScreen(vm, pad, up(Tab.ACCOUNTS)) { nav.navigate("account/$it") } }
             composable("account/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
@@ -359,11 +398,11 @@ private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () ->
             composable(Routes.DEBTS) { DebtsScreen(vm, back) }
             composable(Routes.IMPORT_MESSAGES) { com.paisaplus.compose.ui.settings.MessageImportScreen(vm, back) }
             composable(Routes.IMPORT_CSV) { ImportCsvScreen(vm, back) }
-            composable(Routes.SETTINGS) { SettingsScreen(vm, back) { nav.navigate(it) } }
+            composable(Routes.SETTINGS) { SettingsScreen(vm, back, openSettings) }
             composable("${Routes.SETTINGS}/{page}") { e ->
                 val page = com.paisaplus.compose.ui.settings.SettingsPage.entries.firstOrNull { it.name == e.arguments?.getString("page") }
                     ?: com.paisaplus.compose.ui.settings.SettingsPage.MONEY
-                com.paisaplus.compose.ui.settings.SettingsPageScreen(vm, page, back) { nav.navigate(it) }
+                com.paisaplus.compose.ui.settings.SettingsPageScreen(vm, page, back, openSettings)
             }
             composable(
                 "tx/{id}?type={type}&account={account}",
@@ -385,6 +424,10 @@ private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () ->
         }
     }
 }
+
+/** Related settings destinations share a mirrored horizontal navigation transition. */
+private fun isSettingsDestination(route: String?) = route == Routes.SETTINGS || route?.startsWith("${Routes.SETTINGS}/") == true ||
+    route in setOf(Routes.PROFILE, Routes.IMPORT_MESSAGES, Routes.IMPORT_CSV, Routes.BACKUP)
 
 /** Floating liquid-glass capsule replacing the NavigationBar when glass is on. */
 @OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)

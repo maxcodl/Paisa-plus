@@ -51,3 +51,11 @@ On the physical Xiaomi:
 - Reinstalled the minified ARM64 release APK, reimported the final pack and reran local generation successfully. This verifies that R8 preserves the ONNX runtime bindings. The model remains installed for the user to try.
 
 389 JVM tests pass, with zero failures/errors/skips, including the exported model pack and GPT-2 tokenizer. Debug and minified release builds pass. Release APK sizes: ARM64 16,777,588 bytes; ARMv7 15,801,040 bytes; x86-64 18,663,048 bytes. Models remain outside APK and Git history. Notification access is currently enabled by the device user; no real incoming SMS/Gmail notification was generated during this test.
+
+## Auto setup and Settings navigation — 0.8.0
+
+Added a one-time device-local Auto introduction after onboarding, including for existing users on update. Download, Import ZIP and Skip choices are shown; widget quick-add launches bypass it. Download work is explicitly user-triggered. The intro preference is excluded from backup export/restore. The temporary optional model installation was deleted through its normal UI to check the not-installed setup layout; the user's account/transaction data was preserved.
+
+On the connected Xiaomi, confirmed the startup screen layout shows the 55.7 MB download and all choices without clipping. The screen was dismissed and a force-stop/relaunch returned to Home. Settings subpages now use compact fixed titles and mirrored 260 ms navigation slides; the hub retains its large collapsing title. Captured and inspected the Back transition. Two rapid toolbar Back taps returned to the hub, and the hub's Settings title, Backup & data row and Home-screen widgets row returned to exactly their previous UI bounds. No double-pop occurred.
+
+Synced the latest GitHub main widget/theme updates before the final 0.8.0 build; these changes remain intact.

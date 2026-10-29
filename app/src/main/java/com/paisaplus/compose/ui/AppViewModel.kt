@@ -224,6 +224,9 @@ class AppViewModel @Inject constructor(
         if (old.isNotEmpty() && old != path) withContext(Dispatchers.IO) { java.io.File(old).delete() }
     }
     /** null until DataStore has loaded (avoids flashing onboarding for existing users). */
+    val automationIntroSeen = settings.automationIntroSeen.stateIn(viewModelScope, SharingStarted.Eagerly, null as Boolean?)
+    fun finishAutomationIntro() = viewModelScope.launch { settings.finishAutomationIntro() }
+
     val onboarded = settings.onboarded.stateIn(viewModelScope, SharingStarted.Eagerly, null as Boolean?)
     val tabs = settings.tabs.map(TabConfig::parse).stateIn(viewModelScope, SharingStarted.Eagerly, TabConfig.DEFAULT)
     val money = settings.money.stateIn(viewModelScope, SharingStarted.Eagerly, MoneyFormat())
