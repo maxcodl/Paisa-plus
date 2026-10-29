@@ -24,7 +24,9 @@ Checklist of planned features, open checks and known gaps. Tick items as they sh
   - [x] This month 2×2: net, income, expense, spent-vs-income bar (Glance rows cap at 10 children, so no daily bars).
 - [x] Reports: Spend summary card (month total, six-month bars, tap a bar to pick the month, dashed average).
 - [x] Reports: account filter chips (All, Bank, Credit cards, each card group, each account) applied to the whole page.
-- [x] Widgets follow the app theme (accent / Monet, variant, contrast, light / dark mode) instead of fixed brown; Settings › Home-screen widgets › Widget opacity.
+- [x] Widget customisation (Settings › Home-screen widgets): style App colours (accent / Monet, light / dark) or Nothing (flat monochrome, red accent), opacity, glass sheen, Add expense button on the balance widget; corners follow the launcher radius.
+- [ ] Widgets: per-widget setup screen when placed (balance pages per widget, style per widget).
+- [x] Settings reorganised: hub (profile, Money & totals, Appearance ×3, Home & widgets, Security & data, About) with sub-pages; dropdowns for number format, language, lock after; colour-style carousel with live previews.
 
 ## Verify on the phone
 

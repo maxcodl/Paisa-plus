@@ -358,6 +358,11 @@ private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () ->
             composable(Routes.DEBTS) { DebtsScreen(vm, back) }
             composable(Routes.IMPORT_CSV) { ImportCsvScreen(vm, back) }
             composable(Routes.SETTINGS) { SettingsScreen(vm, back) { nav.navigate(it) } }
+            composable("${Routes.SETTINGS}/{page}") { e ->
+                val page = com.paisaplus.compose.ui.settings.SettingsPage.entries.firstOrNull { it.name == e.arguments?.getString("page") }
+                    ?: com.paisaplus.compose.ui.settings.SettingsPage.MONEY
+                com.paisaplus.compose.ui.settings.SettingsPageScreen(vm, page, back) { nav.navigate(it) }
+            }
             composable(
                 "tx/{id}?type={type}&account={account}",
                 arguments = listOf(

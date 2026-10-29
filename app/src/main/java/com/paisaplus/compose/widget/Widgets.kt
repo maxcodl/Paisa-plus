@@ -51,6 +51,8 @@ import com.paisaplus.compose.data.salaryIds
 import com.paisaplus.compose.data.transferIds
 import com.paisaplus.compose.ui.DebtRow
 import com.paisaplus.compose.data.ThemeMode
+import com.paisaplus.compose.data.WidgetStyle
+import android.os.Build
 import com.paisaplus.compose.ui.theme.paisaScheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.CompositionLocalProvider
@@ -65,37 +67,55 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-/** Widget colours: the app's own scheme (accent / Monet, variant, contrast; light + dark) and Settings › Widget opacity. */
-internal class WidgetPalette(private val light: ColorScheme, private val dark: ColorScheme, opacity: Float) {
-    private fun p(f: (ColorScheme) -> Color) = ColorProvider(day = f(light), night = f(dark))
-    val card = p { it.primaryContainer.copy(alpha = opacity) }
-    val fg = p { it.onPrimaryContainer }
-    val btn = p { it.primary }
-    val onBtn = p { it.onPrimary }
+/** One mode's widget colours. [bar]: progress fill; [btn]: the Add / + button. */
+internal data class WidgetRoles(val card: Color, val fg: Color, val btn: Color, val onBtn: Color, val bar: Color, val error: Color, val track: Color)
+
+/** App colours: the app's own scheme (accent / Monet, variant, contrast). */
+private fun ColorScheme.roles(opacity: Float) =
+    WidgetRoles(primaryContainer.copy(alpha = opacity), onPrimaryContainer, primary, onPrimary, primary, error, onPrimaryContainer.copy(alpha = 0.2f))
+
+private val NothingRed = Color(0xFFD71921)
+
+/** Nothing OS look: flat grey card, monochrome text and bars, red accent. */
+private fun nothingRoles(dark: Boolean, opacity: Float) =
+    if (dark) WidgetRoles(Color(0xFF1B1B1B).copy(alpha = opacity), Color.White, NothingRed, Color.White, Color.White, NothingRed, Color.White.copy(alpha = 0.15f))
+    else WidgetRoles(Color(0xFFF2F2F2).copy(alpha = opacity), Color(0xFF111111), NothingRed, Color.White, Color(0xFF111111), NothingRed, Color.Black.copy(alpha = 0.12f))
+
+internal class WidgetPalette(private val day: WidgetRoles, private val night: WidgetRoles, val sheen: Boolean, val addButton: Boolean) {
+    private fun p(f: (WidgetRoles) -> Color) = ColorProvider(day = f(day), night = f(night))
+    val card = p { it.card }
+    val fg = p { it.fg }
+    val btn = p { it.btn }
+    val onBtn = p { it.onBtn }
+    val bar = p { it.bar }
     val error = p { it.error }
-    val track = p { it.onPrimaryContainer.copy(alpha = 0.2f) }
+    val track = p { it.track }
 }
 
-private val LocalPalette = staticCompositionLocalOf<WidgetPalette> { error("WidgetTheme missing") }
+internal val LocalPalette = staticCompositionLocalOf<WidgetPalette> { error("WidgetTheme missing") }
 internal val WidgetFg: ColorProvider @Composable get() = LocalPalette.current.fg
 internal val WidgetBtn: ColorProvider @Composable get() = LocalPalette.current.btn
 internal val WidgetOnBtn: ColorProvider @Composable get() = LocalPalette.current.onBtn
 private val WidgetError: ColorProvider @Composable get() = LocalPalette.current.error
 private val WidgetTrack: ColorProvider @Composable get() = LocalPalette.current.track
 
-/** Palette for the current theme settings; Light / Dark theme mode pins the widget too, System follows the launcher. */
+/** Palette for Settings › Home-screen widgets and the app theme; Light / Dark theme mode pins the widget too, System follows the launcher. */
 internal suspend fun palette(context: Context): WidgetPalette {
     val s = entryPoint(context).settings()
     val t = s.theme.first()
-    val opacity = s.widgetOpacity.first()
-    val light = paisaScheme(context, t, dark = false)
-    val dark = paisaScheme(context, t, dark = true)
-    return when (t.mode) {
-        ThemeMode.LIGHT -> WidgetPalette(light, light, opacity)
-        ThemeMode.DARK -> WidgetPalette(dark, dark, opacity)
-        ThemeMode.SYSTEM -> WidgetPalette(light, dark, opacity)
+    val w = s.widget.first()
+    fun roles(dark: Boolean) = if (w.style == WidgetStyle.NOTHING) nothingRoles(dark, w.opacity) else paisaScheme(context, t, dark).roles(w.opacity)
+    val (day, night) = when (t.mode) {
+        ThemeMode.LIGHT -> roles(false).let { it to it }
+        ThemeMode.DARK -> roles(true).let { it to it }
+        ThemeMode.SYSTEM -> roles(false) to roles(true)
     }
+    return WidgetPalette(day, night, sheen = w.style == WidgetStyle.APP && w.sheen, addButton = w.addButton)
 }
+
+/** The launcher's own widget corner radius (Android 12+), so the cards match the rest of the home screen. */
+private fun GlanceModifier.corners() =
+    if (Build.VERSION.SDK_INT >= 31) cornerRadius(android.R.dimen.system_app_widget_background_radius) else cornerRadius(28.dp)
 
 @Composable
 internal fun WidgetTheme(p: WidgetPalette, content: @Composable () -> Unit) =
@@ -107,12 +127,13 @@ internal fun addExpense(context: Context) = Intent(context, MainActivity::class.
     .putExtra(MainActivity.EXTRA_ADD, true)
     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
-/** The card every widget sits on: accent tint at the chosen opacity under a glass sheen + rim; tapping it opens [open]. */
+/** The card every widget sits on: palette tint at the chosen opacity, optionally under a glass sheen + rim; tapping it opens [open]. */
 @Composable
 internal fun Card(open: Intent, padding: Dp = 16.dp, center: Boolean = false, content: @Composable ColumnScope.() -> Unit) =
-    Box(GlanceModifier.fillMaxSize().background(LocalPalette.current.card).cornerRadius(28.dp).clickable(actionStartActivity(open))) {
+    Box(GlanceModifier.fillMaxSize().background(LocalPalette.current.card).corners().clickable(actionStartActivity(open))) {
+        val inner = GlanceModifier.fillMaxSize()
         Column(
-            GlanceModifier.fillMaxSize().background(ImageProvider(R.drawable.widget_glass)).cornerRadius(28.dp).padding(padding),
+            (if (LocalPalette.current.sheen) inner.background(ImageProvider(R.drawable.widget_glass)).corners() else inner).padding(padding),
             verticalAlignment = if (center) Alignment.CenterVertically else Alignment.Top,
             horizontalAlignment = if (center) Alignment.CenterHorizontally else Alignment.Start,
             content = content,
@@ -164,7 +185,7 @@ private fun Bar(spent: Double, budget: Double) {
     LinearProgressIndicator(
         progress = if (budget > 0) (spent / budget).toFloat().coerceIn(0f, 1f) else 0f,
         modifier = GlanceModifier.fillMaxWidth().height(6.dp).cornerRadius(3.dp),
-        color = if (over) WidgetError else WidgetBtn,
+        color = if (over) WidgetError else LocalPalette.current.bar,
         backgroundColor = WidgetTrack,
     )
 }

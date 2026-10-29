@@ -77,6 +77,12 @@ data class MoneyFormat(val currency: String = "INR", val locale: String = "en-IN
 
 data class LockSettings(val enabled: Boolean = false, val afterMinutes: Int = 1, val secure: Boolean = false)
 
+/** APP: the app's accent colours under glass. NOTHING: flat monochrome card with a red accent, like Nothing OS widgets. */
+enum class WidgetStyle { APP, NOTHING }
+
+/** Home-screen widget look: [opacity] 0.2–1 (1 = solid), [sheen] glass highlight (APP only), [addButton] on the balance widget. */
+data class WidgetPrefs(val style: WidgetStyle = WidgetStyle.APP, val opacity: Float = 0.85f, val sheen: Boolean = true, val addButton: Boolean = true)
+
 private val Context.store by preferencesDataStore("settings")
 
 // Key names match the Flutter app's settings box (lib/src/core/constants.dart).
@@ -115,6 +121,9 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     private val excludeTransfersKey = booleanPreferencesKey("key_exclude_transfers")
     private val monthStartKey = intPreferencesKey("key_month_start")
     private val widgetOpacityKey = floatPreferencesKey("key_widget_opacity")
+    private val widgetStyleKey = stringPreferencesKey("key_widget_style")
+    private val widgetSheenKey = booleanPreferencesKey("key_widget_sheen")
+    private val widgetAddKey = booleanPreferencesKey("key_widget_add_button")
 
     private val userNameKey = stringPreferencesKey("key_user_name")
     private val currencyKey = stringPreferencesKey("key_currency")
@@ -143,9 +152,20 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     val balanceModes = ctx.store.data.map { BalanceMode.parse(it[balanceModesKey]) }
     suspend fun setBalanceModes(m: List<BalanceMode>) = ctx.store.edit { it[balanceModesKey] = BalanceMode.format(m) }
 
-    /** Home-screen widget card opacity, 0.2–1 (1 = solid). */
-    val widgetOpacity = ctx.store.data.map { (it[widgetOpacityKey] ?: 0.85f).coerceIn(0.2f, 1f) }
-    suspend fun setWidgetOpacity(v: Float) = ctx.store.edit { it[widgetOpacityKey] = v }
+    val widget = ctx.store.data.map { p ->
+        WidgetPrefs(
+            style = WidgetStyle.entries.firstOrNull { it.name == p[widgetStyleKey] } ?: WidgetStyle.APP,
+            opacity = (p[widgetOpacityKey] ?: 0.85f).coerceIn(0.2f, 1f),
+            sheen = p[widgetSheenKey] ?: true,
+            addButton = p[widgetAddKey] ?: true,
+        )
+    }
+    suspend fun setWidget(w: WidgetPrefs) = ctx.store.edit {
+        it[widgetStyleKey] = w.style.name
+        it[widgetOpacityKey] = w.opacity
+        it[widgetSheenKey] = w.sheen
+        it[widgetAddKey] = w.addButton
+    }
 
     /** Bottom-bar tabs, comma-separated Tab names; null = default set. */
     val tabs = ctx.store.data.map { it[tabsKey] }

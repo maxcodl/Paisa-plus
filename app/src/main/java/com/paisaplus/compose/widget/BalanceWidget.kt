@@ -122,7 +122,7 @@ class BalanceWidget : GlanceAppWidget() {
             Text(page.amount, style = TextStyle(color = fg, fontSize = 26.sp, fontWeight = FontWeight.Bold), maxLines = 1)
             if (page.detail != null) Text(page.detail, style = TextStyle(color = fg, fontSize = 12.sp), maxLines = 1)
             Spacer(GlanceModifier.defaultWeight())
-            Box(
+            if (LocalPalette.current.addButton) Box(
                 GlanceModifier.fillMaxWidth().height(44.dp).background(btn).cornerRadius(22.dp).clickable(actionStartActivity(add)),
                 contentAlignment = Alignment.Center,
             ) { Text(str(R.string.add_expense), style = TextStyle(color = onBtn, fontSize = 14.sp, fontWeight = FontWeight.Medium)) }

@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.paisaplus.compose.data.BalanceMode
+import com.paisaplus.compose.data.WidgetPrefs
 import com.paisaplus.compose.data.AccountEntity
 import com.paisaplus.compose.data.AccountRepository
 import com.paisaplus.compose.Tab
@@ -180,8 +181,8 @@ class AppViewModel @Inject constructor(
     val hideBalance = settings.hideBalance.stateIn(viewModelScope, SharingStarted.Eagerly, false)
     val excludeTransfers = settings.excludeTransfers.stateIn(viewModelScope, SharingStarted.Eagerly, true)
     fun setExcludeTransfers(v: Boolean) = viewModelScope.launch { settings.setExcludeTransfers(v) }
-    val widgetOpacity = settings.widgetOpacity.stateIn(viewModelScope, SharingStarted.Eagerly, 0.85f)
-    fun setWidgetOpacity(v: Float) = viewModelScope.launch { settings.setWidgetOpacity(v) }
+    val widget = settings.widget.stateIn(viewModelScope, SharingStarted.Eagerly, WidgetPrefs())
+    fun setWidget(w: WidgetPrefs) = viewModelScope.launch { settings.setWidget(w) }
     val monthStart = settings.monthStart.stateIn(viewModelScope, SharingStarted.Eagerly, 1)
     fun setMonthStart(day: Int) = viewModelScope.launch { settings.setMonthStart(day) }
     /** Category ids Home/Reports leave out of income/expense totals. */
@@ -233,7 +234,7 @@ class AppViewModel @Inject constructor(
         // Keep the home-screen widgets current: data, masking, currency, balance modes, month start, transfers, theme or opacity changed.
         @OptIn(kotlinx.coroutines.FlowPreview::class)
         viewModelScope.launch {
-            combine(data, hideBalance, money, balanceModes, combine(monthStart, excludeTransfers, theme, widgetOpacity) { a, b, c, e -> listOf(a, b, c, e) }) { d, h, m, b, s -> listOf(d.accounts, d.loans, d.expenses.size, h, m, b, s) }
+            combine(data, hideBalance, money, balanceModes, combine(monthStart, excludeTransfers, theme, widget) { a, b, c, e -> listOf(a, b, c, e) }) { d, h, m, b, s -> listOf(d.accounts, d.loans, d.expenses.size, h, m, b, s) }
                 .drop(1).debounce(800).collect { com.paisaplus.compose.widget.BalanceWidget.refresh(ctx) }
         }
     }
