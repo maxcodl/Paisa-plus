@@ -59,3 +59,9 @@ Added a one-time device-local Auto introduction after onboarding, including for 
 On the connected Xiaomi, confirmed the startup screen layout shows the 55.7 MB download and all choices without clipping. The screen was dismissed and a force-stop/relaunch returned to Home. Settings subpages now use compact fixed titles and mirrored 260 ms navigation slides; the hub retains its large collapsing title. Captured and inspected the Back transition. Two rapid toolbar Back taps returned to the hub, and the hub's Settings title, Backup & data row and Home-screen widgets row returned to exactly their previous UI bounds. No double-pop occurred.
 
 Synced the latest GitHub main widget/theme updates before the final 0.8.0 build; these changes remain intact.
+
+## Predictive Back correction — 0.8.1
+
+Reproduced the reported floating Profile rectangle on the physical Xiaomi (Android 16) using a slow system edge swipe. Navigation Compose 2.10.2 has independent predictive transition defaults: changing ordinary pop transitions in 0.8.0 did not replace its 70% scale-out. Explicit predictive enter/exit slides now keep page geometry unchanged across the app's NavHost.
+
+Installed the minified ARM64 0.8.1 release. Recorded the same completed edge swipe before and after: Profile now slides horizontally at full size and returns to Home. A short cancelled swipe restores Profile with its original layout and back-stack entry. Also recorded Backup & data → Settings: full-size slide, returning to the hub at its previous scroll position. 389 JVM tests pass without failures, errors or skips; minified release build and release lint pass.

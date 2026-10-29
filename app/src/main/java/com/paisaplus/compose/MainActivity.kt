@@ -375,6 +375,14 @@ private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () ->
                     slideOutOfContainer(androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.End, androidx.compose.animation.core.tween(260))
                 } else androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(220))
             },
+            // Predictive Back has separate defaults (including a 70% scale-out).
+            // Keep pages at their original size while the gesture seeks this slide.
+            predictivePopEnterTransition = { _ ->
+                slideIntoContainer(androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.End, androidx.compose.animation.core.tween(260), initialOffset = { it / 4 })
+            },
+            predictivePopExitTransition = { _ ->
+                slideOutOfContainer(androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.End, androidx.compose.animation.core.tween(260))
+            },
         ) {
             composable(Tab.HOME.route) { HomeScreen(vm, nav, pad) }
             composable(Tab.ACCOUNTS.route) { AccountsScreen(vm, pad, up(Tab.ACCOUNTS)) { nav.navigate("account/$it") } }

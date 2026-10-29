@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.1
+
+- Keep pages full size during system Back gestures instead of shrinking into a floating rectangle
+
 ## 0.8.0
 
 - One-time Auto setup with optional model Download, Import ZIP and Skip choices
