@@ -8,6 +8,7 @@
 - Help for "Allow restricted settings" when notification access is greyed out on sideloaded installs
 - Settings › SMS & AI: notification access, sources, scan past SMS (30–365 days, READ_SMS), on-device model
 - Settings › Notifications: permission and per-type channel settings
+- Add automatically (on by default): bank alerts post straight to the matching account (last digits), with payee, category from payee history, payment method and UPI app; duplicates from SMS + Gmail, manual or CSV entries are skipped; uncertain ones wait in Review; a notification for each
 
 ## 0.8.1
 

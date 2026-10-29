@@ -49,30 +49,59 @@ interface MessageInboxDao {
 }
 
 @Singleton
-/** [MessageInboxRepository.receive] result for a new review item. */
+/** [MessageInboxRepository.receive] results. */
 const val ADDED_TO_REVIEW = "Transaction added to review inbox"
+const val AUTO_ADDED = "Transaction added automatically"
+const val DUPLICATE = "Already in your transactions"
 
-class MessageInboxRepository @Inject constructor(private val db: PaisaDatabase, private val expenses: ExpenseRepository, private val settings: SettingsStore) {
+class MessageInboxRepository @Inject constructor(
+    @dagger.hilt.android.qualifiers.ApplicationContext private val ctx: android.content.Context,
+    private val db: PaisaDatabase, private val expenses: ExpenseRepository, private val settings: SettingsStore,
+) {
     fun pending() = db.messageInbox().pending()
 
-    suspend fun receive(body: String, source: String, receivedAt: Long): String {
+    /**
+     * Parses one alert. Every candidate is recorded once (by fingerprint); with Settings › SMS & AI › Add automatically
+     * on, a recognised account posts it straight away, a matching existing transaction marks it a duplicate, and
+     * anything uncertain stays in Review. [scan]: from the SMS history scan, where duplicates are judged per day.
+     */
+    suspend fun receive(body: String, source: String, receivedAt: Long, scan: Boolean = false): String {
         val result = BankMessageParser.parse(body)
         if (result is MessageParseResult.Ignored) return result.reason
         val p = (result as MessageParseResult.Candidate).transaction
-        return db.withTransaction {
+        val fingerprint = messageFingerprint(body, p, receivedAt)
+        val inserted = db.withTransaction {
             val id = db.messageInbox().insert(MessageInboxEntity(
-                messageFingerprint(body, p, receivedAt), source.take(100), body, receivedAt,
+                fingerprint, source.take(100), body, receivedAt,
                 p.amountPaise, p.type, p.accountSuffix, p.merchant, p.reference, p.isUpi, p.score,
             ))
             db.messageInbox().trim()
-            if (id == -1L) "Message already detected" else ADDED_TO_REVIEW
+            id != -1L
         }
+        if (!inserted) return "Message already detected"
+        if (!settings.messages.first().autoAdd || settings.money.first().currency != "INR") return ADDED_TO_REVIEW
+        val account = AutoAdd.account(db.accounts().list(), p.accountSuffix, body) ?: return ADDED_TO_REVIEW
+        val name = AutoAdd.payee(p.merchant, body) ?: return ADDED_TO_REVIEW
+        val category = AutoAdd.category(name, body, db.categories().list(), db.expenses().list()) ?: return ADDED_TO_REVIEW
+        // Live: the same payment from SMS and Gmail, or typed in by hand, lands within minutes. History: entries
+        // from CSV or by hand may carry only the date, so any same-day match counts.
+        val (from, to) = if (scan) {
+            val day = java.time.Instant.ofEpochMilli(receivedAt).atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+            day.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() to day.plusDays(1).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() - 1
+        } else receivedAt - 30 * 60_000L to receivedAt + 30 * 60_000L
+        if (db.expenses().hasSimilar(account.id, p.type, p.amountPaise / 100.0, from, to)) {
+            db.messageInbox().finish(fingerprint, "DUPLICATE")
+            return DUPLICATE
+        }
+        confirm(fingerprint, account.id, category.id, name, auto = true)
+        if (!scan) AutoAddNotice.show(ctx, name, p.amountPaise / 100.0, p.type, account.name)
+        return AUTO_ADDED
     }
 
     suspend fun dismiss(id: String) = db.messageInbox().finish(id, "DISMISSED")
 
     /** Status, expense and account balance are committed atomically; repeated taps cannot double-post. */
-    suspend fun confirm(id: String, accountId: Long, categoryId: Long, name: String) = db.withTransaction {
+    suspend fun confirm(id: String, accountId: Long, categoryId: Long, name: String, auto: Boolean = false) = db.withTransaction {
         val row = db.messageInbox().get(id) ?: return@withTransaction
         if (row.status != "PENDING") return@withTransaction
         require(settings.money.first().currency == "INR") { "INR alerts require INR as the app currency. Change it in Settings before importing." }
@@ -84,8 +113,9 @@ class MessageInboxRepository @Inject constructor(private val db: PaisaDatabase, 
         expenses.add(ExpenseEntity(
             name = name.trim(), amount = amount, time = row.receivedAt, type = row.type,
             accountId = accountId, categoryId = categoryId,
-            note = "Reviewed ${row.source} alert" + (row.reference?.let { "; Ref $it" } ?: ""),
-            method = if (row.isUpi) "UPI" else null,
+            note = (if (auto) "Auto-added from ${row.source}" else "Reviewed ${row.source} alert") + (row.reference?.let { "; Ref $it" } ?: ""),
+            method = AutoAdd.method(row.body, row.isUpi),
+            upiApp = if (AutoAdd.method(row.body, row.isUpi) == "UPI") AutoAdd.upiApp(row.body)?.name else null,
         ))
         db.messageInbox().finish(id, "IMPORTED")
     }

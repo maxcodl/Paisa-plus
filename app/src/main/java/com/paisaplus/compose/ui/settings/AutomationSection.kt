@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Message
 import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.AutoMode
 import androidx.compose.material.icons.rounded.Mail
 import androidx.compose.material.icons.rounded.NewReleases
 import androidx.compose.material.icons.rounded.Notifications
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.rounded.EventRepeat
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Sms
 import androidx.compose.material.icons.rounded.Wifi
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -54,6 +56,7 @@ import com.paisaplus.compose.ui.AppViewModel
 import com.paisaplus.compose.ui.components.LinkRow
 import com.paisaplus.compose.ui.components.ListGroup
 import com.paisaplus.compose.ui.components.ListHeader
+import com.paisaplus.compose.ui.components.PrefBlock
 import com.paisaplus.compose.ui.components.PrefRow
 import com.paisaplus.compose.ui.components.SwitchRow
 import com.paisaplus.compose.ui.components.TintCard
@@ -84,7 +87,7 @@ fun AutomationSection(app: AppViewModel, open: (String) -> Unit, inbox: MessageI
                     onClick = { ctx.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)) },
                 ) { androidx.compose.material3.Switch(access, null) }
             }
-            item { LinkRow(Icons.AutoMirrored.Rounded.Message, 2, str(R.string.review_inbox), str(R.string.message_review_count, pending.size)) { open(Routes.IMPORT_MESSAGES) } }
+            item { LinkRow(Icons.AutoMirrored.Rounded.Message, 2, str(R.string.review_inbox), str(R.string.x_waiting, pending.size)) { open(Routes.IMPORT_MESSAGES) } }
         }
         // Android 13+ greys out notification access for sideloaded apps until "Allow restricted settings" is on.
         if (!access && Build.VERSION.SDK_INT >= 33) {
@@ -100,6 +103,11 @@ fun AutomationSection(app: AppViewModel, open: (String) -> Unit, inbox: MessageI
             }
         }
 
+        ListHeader(str(R.string.when_a_payment_is_found))
+        ListGroup {
+            item { SwitchRow(Icons.Rounded.AutoMode, 4, str(R.string.add_automatically), str(R.string.add_automatically_summary), prefs.autoAdd) { app.setMessagePrefs(prefs.copy(autoAdd = it)) } }
+        }
+
         ListHeader(str(R.string.sources))
         ListGroup {
             item { SwitchRow(Icons.Rounded.Sms, 1, "SMS", str(R.string.source_sms_summary), prefs.sms) { app.setMessagePrefs(prefs.copy(sms = it)) } }
@@ -109,16 +117,16 @@ fun AutomationSection(app: AppViewModel, open: (String) -> Unit, inbox: MessageI
         ListHeader(str(R.string.past_messages))
         ListGroup {
             item {
-                PrefRow(
-                    Icons.Rounded.History, 5, str(R.string.scan_past_sms_x, days),
-                    inbox.feedback.takeIf { !inbox.busy } ?: str(if (inbox.busy) R.string.scanning else R.string.scan_past_sms_summary),
-                    enabled = !inbox.busy,
-                    onClick = { if (sms) inbox.scanSms(days) else askSms.launch(Manifest.permission.READ_SMS) },
-                )
-            }
-            item {
-                Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
-                    com.paisaplus.compose.ui.components.SegmentedTabs(scanDays, days, { str(R.string.x_days, it) }, { days = it })
+                PrefBlock(
+                    Icons.Rounded.History, 5, str(R.string.scan_past_sms),
+                    if (inbox.busy) str(R.string.scanning) else inbox.feedback ?: str(R.string.scan_past_sms_summary),
+                ) {
+                    com.paisaplus.compose.ui.components.SegmentedTabs(scanDays, days, { if (it == 365) str(R.string.one_year) else str(R.string.x_days_short, it) }, { days = it })
+                    Spacer(Modifier.height(12.dp))
+                    Button(
+                        { if (sms) inbox.scanSms(days) else askSms.launch(Manifest.permission.READ_SMS) },
+                        Modifier.fillMaxWidth(), enabled = !inbox.busy,
+                    ) { Text(str(R.string.scan_last_x_days, days)) }
                 }
             }
         }
@@ -139,6 +147,7 @@ private fun ensureChannels(ctx: android.content.Context) {
         NotificationChannel("recurring", str(R.string.recurring_transactions), NotificationManager.IMPORTANCE_HIGH),
         NotificationChannel("updates", str(R.string.app_updates), NotificationManager.IMPORTANCE_DEFAULT),
         NotificationChannel("downloads", str(R.string.downloads), NotificationManager.IMPORTANCE_LOW),
+        NotificationChannel(com.paisaplus.compose.messages.AutoAddNotice.CHANNEL, str(R.string.auto_added_transactions), NotificationManager.IMPORTANCE_DEFAULT),
     ))
 }
 
@@ -166,6 +175,7 @@ fun NotificationsSection() {
         }
         ListHeader(str(R.string.notification_types))
         ListGroup {
+            item { LinkRow(Icons.Rounded.AutoMode, 4, str(R.string.auto_added_transactions), str(R.string.auto_added_channel_summary)) { channel(com.paisaplus.compose.messages.AutoAddNotice.CHANNEL) } }
             item { LinkRow(Icons.Rounded.EventRepeat, 1, str(R.string.recurring_transactions), str(R.string.recurring_reminders_summary)) { channel("recurring") } }
             item { LinkRow(Icons.Rounded.NewReleases, 5, str(R.string.app_updates), str(R.string.app_updates_channel_summary)) { channel("updates") } }
             item { LinkRow(Icons.Rounded.Download, 3, str(R.string.downloads), str(R.string.downloads_channel_summary)) { channel("downloads") } }

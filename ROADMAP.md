@@ -34,10 +34,11 @@ Checklist of planned features, open checks and known gaps. Tick items as they sh
 - [x] Settings reorganised: hub (profile, Money & totals, Appearance ×3, Home & widgets, Security & data, About) with sub-pages; dropdowns for number format, language, lock after; colour-style carousel with live previews.
 - [x] Message import: Sources (SMS / Gmail), Wi-Fi-only model download, foreground download with progress notification, "Allow restricted settings" help for sideloaded installs.
 - [x] Settings › SMS & AI (access, sources, scan past SMS via READ_SMS, model) and Settings › Notifications (permission, channels).
+- [x] Auto-add from bank alerts: account by last digits, payee, category from payee history, method + UPI app; duplicate checks (±30 min live, same day for history scans). Model is MIT; not used for auto-add (misreads amounts/dates in testing).
+- [ ] AI model: only as a fallback for alerts the rule parser rejects, results to Review (never auto-add) — needs a model that reads amounts reliably.
 - [x] App updates (Settings › About › App updates): Off / Daily / Weekly / Monthly checks of GitHub releases (`v*` tags, beta optional), notification per new version, download + SHA-256 check + system installer.
 - [ ] Release signing: put the shared release keystore in `keystore.properties` (or RELEASE_* env) on every machine that builds releases; without it the build falls back to the debug key and updates will not install over other builds.
 - [ ] Make the GitHub repo public (or host releases elsewhere): update checks and model download get 404 while private.
-- [ ] Model licence: get the author's OK or a licence on rawsun00001/banking-sms-json-parser-v8 before re-hosting the converted pack.
 
 ## Verify on the phone
 

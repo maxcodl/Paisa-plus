@@ -87,7 +87,7 @@ enum class WidgetAccent { RED, WALLPAPER }
 data class WidgetPrefs(val style: WidgetStyle = WidgetStyle.APP, val opacity: Float = 0.85f, val sheen: Boolean = true, val addButton: Boolean = true, val accent: WidgetAccent = WidgetAccent.WALLPAPER)
 
 /** Message import: which notification sources to read; [wifiOnly] for the optional model download (~56 MB). */
-data class MessagePrefs(val sms: Boolean = true, val gmail: Boolean = true, val wifiOnly: Boolean = true)
+data class MessagePrefs(val sms: Boolean = true, val gmail: Boolean = true, val wifiOnly: Boolean = true, val autoAdd: Boolean = true)
 
 enum class UpdateFrequency(val days: Int) { OFF(0), DAILY(1), WEEKLY(7), MONTHLY(30) }
 
@@ -139,6 +139,7 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     private val msgSmsKey = booleanPreferencesKey("key_msg_sms")
     private val msgGmailKey = booleanPreferencesKey("key_msg_gmail")
     private val modelWifiKey = booleanPreferencesKey("key_model_wifi_only")
+    private val msgAutoKey = booleanPreferencesKey("key_msg_auto_add")
     private val updFreqKey = stringPreferencesKey("key_update_frequency")
     private val updBetaKey = booleanPreferencesKey("key_update_beta")
     private val updLastKey = longPreferencesKey("key_update_last_check")
@@ -171,8 +172,8 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     val balanceModes = ctx.store.data.map { BalanceMode.parse(it[balanceModesKey]) }
     suspend fun setBalanceModes(m: List<BalanceMode>) = ctx.store.edit { it[balanceModesKey] = BalanceMode.format(m) }
 
-    val messages = ctx.store.data.map { MessagePrefs(it[msgSmsKey] ?: true, it[msgGmailKey] ?: true, it[modelWifiKey] ?: true) }
-    suspend fun setMessages(m: MessagePrefs) = ctx.store.edit { it[msgSmsKey] = m.sms; it[msgGmailKey] = m.gmail; it[modelWifiKey] = m.wifiOnly }
+    val messages = ctx.store.data.map { MessagePrefs(it[msgSmsKey] ?: true, it[msgGmailKey] ?: true, it[modelWifiKey] ?: true, it[msgAutoKey] ?: true) }
+    suspend fun setMessages(m: MessagePrefs) = ctx.store.edit { it[msgSmsKey] = m.sms; it[msgGmailKey] = m.gmail; it[modelWifiKey] = m.wifiOnly; it[msgAutoKey] = m.autoAdd }
 
     val updates = ctx.store.data.map { p ->
         UpdatePrefs(

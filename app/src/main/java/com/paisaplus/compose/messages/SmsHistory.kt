@@ -5,11 +5,12 @@ import android.provider.Telephony
 
 /**
  * Reads the last [days] of the SMS inbox (READ_SMS) and sends every bank message through the same parser and
- * review inbox as live alerts. Already-seen messages are skipped by their fingerprint. Returns how many were added.
+ * review inbox as live alerts. Already-seen messages are skipped by their fingerprint.
+ * Returns (added automatically, sent to review, already in transactions).
  */
-suspend fun MessageInboxRepository.scanSmsHistory(ctx: Context, days: Int): Int {
+suspend fun MessageInboxRepository.scanSmsHistory(ctx: Context, days: Int): Triple<Int, Int, Int> {
     val since = System.currentTimeMillis() - days * 86_400_000L
-    var added = 0
+    var added = 0; var review = 0; var dupes = 0
     ctx.contentResolver.query(
         Telephony.Sms.Inbox.CONTENT_URI,
         arrayOf(Telephony.Sms.BODY, Telephony.Sms.DATE),
@@ -21,8 +22,12 @@ suspend fun MessageInboxRepository.scanSmsHistory(ctx: Context, days: Int): Int 
         while (c.moveToNext()) {
             val text = c.getString(body) ?: continue
             if (text.length > 16_384) continue
-            if (runCatching { receive(text, "SMS", c.getLong(date)) }.getOrNull() == ADDED_TO_REVIEW) added++
+            when (runCatching { receive(text, "SMS", c.getLong(date), scan = true) }.getOrNull()) {
+                AUTO_ADDED -> added++
+                ADDED_TO_REVIEW -> review++
+                DUPLICATE -> dupes++
+            }
         }
     }
-    return added
+    return Triple(added, review, dupes)
 }
