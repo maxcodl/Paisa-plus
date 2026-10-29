@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Optional "Scan past SMS" in Settings › SMS & AI (GitHub builds only; asked at runtime). -->
+    <uses-permission android:name="android.permission.READ_SMS" />
     <!-- Only optional model downloads use the network. Inference stays on device. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />

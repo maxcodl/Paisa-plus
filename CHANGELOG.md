@@ -6,6 +6,8 @@
 - Message import settings: SMS and Gmail source switches, Wi-Fi-only model download
 - Model download runs in the foreground with a progress notification
 - Help for "Allow restricted settings" when notification access is greyed out on sideloaded installs
+- Settings › SMS & AI: notification access, sources, scan past SMS (30–365 days, READ_SMS), on-device model
+- Settings › Notifications: permission and per-type channel settings
 
 ## 0.8.1
 

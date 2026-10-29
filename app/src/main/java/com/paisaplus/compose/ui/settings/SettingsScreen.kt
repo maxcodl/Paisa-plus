@@ -142,6 +142,8 @@ enum class SettingsPage(val icon: ImageVector, val hue: Int, val title: Int, val
     BACKGROUND(Icons.Rounded.Wallpaper, 2, R.string.background_glass, R.string.background_glass_summary),
     HOME(Icons.Rounded.Dashboard, 5, R.string.home_navigation, R.string.home_navigation_summary),
     WIDGETS(Icons.Rounded.Widgets, 3, R.string.widgets, R.string.widgets_summary),
+    AUTOMATION(Icons.Rounded.AutoAwesome, 2, R.string.sms_ai, R.string.sms_ai_summary),
+    NOTIFICATIONS(Icons.Rounded.Notifications, 6, R.string.notifications, R.string.notifications_summary),
     PRIVACY(Icons.Rounded.Lock, 0, R.string.privacy_security, R.string.privacy_security_summary),
     DATA(Icons.Rounded.Backup, 7, R.string.backup_data, R.string.backup_data_summary),
     UPDATES(Icons.Rounded.SystemUpdate, 5, R.string.app_updates, R.string.app_updates_summary),
@@ -202,6 +204,8 @@ fun SettingsScreen(vm: AppViewModel, onBack: () -> Unit, open: (String) -> Unit)
         item { ListGroup { page(SettingsPage.COLOURS); page(SettingsPage.LOOK); page(SettingsPage.BACKGROUND) } }
         item { ListHeader(str(R.string.home_and_widgets)) }
         item { ListGroup { page(SettingsPage.HOME); page(SettingsPage.WIDGETS) } }
+        item { ListHeader(str(R.string.automation_and_alerts)) }
+        item { ListGroup { page(SettingsPage.AUTOMATION); page(SettingsPage.NOTIFICATIONS) } }
         item { ListHeader(str(R.string.security_and_data)) }
         item { ListGroup { page(SettingsPage.PRIVACY); page(SettingsPage.DATA) } }
 
@@ -480,6 +484,8 @@ fun SettingsPageScreen(vm: AppViewModel, page: SettingsPage, onBack: () -> Unit,
             }
 
             SettingsPage.UPDATES -> item { UpdatesSection() }
+            SettingsPage.AUTOMATION -> item { AutomationSection(vm, open) }
+            SettingsPage.NOTIFICATIONS -> item { NotificationsSection() }
 
             SettingsPage.DATA -> {
                 item {
@@ -496,7 +502,6 @@ fun SettingsPageScreen(vm: AppViewModel, page: SettingsPage, onBack: () -> Unit,
                         }
                         if (backupDir != null) item { PrefRow(Icons.Rounded.Backup, 3, str(R.string.back_up_now), onClick = vm::backupNow) }
                         item { LinkRow(Icons.Rounded.Backup, 0, str(R.string.backup_restore), str(R.string.export_restore_daily_auto_backup)) { open(Routes.BACKUP) } }
-                        item { LinkRow(Icons.AutoMirrored.Rounded.Message, 2, str(R.string.message_import_title), str(R.string.message_import_summary)) { open(Routes.IMPORT_MESSAGES) } }
                         item { LinkRow(Icons.Rounded.UploadFile, 2, str(R.string.import_bank_statement), "CSV") { open(Routes.IMPORT_CSV) } }
                     }
 

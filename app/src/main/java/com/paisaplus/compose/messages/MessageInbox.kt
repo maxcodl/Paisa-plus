@@ -49,6 +49,9 @@ interface MessageInboxDao {
 }
 
 @Singleton
+/** [MessageInboxRepository.receive] result for a new review item. */
+const val ADDED_TO_REVIEW = "Transaction added to review inbox"
+
 class MessageInboxRepository @Inject constructor(private val db: PaisaDatabase, private val expenses: ExpenseRepository, private val settings: SettingsStore) {
     fun pending() = db.messageInbox().pending()
 
@@ -62,7 +65,7 @@ class MessageInboxRepository @Inject constructor(private val db: PaisaDatabase, 
                 p.amountPaise, p.type, p.accountSuffix, p.merchant, p.reference, p.isUpi, p.score,
             ))
             db.messageInbox().trim()
-            if (id == -1L) "Message already detected" else "Transaction added to review inbox"
+            if (id == -1L) "Message already detected" else ADDED_TO_REVIEW
         }
     }
 
