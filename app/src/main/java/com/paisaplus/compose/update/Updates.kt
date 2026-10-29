@@ -267,10 +267,10 @@ class UpdatesViewModel @Inject constructor(
     private val _prompt = MutableStateFlow<AppRelease?>(null)
     val prompt = _prompt.asStateFlow()
 
-    /** Opening check: skipped when updates are Off or a check ran in the last hour; silent on errors. */
+    /** Every app start checks (one small GitHub request) unless updates are Off; silent on errors. */
     fun checkOnOpen() = viewModelScope.launch {
         val p = settings.updates.first()
-        if (p.frequency == com.paisaplus.compose.data.UpdateFrequency.OFF || System.currentTimeMillis() - p.lastCheck < 3_600_000L) return@launch
+        if (p.frequency == com.paisaplus.compose.data.UpdateFrequency.OFF) return@launch
         val r = runCatching { UpdateChecker.check(ctx, p.beta) }.getOrNull()
         settings.setUpdates(settings.updates.first().copy(lastCheck = System.currentTimeMillis()))
         if (r != null) {

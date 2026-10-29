@@ -140,6 +140,8 @@
     <string name="whats_new">Novidades</string>
     <string name="install">Instalar</string>
     <string name="later">Depois</string>
+    <string name="sms_scan_result_v">%1$d lançamentos do extrato completados (hora, recebedor, app) · %2$d lançados · %3$d pra revisão · %4$d já feitos</string>
+    <string name="scan_all_messages">Varrer todas as mensagens</string>
     <string name="widget_style">Estilo do widget</string>
     <string name="widget_style_app">Cores do app</string>
     <string name="widget_style_nothing">Nothing</string>

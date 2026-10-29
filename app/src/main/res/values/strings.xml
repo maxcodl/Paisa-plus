@@ -99,7 +99,7 @@
     <string name="app_updates_channel_summary">When a new version is out</string>
     <string name="downloads_channel_summary">Model download progress</string>
     <string name="scan_past_sms">Scan past SMS</string>
-    <string name="one_year">1 year</string>
+    <string name="one_year">1 yr</string>
     <string name="x_days_short">%1$d d</string>
     <string name="scan_last_x_days">Scan last %1$d days</string>
     <string name="x_waiting">%1$d waiting</string>
@@ -141,6 +141,8 @@
     <string name="whats_new">What\'s new</string>
     <string name="install">Install</string>
     <string name="later">Later</string>
+    <string name="sms_scan_result_v">%1$d statement entries filled in (time, payee, app) · %2$d added · %3$d to review · %4$d already done</string>
+    <string name="scan_all_messages">Scan all messages</string>
     <string name="widget_style">Widget style</string>
     <string name="widget_style_app">App colours</string>
     <string name="widget_style_nothing">Nothing</string>

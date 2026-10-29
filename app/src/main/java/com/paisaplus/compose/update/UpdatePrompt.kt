@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -42,6 +43,20 @@ fun releaseNotes(body: String): String = body
         }.replace("**", "").replace("`", "")
     }.trim()
 
+/** Release notes laid out like a changelog: headings, then each bullet with a hanging indent and room between items. */
+@Composable
+fun ReleaseNotesText(notes: String, modifier: Modifier = Modifier) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        notes.lines().filter { it.isNotBlank() }.forEach { line ->
+            if (line.startsWith("• ")) androidx.compose.foundation.layout.Row {
+                Text("•", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
+                androidx.compose.foundation.layout.Spacer(Modifier.width(10.dp))
+                Text(line.removePrefix("• "), Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+            } else Text(line, style = MaterialTheme.typography.titleSmall)
+        }
+    }
+}
+
 /**
  * Checks once on opening (unless updates are Off) and, when a newer release exists that hasn't been offered yet,
  * shows its changelog with Install (downloads, verifies, then Android's installer) or Later (not offered again for
@@ -62,11 +77,7 @@ fun UpdatePrompt(vm: UpdatesViewModel = hiltViewModel()) {
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(str(R.string.whats_new), style = MaterialTheme.typography.titleSmall)
-                Text(
-                    releaseNotes(release.notes).ifBlank { release.name },
-                    Modifier.heightIn(max = 320.dp).verticalScroll(rememberScrollState()),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                ReleaseNotesText(releaseNotes(release.notes).ifBlank { release.name }, Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState()))
                 if (downloading != null) {
                     LinearWavyProgressIndicator({ downloading.progress }, Modifier.fillMaxWidth())
                     Text(str(R.string.downloading_x, (downloading.progress * 100).toInt()), style = MaterialTheme.typography.bodySmall)

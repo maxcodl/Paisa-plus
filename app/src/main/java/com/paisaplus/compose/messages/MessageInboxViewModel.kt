@@ -36,7 +36,7 @@ class MessageInboxViewModel @Inject constructor(
     }
     fun parse(text: String) = run { inbox.receive(text, "Pasted message", System.currentTimeMillis()) }
     /** Settings › SMS & AI › Scan past SMS (needs READ_SMS, asked by the screen). */
-    fun scanSms(days: Int) = run { inbox.scanSmsHistory(ctx, days).let { (a, r, d, s) -> com.paisaplus.compose.str(com.paisaplus.compose.R.string.sms_scan_result_xyzw, a, r, d, s) } }
+    fun scanSms(days: Int) = run { inbox.scanSmsHistory(ctx, days).let { c -> com.paisaplus.compose.str(com.paisaplus.compose.R.string.sms_scan_result_v, c[4], c[0], c[1], c[2] + c[3]) } }
     fun dismissAll() = run { com.paisaplus.compose.str(com.paisaplus.compose.R.string.dismissed_x, inbox.dismissAll()) }
     fun dismiss(id: String) = run { inbox.dismiss(id); "Message dismissed" }
     fun confirm(id: String, account: Long, category: Long, name: String) = run {

@@ -95,7 +95,8 @@ fun UpdatesSection(vm: UpdatesViewModel = hiltViewModel()) {
         if (release != null) {
             ListHeader(str(R.string.update_x_available, release.version))
             ListGroup {
-                item { PrefRow(Icons.Rounded.NewReleases, 6, release.name, com.paisaplus.compose.update.releaseNotes(release.notes).ifBlank { null }) }
+                item { PrefRow(Icons.Rounded.NewReleases, 6, release.name, str(R.string.whats_new)) }
+                item { com.paisaplus.compose.update.ReleaseNotesText(com.paisaplus.compose.update.releaseNotes(release.notes), Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) }
                 item {
                     Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         val s = state

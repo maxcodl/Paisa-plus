@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.3
+
+- Updates: the app checks for a new version every time it opens (it used to skip if it had checked within the hour), and the changelog shows as a tidy list in the update dialog and in App updates
+- Scan past SMS: 7-day and All ranges; a re-scan also fills in statement entries from alerts seen before
+- Statement names cut at 10 characters ("Cochin Caf") take the alert's fuller name
+- Very old alerts for accounts not in the app (before any of your records) no longer land in Review
+
 ## 0.9.2
 
 - Scans reconcile with your statements: alerts before an account's statement start are skipped (already in the opening balance); alerts matching a statement row give it the real time, a readable payee, payment method and UPI app without changing balances; only unmatched ones go to Review

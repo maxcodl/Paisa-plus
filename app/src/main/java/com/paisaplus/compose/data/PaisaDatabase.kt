@@ -50,6 +50,9 @@ interface ExpenseDao {
     @Query("SELECT MIN(time) FROM expenses WHERE accountId = :accountId AND (note IS NULL OR (note NOT LIKE 'Reviewed%' AND note NOT LIKE 'Auto-added%' AND note NOT LIKE 'Added from%'))")
     suspend fun firstOwnRecord(accountId: Long): Long?
 
+    @Query("SELECT MIN(time) FROM expenses WHERE note IS NULL OR (note NOT LIKE 'Reviewed%' AND note NOT LIKE 'Auto-added%' AND note NOT LIKE 'Added from%')")
+    suspend fun firstOwnRecordAnyAccount(): Long?
+
     /** Your own (imported or entered) transactions on [accountIds] with this direction and amount in [from]..[to]. */
     @Query("SELECT * FROM expenses WHERE accountId IN (:accountIds) AND type = :type AND abs(amount - :amount) < 0.005 AND time BETWEEN :from AND :to AND (note IS NULL OR (note NOT LIKE 'Reviewed%' AND note NOT LIKE 'Auto-added%' AND note NOT LIKE 'Added from%'))")
     suspend fun ownNear(accountIds: List<Long>, type: TransactionType, amount: Double, from: Long, to: Long): List<ExpenseEntity>

@@ -61,7 +61,8 @@ import com.paisaplus.compose.ui.components.PrefRow
 import com.paisaplus.compose.ui.components.SwitchRow
 import com.paisaplus.compose.ui.components.TintCard
 
-private val scanDays = listOf(30, 90, 180, 365)
+/** Scan ranges in days; 0 = every message on the phone. */
+private val scanDays = listOf(7, 30, 90, 365, 0)
 
 /** Settings › SMS & AI: notification access, sources, past-SMS scan, the optional on-device model, and the review inbox. */
 @Composable
@@ -121,12 +122,12 @@ fun AutomationSection(app: AppViewModel, open: (String) -> Unit, inbox: MessageI
                     Icons.Rounded.History, 5, str(R.string.scan_past_sms),
                     if (inbox.busy) str(R.string.scanning) else inbox.feedback ?: str(R.string.scan_past_sms_summary),
                 ) {
-                    com.paisaplus.compose.ui.components.SegmentedTabs(scanDays, days, { if (it == 365) str(R.string.one_year) else str(R.string.x_days_short, it) }, { days = it })
+                    com.paisaplus.compose.ui.components.SegmentedTabs(scanDays, days, { when (it) { 0 -> str(R.string.all); 365 -> str(R.string.one_year); else -> str(R.string.x_days_short, it) } }, { days = it })
                     Spacer(Modifier.height(12.dp))
                     Button(
                         { if (sms) inbox.scanSms(days) else askSms.launch(Manifest.permission.READ_SMS) },
                         Modifier.fillMaxWidth(), enabled = !inbox.busy,
-                    ) { Text(str(R.string.scan_last_x_days, days)) }
+                    ) { Text(if (days == 0) str(R.string.scan_all_messages) else str(R.string.scan_last_x_days, days)) }
                 }
             }
         }

@@ -93,7 +93,12 @@ class MessageInboxRepository @Inject constructor(
             db.messageInbox().trim()
             id != -1L
         }
-        if (!inserted) return "Message already detected"
+        if (!inserted) {
+            // Seen before (an earlier scan or alert): it can still fill in its statement row, which older versions didn't do.
+            val seen = db.messageInbox().get(fingerprint)
+            if (scan && seen != null && seen.status in setOf("DUPLICATE", "COVERED", "DISMISSED") && merge(seen.copy(body = body))) return MERGED
+            return "Message already detected"
+        }
         return settle(fingerprint, scan, notify = !scan)
     }
 
@@ -121,6 +126,20 @@ class MessageInboxRepository @Inject constructor(
         return dupes.size
     }
 
+    /** Matches an older alert to its statement row and fills that row in; false if there's none to fill. */
+    private suspend fun merge(row: MessageInboxEntity): Boolean {
+        if (System.currentTimeMillis() - row.receivedAt < FRESH_MS) return false
+        val accounts = db.accounts().list()
+        val account = AutoAdd.account(accounts, row.accountSuffix, row.body) ?: return false
+        val e = statementRow(row, account, accounts) ?: return false
+        val hint = hintFor(row)
+        val parsed = (BankMessageParser.parse(row.body) as? MessageParseResult.Candidate)?.transaction
+        val name = AutoAdd.complete(AutoAdd.payee(hint?.merchant, "") ?: AutoAdd.payee(parsed?.merchant ?: row.merchant, row.body), db.expenses().payeeNames())
+        enrich(e, row, name, hint)
+        db.messageInbox().finish(row.fingerprint, "MERGED")
+        return true
+    }
+
     private suspend fun settle(fingerprint: String, scan: Boolean, notify: Boolean): String {
         val row = db.messageInbox().get(fingerprint)?.takeIf { it.status == "PENDING" } ?: return DUPLICATE
         val accounts = db.accounts().list()
@@ -130,6 +149,11 @@ class MessageInboxRepository @Inject constructor(
         val known = db.expenses().payeeNames()
         val name = AutoAdd.complete(AutoAdd.payee(hint?.merchant, "") ?: AutoAdd.payee(parsed?.merchant ?: row.merchant, row.body), known)
         val old = System.currentTimeMillis() - row.receivedAt >= FRESH_MS
+        // Account unknown (no digits, or an account not in the app): older than all your records means nothing to add.
+        if (old && account == null && db.expenses().firstOwnRecordAnyAccount()?.let { row.receivedAt < it } == true) {
+            db.messageInbox().finish(fingerprint, "COVERED")
+            return COVERED
+        }
         if (old && account != null) {
             // Before the account's first statement or entry: already counted in its opening balance.
             val start = db.expenses().firstOwnRecord(account.id)
@@ -179,7 +203,8 @@ class MessageInboxRepository @Inject constructor(
         val app = e.upiApp ?: hint?.let { appOf(it.source) } ?: if (method == "UPI") AutoAdd.upiApp(row.body)?.name else null
         expenses.update(e.copy(
             time = row.receivedAt,
-            name = if (name != null && AutoAdd.crypticName(e.name)) name else e.name,
+            // Statements say "UPI q6922…" or cut names at 10 characters ("Cochin Caf"): the alert's fuller name wins.
+            name = if (name != null && (AutoAdd.crypticName(e.name) || (name.length > e.name.length && name.startsWith(e.name, ignoreCase = true)))) name else e.name,
             method = method,
             upiApp = if (method == "UPI") app else e.upiApp,
         ))
