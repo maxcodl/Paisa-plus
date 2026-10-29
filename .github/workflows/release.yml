@@ -1,32 +1,90 @@
-name: Manual release build
+name: Release
 
+# A push to main that changes versionName (app/build.gradle.kts) builds, tags v<versionName> and publishes a GitHub
+# release with that version's CHANGELOG.md section, the signed APKs and the pinned optional AI model pack.
+# Run it by hand to retry, to force a prerelease, or with artifacts_only to build without publishing.
 on:
+  push:
+    branches: [main]
+    paths: ['app/build.gradle.kts', 'CHANGELOG.md']
   workflow_dispatch:
     inputs:
-      release_tag:
-        description: 'Optional new release tag (for example v0.9.0); leave empty for artifacts only'
-        required: false
-        type: string
       prerelease:
-        description: Mark the optional GitHub release as a prerelease
+        description: Mark the release as a prerelease (versions with a dash, like 0.9.0-beta1, always are)
         type: boolean
-        default: true
+        default: false
+      artifacts_only:
+        description: Build and upload workflow artifacts only; no tag or release
+        type: boolean
+        default: false
 
 permissions:
   contents: write
 
 concurrency:
-  group: manual-release-${{ github.ref }}
+  group: release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  build:
+  version:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      tag: ${{ steps.v.outputs.tag }}
+      publish: ${{ steps.v.outputs.publish }}
+      skip: ${{ steps.v.outputs.skip }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
+
+      - name: Read versionName and check its tag
+        id: v
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACTS_ONLY: ${{ inputs.artifacts_only }}
+        run: |
+          version=$(sed -nE 's/^[[:space:]]*versionName[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' app/build.gradle.kts | head -n1)
+          if [[ -z "$version" ]]; then echo 'versionName not found in app/build.gradle.kts' >&2; exit 1; fi
+          tag="v$version"
+          git check-ref-format "refs/tags/$tag"
+          exists=false
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" > /dev/null 2>&1; then exists=true; fi
+          publish=true; skip=false
+          if [[ "$exists" == true || "$ARTIFACTS_ONLY" == true ]]; then publish=false; fi
+          # A push that doesn't bump the version (e.g. a CHANGELOG edit) has nothing to release.
+          if [[ "$exists" == true && "$GITHUB_EVENT_NAME" == push ]]; then skip=true; fi
+          if [[ "$exists" == true && "$GITHUB_EVENT_NAME" == workflow_dispatch && "$ARTIFACTS_ONLY" != true ]]; then
+            echo "::warning::$tag already exists; building artifacts only. Bump versionName to release."
+          fi
+          { echo "version=$version"; echo "tag=$tag"; echo "publish=$publish"; echo "skip=$skip"; } >> "$GITHUB_OUTPUT"
+          echo "version=$version tag=$tag exists=$exists publish=$publish skip=$skip"
+
+  build:
+    needs: version
+    if: needs.version.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      TAG: ${{ needs.version.outputs.tag }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      # Fail before the long build if the release would have no proper notes.
+      - name: Release notes from CHANGELOG.md
+        if: needs.version.outputs.publish == 'true'
+        run: |
+          awk -v v="$VERSION" '
+            /^## / { if (found) exit; if ($2 == v) { found = 1; next } }
+            found { print }
+          ' CHANGELOG.md > "$RUNNER_TEMP/changes.md"
+          if ! grep -q '[^[:space:]]' "$RUNNER_TEMP/changes.md"; then
+            echo "CHANGELOG.md has no entries under '## $VERSION'. Rename '## Unreleased' to '## $VERSION' (or add the section) and push again." >&2
+            exit 1
+          fi
 
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
         with:
@@ -41,18 +99,6 @@ jobs:
 
       - name: Install Android SDK packages
         run: sdkmanager 'platforms;android-37.0' 'build-tools;36.0.0'
-
-      - name: Check optional release tag
-        if: inputs.release_tag != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ inputs.release_tag }}
-        run: |
-          git check-ref-format "refs/tags/$RELEASE_TAG"
-          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" > /dev/null 2>&1; then
-            echo 'This tag already exists. Choose a new tag to avoid replacing an existing release.' >&2
-            exit 1
-          fi
 
       - name: Restore signing key
         env:
@@ -83,32 +129,62 @@ jobs:
       - name: Collect release files and checksums
         run: |
           mkdir -p release-artifacts
-          cp app/build/outputs/apk/release/*.apk release-artifacts/
-          cp build/app-bundle/outputs/bundle/release/*.aab release-artifacts/
+          for apk in app/build/outputs/apk/release/*.apk; do
+            # app-arm64-v8a-release.apk -> paisa-plus-0.9.0-arm64-v8a.apk (the in-app updater picks by ABI name)
+            abi=$(basename "$apk" | sed -E 's/^app-(.*)-release\.apk$/\1/')
+            cp "$apk" "release-artifacts/paisa-plus-$VERSION-$abi.apk"
+          done
+          cp build/app-bundle/outputs/bundle/release/*.aab "release-artifacts/paisa-plus-$VERSION.aab"
           cp app/build/outputs/mapping/release/mapping.txt release-artifacts/mapping-apk.txt
           cp build/app-bundle/outputs/mapping/release/mapping.txt release-artifacts/mapping-aab.txt
-          cd release-artifacts
-          sha256sum *.apk *.aab > SHA256SUMS.txt
 
-      - name: Upload release artifacts
+      # The app only installs the exact pack pinned in its catalogue, so the release carries that same file,
+      # re-verified here, rather than a fresh export (whose archive bytes and hash could differ).
+      - name: Add the pinned optional AI model pack
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          catalog=app/src/main/assets/model-catalog.json
+          url=$(jq -r '.models[0].url' "$catalog")
+          sha=$(jq -r '.models[0].sha256' "$catalog")
+          file=$(basename "$url")
+          model_tag=$(basename "$(dirname "$url")")
+          gh release download "$model_tag" --repo "$GITHUB_REPOSITORY" --pattern "$file" --dir release-artifacts
+          echo "$sha  release-artifacts/$file" | sha256sum --check
+          cp "$catalog" release-artifacts/model-catalog.json
+          cd release-artifacts
+          sha256sum *.apk *.aab "$file" > SHA256SUMS.txt
+
+      - name: Upload workflow artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: paisa-release-${{ github.run_number }}
+          name: paisa-plus-${{ needs.version.outputs.version }}-run-${{ github.run_number }}
           path: release-artifacts/
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish optional GitHub release
-        if: inputs.release_tag != ''
+      - name: Tag and publish the GitHub release
+        if: needs.version.outputs.publish == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ inputs.release_tag }}
           PRERELEASE: ${{ inputs.prerelease }}
         run: |
+          catalog=app/src/main/assets/model-catalog.json
+          model=$(jq -r '.models[0] | "\(.name) — `\(.url | split("/") | last)`, \((.downloadBytes / 1000000 * 10 | round) / 10) MB, from [\(.sourceModel)](https://huggingface.co/\(.sourceModel)) (MIT)"' "$catalog")
+          {
+            cat "$RUNNER_TEMP/changes.md"
+            echo
+            echo '## Download'
+            echo
+            echo '- **App:** pick the APK for your phone: `arm64-v8a` for almost all phones, `armeabi-v7a` for older 32-bit ones, `x86_64` for emulators. Installed copies update themselves from Settings › About › App updates.'
+            echo "- **Optional AI model:** $model. Experimental and not needed for automatic import; the app downloads it from Settings › SMS & AI and checks its SHA-256."
+            echo '- `SHA256SUMS.txt` lists checksums for every file.'
+          } > "$RUNNER_TEMP/notes.md"
           flags=()
-          if [[ "$PRERELEASE" == 'true' ]]; then flags+=(--prerelease); fi
-          gh release create "$RELEASE_TAG" release-artifacts/*.apk release-artifacts/*.aab release-artifacts/SHA256SUMS.txt \
-            --target "$GITHUB_SHA" --title "$RELEASE_TAG" --generate-notes "${flags[@]}"
+          if [[ "$PRERELEASE" == true || "$VERSION" == *-* ]]; then flags+=(--prerelease); fi
+          gh release create "$TAG" release-artifacts/*.apk release-artifacts/*.aab release-artifacts/*.zip \
+            release-artifacts/model-catalog.json release-artifacts/SHA256SUMS.txt \
+            --target "$GITHUB_SHA" --title "Paisa+ $VERSION" --notes-file "$RUNNER_TEMP/notes.md" --generate-notes "${flags[@]}"
 
       - name: Remove signing key
         if: always()

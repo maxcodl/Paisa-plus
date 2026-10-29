@@ -103,7 +103,10 @@ object UpdateChecker {
             }
             .maxWithOrNull { a, b -> if (newer(a.str("tag_name"), b.str("tag_name"))) 1 else if (newer(b.str("tag_name"), a.str("tag_name"))) -1 else 0 }
             ?.let { r ->
-                val apk = r["assets"]?.jsonArray?.map { it.jsonObject }?.firstOrNull { it.str("name").endsWith(".apk") } ?: return@let null
+                // Releases ship one APK per ABI (paisa-plus-0.9.0-arm64-v8a.apk ...): take this phone's, else a universal one.
+                val apks = r["assets"]?.jsonArray?.map { it.jsonObject }?.filter { it.str("name").endsWith(".apk") }.orEmpty()
+                val apk = Build.SUPPORTED_ABIS.firstNotNullOfOrNull { abi -> apks.firstOrNull { abi in it.str("name") } }
+                    ?: apks.firstOrNull { "universal" in it.str("name") } ?: apks.singleOrNull() ?: return@let null
                 AppRelease(
                     version = r.str("tag_name").removePrefix("v"),
                     name = r.str("name").ifBlank { r.str("tag_name") },

@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.9.0
 
 - In-app updates: check GitHub releases daily, weekly or monthly (beta optional), notify once per version, download with SHA-256 check and install through the system installer
 - Message import settings: SMS and Gmail source switches, Wi-Fi-only model download
@@ -10,6 +10,8 @@
 - Settings › Notifications: permission and per-type channel settings
 - Add automatically (on by default): bank alerts post straight to the matching account (last digits), with payee, category from payee history, payment method and UPI app; duplicates from SMS + Gmail, manual or CSV entries are skipped; uncertain ones wait in Review; a notification for each
 - Bank parser tuned on real ICICI / Federal / SBI Card alerts: card bill payments, "Acc", amounts glued to "credited", own-account transfers, reversal refunds, completed mandate debits, "card number ending with"; alerts with links now go to Review instead of being dropped
+- In-app updates pick the APK for the phone's CPU (arm64-v8a, armeabi-v7a, x86_64)
+- Releases are created automatically when the version changes, with notes from this changelog and the optional AI model pack attached
 
 ## 0.8.1
 
