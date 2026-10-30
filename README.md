@@ -13,6 +13,8 @@ A native Android rewrite of [Paisa](https://github.com/h4h13/paisa), the open-so
 
 paisa+ is based on [Paisa](https://github.com/h4h13/paisa) by Hemanth S. The original app was written in Flutter. paisa+ ports its features and data model to native Compose and stays compatible with Paisa's JSON backups, so you can move your data across. All credit for the original idea, design, and app goes to the Paisa project.
 
+Special thanks to Misfit ([@SriKousik](https://github.com/SriKousik)) for the notification AI.
+
 ## Features
 
 - Accounts (bank, cash and credit cards), transactions, categories with budgets
