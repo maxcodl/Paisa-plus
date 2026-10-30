@@ -14,7 +14,9 @@ enum class TransactionType { EXPENSE, INCOME }
 enum class PaymentMethod { UPI, TAP, SWIPE, INSERT }
 
 /** Which app made a [PaymentMethod.UPI] payment (stored by name; null = not set). */
-enum class UpiApp(val label: String) { GPAY("Google Pay"), SUPERMONEY("super.money"), PHONEPE("PhonePe"), PAYTM("Paytm"), BHIM("BHIM"), CRED("CRED"), OTHER("") }
+enum class UpiApp(val label: String) { GPAY("Google Pay"), SUPERMONEY("super.money"), PHONEPE("PhonePe"), PAYTM("Paytm"), BHIM("BHIM"), CRED("CRED"),
+    MOBIKWIK("MobiKwik"), FREECHARGE("Freecharge"), NAVI("Navi"),
+    NUBANK("Nubank"), MERCADOPAGO("Mercado Pago"), PICPAY("PicPay"), PAGBANK("PagBank"), INTER("Inter"), OTHER("") }
 enum class CardType { CASH, BANK, WALLET, CREDIT }
 enum class DebtType { DEBT, CREDIT }
 enum class LoanKind { LOAN, EMI }

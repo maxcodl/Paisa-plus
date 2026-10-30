@@ -34,7 +34,7 @@ Rules:
 - name: short merchant/description
 - amount: positive number, no currency symbol, no thousands separators
 - type: income (credit / money in / card payment received) or expense (debit / money out / card spend)
-- category: one of Food, Groceries, Transport, Shopping, Bills, Rent, Health, Entertainment, Travel, Salary, Transfer, EMI, Loan, Other
+- category: one of Food, Groceries, Transport, Shopping, Bills, Rent, Health, Entertainment, Travel, Salary, Transfer, EMI, Loan, Mobile Recharge, Other
 - account: account or card name; one name per account/card, same on every row of it.
   For cards include the last 4 digits, e.g. "HDFC Millennia 1234".
 - bank: bank name
@@ -54,7 +54,8 @@ Rules:
 - payment_method: upi, tap (contactless / tap to pay), swipe or insert (chip)
   when the statement shows how a card or account payment was made; else empty
 - upi_app: for upi rows, the app if the statement names it: gpay, supermoney,
-  phonepe, paytm, bhim, cred or other; else empty
+  phonepe, paytm, bhim, cred, mobikwik, freecharge, navi, nubank, mercadopago,
+  picpay, pagbank, inter or other; else empty
 - A purchase converted to EMI: skip the original purchase and its reversal
   ("EMI conversion" credit); output only the monthly installment rows.
 - Credit card bill payments: on the card, type income, category Transfer;
@@ -114,7 +115,9 @@ private val upiApps = mapOf(
     "gpay" to UpiApp.GPAY, "google pay" to UpiApp.GPAY, "googlepay" to UpiApp.GPAY, "tez" to UpiApp.GPAY,
     "supermoney" to UpiApp.SUPERMONEY, "super.money" to UpiApp.SUPERMONEY, "super money" to UpiApp.SUPERMONEY,
     "phonepe" to UpiApp.PHONEPE, "phone pe" to UpiApp.PHONEPE, "paytm" to UpiApp.PAYTM, "bhim" to UpiApp.BHIM,
-    "cred" to UpiApp.CRED, "other" to UpiApp.OTHER,
+    "cred" to UpiApp.CRED, "mobikwik" to UpiApp.MOBIKWIK, "freecharge" to UpiApp.FREECHARGE, "navi" to UpiApp.NAVI,
+    "nubank" to UpiApp.NUBANK, "mercado pago" to UpiApp.MERCADOPAGO, "mercadopago" to UpiApp.MERCADOPAGO, "picpay" to UpiApp.PICPAY,
+    "pagbank" to UpiApp.PAGBANK, "inter" to UpiApp.INTER, "other" to UpiApp.OTHER,
 )
 
 private val accountTypes = mapOf(

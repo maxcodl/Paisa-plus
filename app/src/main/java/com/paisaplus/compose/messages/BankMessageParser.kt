@@ -15,6 +15,8 @@ data class ParsedBankMessage(
     val score: Double,
     /** The alert carries a link: kept for Review, never added automatically (phishing texts imitate bank alerts). */
     val hasLink: Boolean = false,
+    /** Last digits of the account a debit alert says was credited ("Acct XXX626 credited"): your own, if you have it saved. */
+    val counterSuffix: String? = null,
 )
 
 sealed interface MessageParseResult {
@@ -43,7 +45,7 @@ object BankMessageParser {
     /** A credit card bill payment reaching the card: "Payment of INR 34,000 has been received on your Credit Card". */
     private val cardPayment = rx("""\bpayment\b.*\bcredit card\b.*\b(?:received|credited|processed)\b|\b(?:received|credited)\b.*\bpayment\b.*\bcredit card\b|\breceived payment\b.*\bcredit card\b|\bpayment\b.*\b(?:received|credited)\b.*\bcredit card\b""")
     /** Second leg of a transfer: "Acct XXX002 debited ... Acct XXX626 credited." The alert is the debit. */
-    private val secondLeg = rx("""[.;]\s*(?:a/c|acct|account|acc)\s*[xX*•]*\d{3,}\s+credited""")
+    private val secondLeg = rx("""[.;]\s*(?:a/c|acct|account|acc)\s*[xX*•]*(\d{3,})\s+credited""")
     private val balance = rx("""\b(?:avl|avail(?:able)?|bal(?:ance)?|limit|outstanding|reward|cashback)\b""")
 
     fun parse(body: String): MessageParseResult {
@@ -57,6 +59,13 @@ object BankMessageParser {
         // Many real alerts add a dispute or offer link; links can't authenticate a bank, so such alerts only go to Review.
         val hasLink = links.containsMatchIn(text)
         if (foreignCurrency.containsMatchIn(text)) return ignored("Only INR transaction alerts are supported")
+        // Amazon Pay Later (Axio): an expense with only an amount. Its link keeps it in Review.
+        AutoAdd.payLater.find(text)?.let { m ->
+            val s = m.groupValues[1]
+            if (!validMoney.matches(s)) return ignored("Invalid amount formatting")
+            val paise = runCatching { BigDecimal(s.replace(",", "")).movePointRight(2).longValueExact() }.getOrNull()?.takeIf { it > 0 } ?: return ignored("Invalid amount")
+            return MessageParseResult.Candidate(ParsedBankMessage(paise, TransactionType.EXPENSE, null, null, null, false, 1.0, hasLink))
+        }
         val beneficiary = beneficiaryCredit.findAll(text).firstOrNull { match ->
             val name = match.groupValues.drop(1).first { it.isNotBlank() }
             !ownedAccountWords.containsMatchIn(name) && !amount.containsMatchIn(name)
@@ -100,6 +109,7 @@ object BankMessageParser {
         return MessageParseResult.Candidate(ParsedBankMessage(
             money, if (cardPaid || isCredit(firstAction.value)) TransactionType.INCOME else TransactionType.EXPENSE,
             suffix, merchant, ref, rx("\\bUPI\\b").containsMatchIn(text), score, hasLink,
+            leg?.groupValues?.get(1)?.takeLast(4),
         ))
     }
 }

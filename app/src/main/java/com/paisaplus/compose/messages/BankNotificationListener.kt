@@ -24,6 +24,8 @@ class BankNotificationListener : NotificationListenerService() {
     override fun onListenerConnected() {
         super.onListenerConnected()
         scope.launch { settings.messages.collect { prefs = it } }
+        // Notices already in the shade when access (re)connects: after an update, a reboot or switching access on. Replays dedupe.
+        runCatching { activeNotifications?.forEach(::onNotificationPosted) }
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
@@ -32,24 +34,47 @@ class BankNotificationListener : NotificationListenerService() {
         AutoAdd.appPackages[sbn.packageName]?.let { app ->
             val ex = sbn.notification.extras
             val text = listOfNotNull(ex.getCharSequence(Notification.EXTRA_TITLE), ex.getCharSequence(Notification.EXTRA_BIG_TEXT) ?: ex.getCharSequence(Notification.EXTRA_TEXT)).joinToString(" ")
-            if (text.isNotBlank() && text.length < 2000) scope.launch { runCatching { inbox.receiveHint(text, app, sbn.postTime) } }
+            if (text.isNotBlank() && text.length < 2000) scope.launch {
+                runCatching { inbox.receiveHint(text, app, sbn.postTime) }
+                // No bank alert by then: the notice goes to Review as a payment to confirm (also re-checked whenever Review opens).
+                kotlinx.coroutines.delay(11 * 60_000L)
+                runCatching { inbox.promoteHints() }
+            }
+            return
+        }
+        if (sbn.packageName in AutoAdd.storePackages) {
+            val ex = sbn.notification.extras
+            val text = listOfNotNull(ex.getCharSequence(Notification.EXTRA_TITLE), ex.getCharSequence(Notification.EXTRA_BIG_TEXT) ?: ex.getCharSequence(Notification.EXTRA_TEXT)).joinToString(" ")
+            if (text.isNotBlank() && text.length < 2000) scope.launch {
+                runCatching { inbox.receiveStoreNotice(text, "Amazon", sbn.postTime) }
+                kotlinx.coroutines.delay(11 * 60_000L)
+                runCatching { inbox.promoteHints() }
+            }
             return
         }
         val source = when (sbn.packageName) {
             "com.google.android.gm" -> if (prefs.gmail) "Gmail" else return
             smsPackage -> if (prefs.sms) "SMS" else return
+            // Banking apps picked in Settings: same alerts as their SMS (card bills and own-account transfers show up here too); dedup by reference.
+            in prefs.apps -> "Bank app"
             else -> return
         }
         val notification = sbn.notification
         if (notification.flags and Notification.FLAG_GROUP_SUMMARY != 0) return
         val extras = notification.extras
-        // Prefer expanded text. Do not concatenate inbox/group lines: they may be separate payments.
-        val body = (extras.getCharSequence(Notification.EXTRA_BIG_TEXT)
-            ?: extras.getCharSequence(Notification.EXTRA_TEXT))?.toString() ?: return
-        if (body.length > 16_384) return
+        // A messaging thread bundles unread texts into one notification (big text = all of them); take them one by one.
+        // Replays are harmless: receive() dedups by reference/fingerprint.
+        val messages = extras.getParcelableArray(Notification.EXTRA_MESSAGES)?.mapNotNull { m ->
+            (m as? android.os.Bundle)?.getCharSequence("text")?.toString()?.takeIf { it.isNotBlank() }?.let { it to ((m.getLong("time")).takeIf { t -> t > 0 } ?: sbn.postTime) }
+        }.orEmpty().ifEmpty {
+            // Prefer expanded text. Do not concatenate inbox/group lines: they may be separate payments.
+            val body = (extras.getCharSequence(Notification.EXTRA_BIG_TEXT)
+                ?: extras.getCharSequence(Notification.EXTRA_TEXT))?.toString() ?: return
+            listOf(body to sbn.postTime)
+        }
         scope.launch {
             // Notification callbacks must not crash the service on malformed input or storage errors.
-            runCatching { inbox.receive(body, source, sbn.postTime) }
+            messages.forEach { (body, at) -> if (body.length <= 16_384) runCatching { inbox.receive(body, source, at) } }
         }
     }
 

@@ -74,6 +74,10 @@
     <string name="restricted_settings_steps">Android blocks it for apps installed outside the Play Store. Open App info, tap ⋮ (top right), choose Allow restricted settings, then come back and enable access.</string>
     <string name="open_app_info">Open App info</string>
     <string name="sources">Sources</string>
+    <string name="also_appears_as_x">Bank alerts call them: %1$s</string>
+    <string name="banking_apps">Banking apps</string>
+    <string name="banking_apps_summary">Read alerts from these apps\' notifications</string>
+    <string name="banking_apps_x">%1$d selected</string>
     <string name="source_sms_summary">Alerts from your default SMS app</string>
     <string name="source_gmail_summary">Bank emails shown by Gmail</string>
     <string name="wifi_only_download">Download model on Wi-Fi only</string>

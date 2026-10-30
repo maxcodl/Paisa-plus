@@ -42,8 +42,15 @@ class ExpenseRepository @Inject constructor(private val db: PaisaDatabase) {
     }
 
     /** Renames every transaction of payee [from] to [to]; onto an existing name this merges the two. */
-    suspend fun renamePayee(from: String, to: String) =
+    suspend fun renamePayee(from: String, to: String) = db.withTransaction {
         dao.rename(payeeTransactions(dao.list(), from).map { it.id }, to)
+        // Alerts that name them the old way keep landing on the new name; earlier aliases follow.
+        db.payeeAlias().repoint(from, to)
+        val key = com.paisaplus.compose.messages.AutoAdd.aliasKey(from)
+        if (key.length >= 4 && key != com.paisaplus.compose.messages.AutoAdd.aliasKey(to)) db.payeeAlias().put(com.paisaplus.compose.messages.PayeeAliasEntity(key, from.trim(), to))
+    }
+
+    fun aliases() = db.payeeAlias().all()
 
     fun recentlyDeleted() = db.deleted().all()
 

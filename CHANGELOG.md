@@ -1,4 +1,16 @@
 # Changelog
+## 0.9.9
+
+- Fixed bank texts being missed when several arrived from one sender in a single notification: each message is now read on its own
+- Fixed past-SMS scan marking new payments as duplicates of a different same-amount entry; saved entries are matched by account, amount, date and payee name
+- Banking apps: pick which installed apps' notifications are read as bank alerts (Settings > Sources); iMobile, FedMobile, SBI Card and Axis Mobile are on by default
+- Own-account transfers and credit card bill payments are added as Transfers, with no UPI app tag
+- People: names bank alerts use for someone are remembered (from Review, rename and merge), shown on their page and used to match saved entries; included in backups
+- UPI app notices (Google Pay, PhonePe, Paytm, super money, MobiKwik, Freecharge, Navi) with no matching bank alert go to Review after about 10 minutes; Amazon "payment successful" notices work the same way
+- Amazon Pay Later (Axio) alerts are read into Review; new Mobile Recharge category
+- Pix notices and apps for Brazil (Nubank, Mercado Pago, PicPay, PagBank, Inter) are recognised as hints only; their package names are unverified
+- Backups keep the Banking apps selection
+
 ## 0.9.8
  - Added date seperation for account transactions
 

@@ -87,7 +87,11 @@ enum class WidgetAccent { RED, WALLPAPER }
 data class WidgetPrefs(val style: WidgetStyle = WidgetStyle.APP, val opacity: Float = 0.85f, val sheen: Boolean = true, val addButton: Boolean = true, val accent: WidgetAccent = WidgetAccent.WALLPAPER)
 
 /** Message import: which notification sources to read; [wifiOnly] for the optional model download (~56 MB). */
-data class MessagePrefs(val sms: Boolean = true, val gmail: Boolean = true, val wifiOnly: Boolean = true, val autoAdd: Boolean = true)
+/** [apps]: banking apps whose notifications are read as bank alerts (Settings › Sources › Banking apps). */
+data class MessagePrefs(
+    val sms: Boolean = true, val gmail: Boolean = true, val wifiOnly: Boolean = true, val autoAdd: Boolean = true,
+    val apps: Set<String> = com.paisaplus.compose.messages.AutoAdd.bankAppPackages,
+)
 
 enum class UpdateFrequency(val days: Int) { OFF(0), DAILY(1), WEEKLY(7), MONTHLY(30) }
 
@@ -175,10 +179,15 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     val balanceModes = ctx.store.data.map { BalanceMode.parse(it[balanceModesKey]) }
     suspend fun setBalanceModes(m: List<BalanceMode>) = ctx.store.edit { it[balanceModesKey] = BalanceMode.format(m) }
 
-    val messages = ctx.store.data.map { MessagePrefs(it[msgSmsKey] ?: true, it[msgGmailKey] ?: true, it[modelWifiKey] ?: true, it[msgAutoKey] ?: true) }
-    suspend fun setMessages(m: MessagePrefs) = ctx.store.edit { it[msgSmsKey] = m.sms; it[msgGmailKey] = m.gmail; it[modelWifiKey] = m.wifiOnly; it[msgAutoKey] = m.autoAdd }
+    private val msgAppsKey = androidx.datastore.preferences.core.stringSetPreferencesKey("key_msg_apps")
+    val messages = ctx.store.data.map { MessagePrefs(it[msgSmsKey] ?: true, it[msgGmailKey] ?: true, it[modelWifiKey] ?: true, it[msgAutoKey] ?: true, it[msgAppsKey] ?: com.paisaplus.compose.messages.AutoAdd.bankAppPackages) }
+    suspend fun setMessages(m: MessagePrefs) = ctx.store.edit { it[msgSmsKey] = m.sms; it[msgGmailKey] = m.gmail; it[modelWifiKey] = m.wifiOnly; it[msgAutoKey] = m.autoAdd; it[msgAppsKey] = m.apps }
 
-    val autoAddRepaired = ctx.store.data.map { it[autoRepairKey] ?: false }
+    private val rechargeCatKey = booleanPreferencesKey("key_cat_recharge_v1")
+    val rechargeCategoryAdded = ctx.store.data.map { it[rechargeCatKey] ?: false }
+    suspend fun setRechargeCategoryAdded() = ctx.store.edit { it[rechargeCatKey] = true }
+
+    val autoAddRepaired =ctx.store.data.map { it[autoRepairKey] ?: false }
     suspend fun setAutoAddRepaired() = ctx.store.edit { it[autoRepairKey] = true }
 
     val updates = ctx.store.data.map { p ->
@@ -237,6 +246,10 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     suspend fun export(): JsonObject = buildJsonObject {
         ctx.store.data.first().asMap().forEach { (k, v) ->
             if (k.name in local) return@forEach
+            if (v is Set<*>) { // banking apps to read
+                put(k.name, buildJsonObject { put("type", "stringset"); put("value", kotlinx.serialization.json.JsonArray(v.map { JsonPrimitive(it.toString()) })) })
+                return@forEach
+            }
             val tagged = when (v) {
                 is Boolean -> "bool" to JsonPrimitive(v)
                 is String -> "string" to JsonPrimitive(v)
@@ -256,6 +269,10 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
         o.forEach { (name, e) ->
             if (name in local) return@forEach
             val t = (e as? JsonObject) ?: return@forEach
+            (t["value"] as? kotlinx.serialization.json.JsonArray)?.let { a ->
+                if ((t["type"] as? JsonPrimitive)?.content == "stringset") p[androidx.datastore.preferences.core.stringSetPreferencesKey(name)] = a.mapNotNull { (it as? JsonPrimitive)?.content }.toSet()
+                return@forEach
+            }
             val v = t["value"] as? JsonPrimitive ?: return@forEach
             when ((t["type"] as? JsonPrimitive)?.content) {
                 "bool" -> v.booleanOrNull?.let { p[booleanPreferencesKey(name)] = it }

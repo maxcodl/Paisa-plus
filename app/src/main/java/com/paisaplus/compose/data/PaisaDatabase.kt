@@ -37,8 +37,12 @@ interface ExpenseDao {
 
     @Query("SELECT * FROM expenses ORDER BY id") suspend fun list(): List<ExpenseEntity>
 
-    @Query("SELECT EXISTS(SELECT 1 FROM expenses WHERE accountId = :accountId AND type = :type AND amount = :amount AND time BETWEEN :from AND :to)")
+    // An entry carrying another bank reference ("Ref …") is a different payment of the same amount, not this one.
+    @Query("SELECT EXISTS(SELECT 1 FROM expenses WHERE accountId = :accountId AND type = :type AND amount = :amount AND time BETWEEN :from AND :to AND (note IS NULL OR note NOT LIKE '%Ref %'))")
     suspend fun hasSimilar(accountId: Long, type: TransactionType, amount: Double, from: Long, to: Long): Boolean
+
+    @Query("SELECT EXISTS(SELECT 1 FROM expenses WHERE type = :type AND abs(amount - :amount) < 0.005 AND time BETWEEN :from AND :to)")
+    suspend fun hasAmountType(type: TransactionType, amount: Double, from: Long, to: Long): Boolean
 
     @Query("SELECT EXISTS(SELECT 1 FROM expenses WHERE note LIKE '%' || :text || '%')")
     suspend fun hasNote(text: String): Boolean
@@ -207,13 +211,14 @@ class Migration1To2(private val zone: ZoneId = ZoneId.systemDefault()) : Migrati
     entities = [
         ExpenseEntity::class, AccountEntity::class, CategoryEntity::class,
         DebtEntity::class, DebtTransactionEntity::class, LoanEntity::class,
-        RecurringRuleEntity::class, DeletedExpenseEntity::class, MessageInboxEntity::class,
+        RecurringRuleEntity::class, DeletedExpenseEntity::class, MessageInboxEntity::class, com.paisaplus.compose.messages.PayeeAliasEntity::class,
     ],
-    version = 7,
-    // accounts.statementDay, accounts.network, expenses/deleted_expenses .note, then .method + .upiApp
-    autoMigrations = [AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5), AutoMigration(from = 5, to = 6), AutoMigration(from = 6, to = 7)],
+    version = 8,
+    // accounts.statementDay, accounts.network, expenses/deleted_expenses .note, then .method + .upiApp, then payee_alias
+    autoMigrations = [AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5), AutoMigration(from = 5, to = 6), AutoMigration(from = 6, to = 7), AutoMigration(from = 7, to = 8)],
 )
 abstract class PaisaDatabase : RoomDatabase() {
+    abstract fun payeeAlias(): com.paisaplus.compose.messages.PayeeAliasDao
     abstract fun messageInbox(): MessageInboxDao
     abstract fun expenses(): ExpenseDao
     abstract fun accounts(): AccountDao

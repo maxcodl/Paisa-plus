@@ -113,6 +113,7 @@ fun AutomationSection(app: AppViewModel, open: (String) -> Unit, inbox: MessageI
         ListGroup {
             item { SwitchRow(Icons.Rounded.Sms, 1, "SMS", str(R.string.source_sms_summary), prefs.sms) { app.setMessagePrefs(prefs.copy(sms = it)) } }
             item { SwitchRow(Icons.Rounded.Mail, 3, "Gmail", str(R.string.source_gmail_summary), prefs.gmail) { app.setMessagePrefs(prefs.copy(gmail = it)) } }
+            item { BankingAppsRow(prefs) { app.setMessagePrefs(it) } }
         }
 
         ListHeader(str(R.string.past_messages))

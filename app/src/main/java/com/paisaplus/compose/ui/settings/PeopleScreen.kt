@@ -78,8 +78,10 @@ fun PeopleScreen(vm: AppViewModel, onBack: () -> Unit, onOpenPayee: (Long) -> Un
         (payees + debtOnly).sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
     }
     var byCount by rememberSaveable { mutableStateOf(false) }
-    val shown = remember(people, q, byCount) {
-        val found = if (q.isBlank()) people else people.filter { it.name.contains(q.trim(), ignoreCase = true) }
+    val aliases by vm.aliases.collectAsStateWithLifecycle()
+    val shown = remember(people, q, byCount, aliases) {
+        // Also finds someone by a name their bank alerts use.
+        val found = if (q.isBlank()) people else people.filter { p -> p.name.contains(q.trim(), ignoreCase = true) || aliases.any { it.name.equals(p.name, true) && it.alias.contains(q.trim(), ignoreCase = true) } }
         if (byCount) found.sortedByDescending { it.count } else found
     }
     val green = incomeColor()

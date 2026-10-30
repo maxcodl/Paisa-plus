@@ -42,6 +42,7 @@ data class Snapshot(
     val rules: List<RecurringRuleEntity> = emptyList(),
     val deleted: List<DeletedExpenseEntity> = emptyList(),
     val settings: JsonObject = JsonObject(emptyMap()),
+    val aliases: List<com.paisaplus.compose.messages.PayeeAliasEntity> = emptyList(),
 )
 
 /**
@@ -73,6 +74,8 @@ object NativeBackup {
                 put("loans", arr(s.loans) { mapOf("id" to it.id, "name" to it.name, "kind" to it.kind.name, "account" to it.account, "emi" to it.emi, "tenure" to it.tenure, "paid" to it.paid, "principal" to it.principal, "nextDue" to it.nextDue, "autoPost" to it.autoPost, "dueDay" to it.dueDay) })
                 put("recurring_rules", arr(s.rules) { mapOf("id" to it.id, "name" to it.name, "amount" to it.amount, "type" to it.type.name, "category" to it.category, "account" to it.account, "frequency" to it.frequency.name, "next" to it.next, "remind" to it.remind, "dueDay" to it.dueDay) })
                 put("deleted_expenses", arr(s.deleted) { mapOf("id" to it.id, "originalId" to it.originalId, "name" to it.name, "amount" to it.amount, "time" to it.time, "type" to it.type.name, "accountId" to it.accountId, "categoryId" to it.categoryId, "deletedAt" to it.deletedAt, "note" to it.note, "method" to it.method, "upiApp" to it.upiApp) })
+                // Names bank alerts use for people; older builds neither write nor read this table.
+                put("payee_aliases", arr(s.aliases) { mapOf("key" to it.key, "alias" to it.alias, "name" to it.name) })
             })
             put("settings", s.settings)
         },
@@ -96,6 +99,7 @@ object NativeBackup {
             rules = rows("recurring_rules").map { RecurringRuleEntity(it.l("id"), it.s("name"), it.d("amount"), TransactionType.valueOf(it.s("type")), it.s("category"), it.s("account"), Frequency.valueOf(it.s("frequency")), it.l("next"), it.b("remind"), it.i("dueDay")) },
             deleted = rows("deleted_expenses").map { DeletedExpenseEntity(it.l("id"), it.l("originalId"), it.s("name"), it.d("amount"), it.l("time"), TransactionType.valueOf(it.s("type")), it.l("accountId"), it.l("categoryId"), it.l("deletedAt"), it.sn("note"), it.sn("method"), it.sn("upiApp")) },
             settings = root["settings"] as? JsonObject ?: JsonObject(emptyMap()),
+            aliases = rows("payee_aliases").map { com.paisaplus.compose.messages.PayeeAliasEntity(it.s("key"), it.s("alias"), it.s("name")) },
         )
     }
 
@@ -135,7 +139,7 @@ class BackupManager @Inject constructor(
         Snapshot(
             db.expenses().list(), db.accounts().list(), db.categories().list(),
             db.debts().list(), db.debts().allTransactions(), db.loans().list(),
-            db.recurring().list(), db.deleted().list(), settings.export(),
+            db.recurring().list(), db.deleted().list(), settings.export(), db.payeeAlias().list(),
         )
     }
 
@@ -149,7 +153,8 @@ class BackupManager @Inject constructor(
     /** Atomic replace of every table, then settings. */
     suspend fun restore(s: Snapshot) {
         db.withTransaction {
-            db.messageInbox().clear()
+            db.messageInbox().clear(); db.payeeAlias().clear()
+            s.aliases.forEach { db.payeeAlias().put(it) }
             db.expenses().clear(); db.accounts().clear(); db.categories().clear()
             db.debts().clear(); db.debts().clearTransactions()
             db.loans().clear(); db.recurring().clear(); db.deleted().clear()

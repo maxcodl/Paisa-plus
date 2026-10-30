@@ -35,6 +35,12 @@ class NativeBackupTest {
         assertEquals(full, NativeBackup.decode(text))
     }
 
+    @Test fun aliasesRoundTripAndOldBackupsHaveNone() {
+        val s = Snapshot(aliases = listOf(com.paisaplus.compose.messages.PayeeAliasEntity("rahulcr", "RAHUL C R", "Rahul")))
+        assertEquals(s, NativeBackup.decode(NativeBackup.encode(s, "x", 0)))
+        assertTrue(NativeBackup.decode("""{"format":"paisa-compose","formatVersion":1,"tables":{}}""").aliases.isEmpty())
+    }
+
     @Test fun emptyRoundTrip() = assertEquals(Snapshot(), NativeBackup.decode(NativeBackup.encode(Snapshot(), "x", 0)))
 
     @Test fun flutterBackupIsNotNative() = assertFalse(NativeBackup.isNative("""{"expenses":[],"accounts":[],"categories":[]}"""))

@@ -141,6 +141,7 @@ class BackupImporter @Inject constructor(private val db: PaisaDatabase) {
         val data = FlutterBackup.parse(text)
         db.withTransaction {
             db.messageInbox().clear()
+            db.payeeAlias().clear()
             db.expenses().clear()
             db.accounts().clear()
             db.categories().clear()

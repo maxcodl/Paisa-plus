@@ -64,6 +64,7 @@ private val monthFmt = DateTimeFormatter.ofPattern("MMMM yyyy")
 @Composable
 fun PayeeScreen(vm: AppViewModel, txId: Long, onBack: () -> Unit, onOpenTx: (Long) -> Unit) {
     val d by vm.data.collectAsStateWithLifecycle()
+    val aliases by vm.aliases.collectAsStateWithLifecycle()
     // Follows the transaction, so a rename keeps this page on the renamed payee.
     var name by rememberSaveable { mutableStateOf("") }
     d.expenses.firstOrNull { it.id == txId }?.name?.let { if (it != name) name = it }
@@ -91,6 +92,8 @@ fun PayeeScreen(vm: AppViewModel, txId: Long, onBack: () -> Unit, onOpenTx: (Lon
                                 Text(plural(R.plurals.transactions_count, txs.size), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
+                        val also = aliases.filter { it.name.equals(name.trim(), ignoreCase = true) }.map { it.alias }
+                        if (also.isNotEmpty()) Text(str(R.string.also_appears_as_x, also.joinToString(", ")), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                             Total(str(R.string.sent), txs.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }, p.expense, Modifier.weight(1f))
                             Total(str(R.string.received), txs.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }, p.income, Modifier.weight(1f))

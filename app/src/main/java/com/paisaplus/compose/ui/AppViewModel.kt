@@ -25,6 +25,7 @@ import com.paisaplus.compose.data.MoneyFormat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
 import com.paisaplus.compose.data.DebtEntity
 import com.paisaplus.compose.data.DebtRepository
 import com.paisaplus.compose.data.DebtTransactionEntity
@@ -97,6 +98,7 @@ private val DEFAULT_CATEGORIES = listOf(
     Triple("Education", 0xf0474, 0xFF3F51B5),
     Triple("Travel", 0xf001d, 0xFF009688),
     Triple("Salary", 0xf0116, 0xFF8BC34A),
+    Triple("Mobile Recharge", 0xf011c, 0xFF00BCD4),
     Triple("Other", 0xf04f9, 0xFF795548),
 )
 
@@ -190,6 +192,8 @@ class AppViewModel @Inject constructor(
     val excludeTransfers = settings.excludeTransfers.stateIn(viewModelScope, SharingStarted.Eagerly, true)
     fun setExcludeTransfers(v: Boolean) = viewModelScope.launch { settings.setExcludeTransfers(v) }
     val widget = settings.widget.stateIn(viewModelScope, SharingStarted.Eagerly, WidgetPrefs())
+    /** Names alerts use for people, and who they are saved as (shown on the payee page). */
+    val aliases = expenses.aliases().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val messagePrefs = settings.messages.stateIn(viewModelScope, SharingStarted.Eagerly, com.paisaplus.compose.data.MessagePrefs())
     fun setMessagePrefs(m: com.paisaplus.compose.data.MessagePrefs) = viewModelScope.launch { settings.setMessages(m) }
     fun setWidget(w: WidgetPrefs) = viewModelScope.launch { settings.setWidget(w) }
@@ -244,6 +248,16 @@ class AppViewModel @Inject constructor(
     val balanceModes = settings.balanceModes.stateIn(viewModelScope, SharingStarted.Eagerly, BalanceMode.DEFAULT)
 
     init {
+        // Existing ledgers get "Mobile Recharge" once (new ones get it from the defaults); deleting it later sticks.
+        viewModelScope.launch {
+            if (settings.rechargeCategoryAdded.first()) return@launch
+            val all = db.categories().list()
+            if (all.isEmpty()) return@launch
+            if (all.none { it.name.contains("recharge", ignoreCase = true) }) DEFAULT_CATEGORIES.first { it.first == "Mobile Recharge" }.let { (name, icon, color) ->
+                categories.save(CategoryEntity(name = name, icon = icon, color = color.toInt(), isDefault = true))
+            }
+            settings.setRechargeCategoryAdded()
+        }
         viewModelScope.launch {
             settings.updates.map { it.frequency }.distinctUntilChanged().collect { com.paisaplus.compose.update.scheduleUpdateChecks(ctx, it) }
         }
