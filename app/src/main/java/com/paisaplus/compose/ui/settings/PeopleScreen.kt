@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.People
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -52,7 +53,7 @@ private val lastFmt = DateTimeFormatter.ofPattern("d MMM yyyy")
 private class Person(val name: String, val count: Int, val paid: Double, val received: Double, val last: Long, val latestId: Long?)
 
 /**
- * Everyone you've paid or been paid by, plus people in Debts, A–Z and searchable.
+ * Everyone you've paid or been paid by, plus people in Debts, A–Z or most transactions first, and searchable.
  * Tapping a payee opens their page (all transactions, rename / merge); someone only in Debts opens Debts.
  */
 @Composable
@@ -76,7 +77,11 @@ fun PeopleScreen(vm: AppViewModel, onBack: () -> Unit, onOpenPayee: (Long) -> Un
             .map { Person(it.debt.name.trim(), 0, 0.0, 0.0, it.debt.dateTime, null) }
         (payees + debtOnly).sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
     }
-    val shown = remember(people, q) { if (q.isBlank()) people else people.filter { it.name.contains(q.trim(), ignoreCase = true) } }
+    var byCount by rememberSaveable { mutableStateOf(false) }
+    val shown = remember(people, q, byCount) {
+        val found = if (q.isBlank()) people else people.filter { it.name.contains(q.trim(), ignoreCase = true) }
+        if (byCount) found.sortedByDescending { it.count } else found
+    }
     val green = incomeColor()
 
     Scaffold(topBar = { BackTopBar(str(R.string.people), onBack) }) { pad ->
@@ -86,6 +91,12 @@ fun PeopleScreen(vm: AppViewModel, onBack: () -> Unit, onOpenPayee: (Long) -> Un
                     q, { q = it }, Modifier.fillMaxWidth(), singleLine = true, shape = CircleShape,
                     placeholder = { Text(str(R.string.search_people_x, people.size)) }, leadingIcon = { Icon(Icons.Rounded.Search, null) },
                 )
+            }
+            item {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FilterChip(!byCount, { byCount = false }, { Text(str(R.string.name)) })
+                    FilterChip(byCount, { byCount = true }, { Text(str(R.string.transactions)) })
+                }
             }
             if (shown.isEmpty()) item { EmptyState(Icons.Rounded.People, str(R.string.no_people)) }
             items(shown, key = { it.name.lowercase() }) { p ->

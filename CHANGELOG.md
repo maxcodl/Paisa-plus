@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.6
+
+- People: sort by name (A–Z) or by number of transactions
+
 ## 0.9.5
 
 - People list is sorted A–Z
