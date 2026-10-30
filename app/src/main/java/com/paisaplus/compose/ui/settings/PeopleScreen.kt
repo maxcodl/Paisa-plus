@@ -52,7 +52,7 @@ private val lastFmt = DateTimeFormatter.ofPattern("d MMM yyyy")
 private class Person(val name: String, val count: Int, val paid: Double, val received: Double, val last: Long, val latestId: Long?)
 
 /**
- * Everyone you've paid or been paid by, plus people in Debts, most recent first and searchable.
+ * Everyone you've paid or been paid by, plus people in Debts, A–Z and searchable.
  * Tapping a payee opens their page (all transactions, rename / merge); someone only in Debts opens Debts.
  */
 @Composable
@@ -74,7 +74,7 @@ fun PeopleScreen(vm: AppViewModel, onBack: () -> Unit, onOpenPayee: (Long) -> Un
         val debtOnly = debts.filter { it.debt.name.isNotBlank() && it.debt.name.trim().lowercase() !in known }
             .distinctBy { it.debt.name.trim().lowercase() }
             .map { Person(it.debt.name.trim(), 0, 0.0, 0.0, it.debt.dateTime, null) }
-        (payees + debtOnly).sortedByDescending { it.last }
+        (payees + debtOnly).sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
     }
     val shown = remember(people, q) { if (q.isBlank()) people else people.filter { it.name.contains(q.trim(), ignoreCase = true) } }
     val green = incomeColor()

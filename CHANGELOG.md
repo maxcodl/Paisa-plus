@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.5
+
+- People list is sorted A–Z
+
 ## 0.9.4
 
 - Updates install without a confirmation prompt once Paisa+ has installed itself (Android 12+); the first in-app update still asks
