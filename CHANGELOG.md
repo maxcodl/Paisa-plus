@@ -1,4 +1,7 @@
 # Changelog
+## 0.9.8
+ - Added date seperation for account transactions
+
 
 ## 0.9.7
 
