@@ -5,18 +5,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image
 import com.paisaplus.compose.data.CardNetwork
 import com.paisaplus.compose.R
 import com.paisaplus.compose.str
 
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

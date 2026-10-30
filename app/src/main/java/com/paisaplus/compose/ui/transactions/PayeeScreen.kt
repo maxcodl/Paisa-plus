@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -69,6 +71,9 @@ fun PayeeScreen(vm: AppViewModel, txId: Long, onBack: () -> Unit, onOpenTx: (Lon
     var name by rememberSaveable { mutableStateOf("") }
     d.expenses.firstOrNull { it.id == txId }?.name?.let { if (it != name) name = it }
     var renaming by remember { mutableStateOf(false) }
+    val myAliases = aliases.filter { it.name.equals(name.trim(), ignoreCase = true) }
+    var editingAlias by remember { mutableStateOf<String?>(null) } // null = closed, "" = adding, else the alias key being edited
+    var aliasText by rememberSaveable { mutableStateOf("") }
     val txs = remember(d.expenses, name) { payeeTransactions(d.expenses, name) }
     LaunchedEffect(txs.isEmpty(), d.loading) { if (txs.isEmpty() && !d.loading && name.isNotEmpty()) onBack() }
     val zone = ZoneId.systemDefault()
@@ -92,8 +97,6 @@ fun PayeeScreen(vm: AppViewModel, txId: Long, onBack: () -> Unit, onOpenTx: (Lon
                                 Text(plural(R.plurals.transactions_count, txs.size), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
-                        val also = aliases.filter { it.name.equals(name.trim(), ignoreCase = true) }.map { it.alias }
-                        if (also.isNotEmpty()) Text(str(R.string.also_appears_as_x, also.joinToString(", ")), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                             Total(str(R.string.sent), txs.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }, p.expense, Modifier.weight(1f))
                             Total(str(R.string.received), txs.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }, p.income, Modifier.weight(1f))
@@ -101,6 +104,22 @@ fun PayeeScreen(vm: AppViewModel, txId: Long, onBack: () -> Unit, onOpenTx: (Lon
                         TextButton({ renaming = true }) {
                             Icon(Icons.Rounded.Edit, null, Modifier.padding(end = 8.dp)); Text(str(R.string.rename_or_merge))
                         }
+                    }
+                }
+            }
+            // Other names this person has in bank messages and payment apps: later alerts under them land on this name.
+            item(key = "aliases") {
+                Column(Modifier.padding(top = 16.dp)) {
+                    SectionTitle(str(R.string.names_in_messages))
+                    myAliases.forEach { a ->
+                        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                            Text(a.alias, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                            IconButton({ aliasText = a.alias; editingAlias = a.key }) { Icon(Icons.Rounded.Edit, str(R.string.edit)) }
+                            IconButton({ vm.removeAlias(a.key) }) { Icon(Icons.Rounded.Close, str(R.string.delete)) }
+                        }
+                    }
+                    TextButton({ aliasText = ""; editingAlias = "" }) {
+                        Icon(Icons.Rounded.Add, null, Modifier.padding(end = 8.dp)); Text(str(R.string.add_name))
                     }
                 }
             }
@@ -113,6 +132,21 @@ fun PayeeScreen(vm: AppViewModel, txId: Long, onBack: () -> Unit, onOpenTx: (Lon
                 }
             }
         }
+    }
+
+    editingAlias?.let { key ->
+        AlertDialog(
+            onDismissRequest = { editingAlias = null },
+            title = { Text(str(R.string.names_in_messages)) },
+            text = { OutlinedTextField(aliasText, { aliasText = it }, label = { Text(str(R.string.name)) }, singleLine = true) },
+            confirmButton = {
+                TextButton({
+                    if (key.isEmpty()) vm.addAlias(name.trim(), aliasText) else vm.editAlias(key, name.trim(), aliasText)
+                    editingAlias = null
+                }, enabled = aliasText.isNotBlank()) { Text(str(R.string.save)) }
+            },
+            dismissButton = { TextButton({ editingAlias = null }) { Text(str(R.string.cancel)) } },
+        )
     }
 
     if (renaming) {

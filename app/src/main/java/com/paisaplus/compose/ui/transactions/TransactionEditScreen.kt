@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import com.paisaplus.compose.ui.components.ChoiceChips
 import com.paisaplus.compose.ui.display
 import com.paisaplus.compose.ui.label
+import com.paisaplus.compose.data.BankApp
 import com.paisaplus.compose.data.UpiApp
 import com.paisaplus.compose.data.PaymentMethod
 import com.paisaplus.compose.R
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.SwapHoriz
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
@@ -88,6 +90,8 @@ fun TransactionEditScreen(vm: AppViewModel, id: Long, initialType: TransactionTy
     var pickDate by rememberSaveable { mutableStateOf(false) }
     var pickTime by rememberSaveable { mutableStateOf(false) }
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
+    var converting by rememberSaveable { mutableStateOf(false) }
+    var convertTo by rememberSaveable { mutableLongStateOf(-1L) }
     val original = d.expenses.firstOrNull { it.id == id }
 
     LaunchedEffect(original, d.loading) {
@@ -125,7 +129,7 @@ fun TransactionEditScreen(vm: AppViewModel, id: Long, initialType: TransactionTy
                 onClick = {
                     vm.saveExpense(
                         ExpenseEntity(id = original?.id ?: 0, name = name.trim(), amount = value!!, time = time, type = type, accountId = accountId, categoryId = categoryId, note = note.trim().ifEmpty { null },
-                            method = method.ifEmpty { null }, upiApp = upiApp.takeIf { method == PaymentMethod.UPI.name }?.ifEmpty { null }),
+                            method = method.ifEmpty { null }, upiApp = upiApp.takeIf { method == PaymentMethod.UPI.name || method == PaymentMethod.BANK_APP.name }?.ifEmpty { null }),
                     )
                     onDone()
                 },
@@ -161,9 +165,12 @@ fun TransactionEditScreen(vm: AppViewModel, id: Long, initialType: TransactionTy
             OutlinedTextField(note, { note = it }, label = { Text(str(R.string.note_optional)) }, minLines = 2, maxLines = 5, modifier = Modifier.fillMaxWidth())
             // Payment method (optional): tap the chosen one again to clear it.
             Text(str(R.string.paid_with), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            ChoiceChips(PaymentMethod.entries.map { it.name }, method, { n -> PaymentMethod.valueOf(n).label }, { method = if (method == it) "" else it }, contentPadding = PaddingValues(0.dp))
+            ChoiceChips(PaymentMethod.entries.map { it.name }, method, { n -> PaymentMethod.valueOf(n).label }, { method = if (method == it) "" else it; upiApp = "" }, contentPadding = PaddingValues(0.dp))
             if (method == PaymentMethod.UPI.name) {
                 ChoiceChips(UpiApp.entries.map { it.name }, upiApp, { n -> UpiApp.valueOf(n).display }, { upiApp = if (upiApp == it) "" else it }, contentPadding = PaddingValues(0.dp))
+            }
+            if (method == PaymentMethod.BANK_APP.name) {
+                ChoiceChips(BankApp.entries.map { it.name }, upiApp, { n -> BankApp.valueOf(n).display }, { upiApp = if (upiApp == it) "" else it }, contentPadding = PaddingValues(0.dp))
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onClick = { pickDate = true }, Modifier.weight(1f)) {
@@ -192,14 +199,44 @@ fun TransactionEditScreen(vm: AppViewModel, id: Long, initialType: TransactionTy
                         selected = c.id == categoryId,
                         onClick = { categoryId = if (categoryId == c.id) -1 else c.id },
                         label = { Text(c.name) },
-                        leadingIcon = { Icon(paisaIcon(c.icon), null, tint = Color(c.color)) },
+                        // The same badge colours as the lists (an uncoloured category gets its icon's hue there too).
+                        leadingIcon = { com.paisaplus.compose.ui.components.IconBadge(paisaIcon(c.icon), Color(c.color), 22.dp, autoHue = true) },
                     )
+                }
+            }
+            if (original != null && d.accountById.containsKey(original.accountId) && d.accounts.size > 1) {
+                OutlinedButton(onClick = { convertTo = vm.data.value.accounts.map { it.account.id }.firstOrNull { it != original.accountId && vm.transferLegOf(original, it) != null } ?: -1L; converting = true }, Modifier.fillMaxWidth()) {
+                    Icon(Icons.Rounded.SwapHoriz, null, Modifier.padding(end = 8.dp)); Text(str(R.string.make_transfer))
                 }
             }
             if (original != null && !d.accountById.containsKey(original.accountId)) {
                 Text(str(R.string.account_deleted_pick_another), color = MaterialTheme.colorScheme.error)
             }
         }
+    }
+
+    if (converting && original != null) {
+        val leg = if (convertTo != -1L) vm.transferLegOf(original, convertTo) else null
+        AlertDialog(
+            onDismissRequest = { converting = false },
+            title = { Text(str(R.string.make_transfer)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(str(R.string.other_account), style = MaterialTheme.typography.labelLarge)
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        d.accounts.map { it.account }.filter { it.id != original.accountId }.forEach { a ->
+                            FilterChip(selected = a.id == convertTo, onClick = { convertTo = a.id }, label = { Text(a.name) }, leadingIcon = { Icon(paisaIcon(a.icon, a.cardType.icon), null) })
+                        }
+                    }
+                    Text(
+                        str(if (leg != null) R.string.transfer_links_existing else R.string.transfer_adds_other_side),
+                        style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            },
+            confirmButton = { TextButton({ vm.makeTransfer(original, convertTo); converting = false; onDone() }, enabled = convertTo != -1L) { Text(str(R.string.make_transfer)) } },
+            dismissButton = { TextButton({ converting = false }) { Text(str(R.string.cancel)) } },
+        )
     }
 
     if (pickDate) {

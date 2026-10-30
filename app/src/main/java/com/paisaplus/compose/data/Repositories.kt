@@ -52,6 +52,16 @@ class ExpenseRepository @Inject constructor(private val db: PaisaDatabase) {
 
     fun aliases() = db.payeeAlias().all()
 
+    /** A name messages or payment apps use for [name]; later alerts under it land on [name]. */
+    suspend fun addAlias(name: String, alias: String) {
+        val key = com.paisaplus.compose.messages.AutoAdd.aliasKey(alias)
+        if (key.length >= 4 && key != com.paisaplus.compose.messages.AutoAdd.aliasKey(name)) db.payeeAlias().put(com.paisaplus.compose.messages.PayeeAliasEntity(key, alias.trim(), name.trim()))
+    }
+
+    suspend fun removeAlias(key: String) = db.payeeAlias().delete(key)
+
+    suspend fun editAlias(oldKey: String, name: String, alias: String) = db.withTransaction { removeAlias(oldKey); addAlias(name, alias) }
+
     fun recentlyDeleted() = db.deleted().all()
 
     /** Re-adds a deleted transaction (balance re-applied by [add]); keeps its id unless that's been reused. */

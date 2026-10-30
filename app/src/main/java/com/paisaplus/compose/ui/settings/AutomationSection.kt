@@ -129,6 +129,8 @@ fun AutomationSection(app: AppViewModel, open: (String) -> Unit, inbox: MessageI
                         { if (sms) inbox.scanSms(days) else askSms.launch(Manifest.permission.READ_SMS) },
                         Modifier.fillMaxWidth(), enabled = !inbox.busy,
                     ) { Text(if (days == 0) str(R.string.scan_all_messages) else str(R.string.scan_last_x_days, days)) }
+                    LiveScanLog(inbox.busy)
+                    OutlinedButton({ open(Routes.SCAN_LOG) }, Modifier.fillMaxWidth()) { Text(str(R.string.scan_log)) }
                 }
             }
         }

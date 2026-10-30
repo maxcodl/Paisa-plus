@@ -1,4 +1,17 @@
 # Changelog
+## 0.10.0
+
+- Transfer: new item in the + menu and Pay bill on a credit card save a transfer or card bill payment as one expense and one income; pick the banking app it was paid from
+- Make transfer on any transaction marks it as a transfer and adds (or links) the matching entry on the other account
+- Bank app payment method with iMobile, FedMobile, SBI Card, YONO, Axis Mobile, HDFC and Kotak
+- People: each person lists the other names bank messages and payment apps use for them; add, edit or remove them. Scans save new names only when they look alike, and wrong ones from the first scan are cleaned up once
+- Past-SMS scan: live progress and log while it runs, plus a Scan log screen to filter and copy
+- Banking apps list shows app icons, ticked apps first
+- Category chips on Add transaction use the same colours as the lists
+- Credit card page: Edit is an icon so Add transaction no longer wraps
+- Removed unused strings and imports
+- README now has screenshots
+
 ## 0.9.9
 
 - Fixed bank texts being missed when several arrived from one sender in a single notification: each message is now read on its own

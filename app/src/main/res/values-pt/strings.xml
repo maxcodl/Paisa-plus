@@ -65,15 +65,29 @@
     <string name="update_check_failed">Não deu pra procurar atualizações</string>
     <string name="update_install_failed">A atualização falhou</string>
     <string name="downloading_x">Baixando… %1$d%%</string>
-    <string name="download_and_install">Baixar e instalar</string>
-    <string name="release_notes">Novidades</string>
     <string name="update_install_note">Conferido com o checksum do GitHub; depois o Android pede confirmação. Seus dados ficam.</string>
-    <string name="message_import_summary">SMS e e-mails do banco, modelo opcional no aparelho</string>
     <string name="restricted_settings_title">Acesso a notificações desativado?</string>
     <string name="restricted_settings_steps">O Android bloqueia isso pra apps instalados fora da Play Store. Abra Informações do app, toque em ⋮ (canto de cima), escolha Permitir configurações restritas, volte e ative o acesso.</string>
     <string name="open_app_info">Abrir informações do app</string>
     <string name="sources">Fontes</string>
-    <string name="also_appears_as_x">Os alertas do banco chamam de: %1$s</string>
+    <string name="names_in_messages">Nomes em mensagens e apps</string>
+    <string name="add_name">Adicionar nome</string>
+    <string name="scan_log">Registro da busca</string>
+    <string name="scanning_x_of_y">Buscando %1$d / %2$d</string>
+    <string name="copy">Copiar</string>
+    <string name="no_scan_log">Nenhuma busca ainda. Faça uma busca nos SMS antes.</string>
+    <string name="transfer">Transferência</string>
+    <string name="make_transfer">Virar transferência</string>
+    <string name="other_account">Outra conta</string>
+    <string name="transfer_links_existing">O lançamento correspondente que já está nessa conta também vira Transferência.</string>
+    <string name="transfer_adds_other_side">Este lançamento vira Transferência e o lançamento oposto é adicionado nessa conta.</string>
+    <string name="marked_as_transfer">Marcado como transferência</string>
+    <string name="pay_bill">Pagar fatura</string>
+    <string name="from_account">De</string>
+    <string name="to_account">Para</string>
+    <string name="paid_with_bank_app">Pago pelo app do banco</string>
+    <string name="bank_app">App do banco</string>
+    <string name="transfer_saved">Transferência salva</string>
     <string name="banking_apps">Apps de banco</string>
     <string name="banking_apps_summary">Ler alertas das notificações destes apps</string>
     <string name="banking_apps_x">%1$d selecionados</string>
@@ -92,10 +106,8 @@
     <string name="notification_access_off">Desligado · toque pra liberar nas configurações</string>
     <string name="review_inbox">Caixa de revisão</string>
     <string name="past_messages">Mensagens antigas</string>
-    <string name="scan_past_sms_x">Varrer SMS dos últimos %1$d dias</string>
     <string name="scan_past_sms_summary">Acha mensagens do banco que já estão no celular; pede permissão de SMS uma vez</string>
     <string name="scanning">Varrendo…</string>
-    <string name="sms_scan_result_x">%1$d transações novas na revisão</string>
     <string name="on_device_ai">IA no aparelho</string>
     <string name="notification_types">Tipos de notificação</string>
     <string name="recurring_reminders_summary">No dia em que um pagamento fixo vence</string>
@@ -113,8 +125,6 @@
     <string name="auto_added_channel_summary">Cada pagamento lançado a partir de um alerta</string>
     <string name="auto_added_expense_x">Lançado %1$s · %2$s</string>
     <string name="auto_added_income_x">Recebido %1$s · %2$s</string>
-    <string name="sms_scan_result_xyz">%1$d lançados · %2$d pra revisão · %3$d já existiam</string>
-    <string name="payment_method">Forma de pagamento</string>
     <string name="payments_to_review">Pagamentos pra revisar</string>
     <string name="payments_to_review_x">Pagamentos pra revisar: %1$d</string>
     <string name="nothing_to_review">Tudo em dia. Pagamentos novos dos alertas do banco aparecem aqui.</string>
@@ -136,7 +146,6 @@
     <string name="already_in_transactions">Já está nos lançamentos, saiu da revisão</string>
     <string name="cleared_x_from_review">%1$d já salvos ou reconhecidos agora, saíram da revisão</string>
     <string name="alerts_off_turn_on">O acesso às notificações está desligado, então pagamentos novos não são pegos. Toque pra ligar.</string>
-    <string name="sms_scan_result_xyzw">%1$d lançados · %2$d pra revisão · %3$d já nos seus registros · %4$d já varridos</string>
     <string name="dismiss_all">Dispensar tudo</string>
     <string name="dismiss_all_x">Dispensar %1$d pagamentos?</string>
     <string name="dismiss_all_body">Eles saem da revisão sem serem salvos. Uma nova varredura não traz de volta.</string>
@@ -244,7 +253,6 @@
     <string name="can_t_be_undone">Não dá pra voltar atrás, hein.</string>
     <string name="add_category">Criar categoria</string>
     <string name="no_categories_yet">Nenhuma categoria ainda</string>
-    <string name="this_month_2">nesse mês</string>
     <string name="over_budget_by_x">Estourou a meta em %1$s</string>
     <string name="x_left_of_x">Sobrou %1$s de %2$s</string>
     <string name="edit_category">Mexer na categoria</string>
@@ -300,8 +308,6 @@
     <string name="statement_x">Fatura %1$s</string>
     <string name="last_month_x">Mês passado %1$s</string>
     <string name="x_left">Falta %1$s</string>
-    <string name="next_bill_est_on_x_2">"Próxima fatura (chute) dia %1$s: %2$s "</string>
-    <string name="charges_x_emi_x">(gastos %1$s + parcelas %2$s)</string>
     <string name="used_x_of_x">Torrou %1$s de %2$s</string>
     <string name="lending">Grana emprestada</string>
     <string name="borrowing">Grana que peguei</string>
@@ -515,7 +521,6 @@
     <string name="day_x_x_x_x">Dia %1$s · %2$s = %3$s – %4$s</string>
     <string name="your_profile">Teu perfil</string>
     <string name="name_photo_shortcuts">Nome, foto e atalhos</string>
-    <string name="money">Bufunfa</string>
     <string name="number_format">Formato dos números</string>
     <string name="month_starts_on">O mês vira em</string>
     <string name="month_starts_on_day">O mês começa no dia</string>
@@ -560,7 +565,6 @@
     <string name="position_x">Posição %1$s</string>
     <string name="move_x_left">Jogar %1$s pra esquerda</string>
     <string name="move_x_right">Jogar %1$s pra direita</string>
-    <string name="security">Segurança</string>
     <string name="app_lock">Tranca do app</string>
     <string name="unlock_with_fingerprint_or_screen">Destravar na digital ou senha da tela</string>
     <string name="set_a_screen_lock_first">Bota uma senha no celular primeiro, né</string>
@@ -569,7 +573,6 @@
     <string name="x_min">%1$s min</string>
     <string name="block_screenshots">Bloquear print da tela</string>
     <string name="also_hides_the_app_in">Também esconde o app nos abertos recentemente</string>
-    <string name="data">Dados</string>
     <string name="default_brown">Marrom padrão</string>
     <string name="colour_x">Cor %1$s</string>
     <string name="edit_transaction">Mexer na movimentação</string>

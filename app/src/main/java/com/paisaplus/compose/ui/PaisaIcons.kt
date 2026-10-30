@@ -106,7 +106,6 @@ private val mdi: List<Triple<String, Int, ImageVector>> = listOf(
 private val byCode = mdi.associate { it.second to it.third }
 
 const val MDI_TAG = 0xf04f9
-const val MDI_HOME = 0xf02dc
 
 fun paisaIcon(codePoint: Int, fallback: ImageVector = Icons.Rounded.Sell): ImageVector = byCode[codePoint] ?: fallback
 

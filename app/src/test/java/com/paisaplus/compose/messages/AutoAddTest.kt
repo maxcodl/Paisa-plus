@@ -46,6 +46,15 @@ class AutoAddTest {
         assertNull(AutoAdd.aliasFor(list, null))
     }
 
+    @Test fun plausibleAliases() {
+        assertEquals(true, AutoAdd.plausibleAlias("COCHIN RAHUMANI", "Cochin Rahumania Biriyani"))
+        assertEquals(true, AutoAdd.plausibleAlias("RAHUL C R", "Rahul Chandran"))
+        assertEquals(true, AutoAdd.plausibleAlias("RELIANCE RETAIL", "Reliance Retail Alappuzha"))
+        assertEquals(false, AutoAdd.plausibleAlias("VEEKAY FUELS", "A Somanathan"))
+        assertEquals(false, AutoAdd.plausibleAlias("ASTER PHARMACY", "Amina B"))
+        assertEquals(false, AutoAdd.plausibleAlias("MUKESH SINGH", "Cochin Caf"))
+    }
+
     @Test fun amazonStoreNotice() {
         val n = AutoAdd.storeNotice("Your Mobile Prepaid payment is successful. Your Mobile Prepaid payment of Rs 49 is successful. Please click here to check order details.")!!
         assertEquals(4900L, n.amountPaise)

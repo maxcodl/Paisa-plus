@@ -186,6 +186,9 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     private val rechargeCatKey = booleanPreferencesKey("key_cat_recharge_v1")
     val rechargeCategoryAdded = ctx.store.data.map { it[rechargeCatKey] ?: false }
     suspend fun setRechargeCategoryAdded() = ctx.store.edit { it[rechargeCatKey] = true }
+    private val aliasPrunedKey = booleanPreferencesKey("key_alias_pruned_v1")
+    val aliasesPruned = ctx.store.data.map { it[aliasPrunedKey] ?: false }
+    suspend fun setAliasesPruned() = ctx.store.edit { it[aliasPrunedKey] = true }
 
     val autoAddRepaired =ctx.store.data.map { it[autoRepairKey] ?: false }
     suspend fun setAutoAddRepaired() = ctx.store.edit { it[autoRepairKey] = true }

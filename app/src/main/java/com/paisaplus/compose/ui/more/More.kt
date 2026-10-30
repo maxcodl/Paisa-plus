@@ -26,11 +26,9 @@ import androidx.compose.material.icons.rounded.Category
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Handshake
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.BarChart
 import androidx.compose.material.icons.rounded.EventRepeat
 import androidx.compose.material.icons.rounded.RequestQuote
 import androidx.compose.material.icons.rounded.Savings
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -40,7 +38,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import com.paisaplus.compose.ui.components.rememberSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,7 +49,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -73,7 +69,6 @@ import com.paisaplus.compose.ui.money
 import com.paisaplus.compose.ui.paisaIcon
 import com.paisaplus.compose.ui.plainOrEmpty
 import com.paisaplus.compose.ui.toAmount
-import java.time.YearMonth
 
 private data class Entry(val title: String, val icon: ImageVector, val route: String)
 

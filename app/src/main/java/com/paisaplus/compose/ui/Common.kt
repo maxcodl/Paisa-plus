@@ -1,52 +1,28 @@
 package com.paisaplus.compose.ui
 
 import com.paisaplus.compose.data.UpiApp
+import com.paisaplus.compose.data.BankApp
 import com.paisaplus.compose.data.PaymentMethod
 import com.paisaplus.compose.R
 import com.paisaplus.compose.str
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountBalance
 import androidx.compose.material.icons.rounded.AccountBalanceWallet
 import androidx.compose.material.icons.rounded.CreditCard
 import androidx.compose.material.icons.rounded.Payments
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.paisaplus.compose.data.CardType
-import com.paisaplus.compose.data.CategoryEntity
 import com.paisaplus.compose.data.ExpenseEntity
 import com.paisaplus.compose.data.TransactionType
 import com.paisaplus.compose.ui.theme.LocalPaisaColors
-import java.text.NumberFormat
 import java.time.format.DateTimeFormatter
 
 
@@ -126,14 +102,20 @@ fun Double.plainOrEmpty() = if (this == 0.0) "" else toBigDecimal().stripTrailin
 val PaymentMethod.label get() = str(when (this) {
     PaymentMethod.UPI -> R.string.upi; PaymentMethod.TAP -> R.string.tap_to_pay
     PaymentMethod.SWIPE -> R.string.swipe; PaymentMethod.INSERT -> R.string.insert_chip
+    PaymentMethod.BANK_APP -> R.string.bank_app
 })
 
 
 val UpiApp.display get() = label.ifEmpty { str(R.string.other) }
+val BankApp.display get() = label.ifEmpty { str(R.string.other) }
 
-/** "UPI · Google Pay", "Tap to pay"; null when the transaction has no method. */
+/** "UPI · Google Pay", "Bank app · iMobile Pay", "Tap to pay"; null when the transaction has no method. */
 fun ExpenseEntity.methodLabel(): String? {
     val m = method?.let { n -> PaymentMethod.entries.firstOrNull { it.name == n } } ?: return null
-    val app = upiApp?.let { n -> UpiApp.entries.firstOrNull { it.name == n } }?.takeIf { m == PaymentMethod.UPI }
-    return listOfNotNull(m.label, app?.display).joinToString(" · ")
+    val app = when (m) {
+        PaymentMethod.UPI -> upiApp?.let { n -> UpiApp.entries.firstOrNull { it.name == n } }?.display
+        PaymentMethod.BANK_APP -> upiApp?.let { n -> BankApp.entries.firstOrNull { it.name == n } }?.display
+        else -> null
+    }
+    return listOfNotNull(m.label, app).joinToString(" · ")
 }

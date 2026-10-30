@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -30,6 +29,7 @@ import androidx.compose.material.icons.automirrored.rounded.TrendingDown
 import androidx.compose.material.icons.automirrored.rounded.TrendingUp
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.SwapHoriz
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material3.ModalBottomSheet
@@ -50,7 +50,6 @@ import com.paisaplus.compose.ui.theme.LocalGlass
 import com.paisaplus.compose.ui.theme.glass
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleFloatingActionButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,7 +58,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -109,7 +107,7 @@ fun TransactionsScreen(vm: AppViewModel, nav: NavHostController, outer: PaddingV
                 IconButton(onClick = { showDeleted = true }) { Icon(Icons.Rounded.History, str(R.string.recently_deleted)) }
             }
         },
-        floatingActionButton = { if (d.accounts.isNotEmpty()) Box(Modifier.padding(bottom = outer.calculateBottomPadding())) { AddFab { nav.editTransaction(type = it) } } },
+        floatingActionButton = { if (d.accounts.isNotEmpty()) Box(Modifier.padding(bottom = outer.calculateBottomPadding())) { AddFab({ nav.navigate("transfer") }) { nav.editTransaction(type = it) } } },
     ) { pad ->
         LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(top = pad.calculateTopPadding(), bottom = outer.calculateBottomPadding() + 88.dp)) {
             item { MonthPicker(month, months) { monthKey = it?.toString().orEmpty() } }
@@ -221,10 +219,10 @@ private fun TxRow(e: ExpenseEntity, d: AppData, vm: AppViewModel, onOpen: () -> 
     }
 }
 
-/** Expressive FAB menu: add expense / add income. */
+/** Expressive FAB menu: add expense / income / transfer (between your accounts, or a card bill payment). */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun AddFab(onAdd: (TransactionType) -> Unit) {
+fun AddFab(onTransfer: () -> Unit, onAdd: (TransactionType) -> Unit) {
     var open by rememberSaveable { mutableStateOf(false) }
     BackHandler(open) { open = false }
     FloatingActionButtonMenu(
@@ -235,6 +233,11 @@ fun AddFab(onAdd: (TransactionType) -> Unit) {
             }
         },
     ) {
+        FloatingActionButtonMenuItem(
+            onClick = { open = false; onTransfer() },
+            text = { Text(str(R.string.transfer)) },
+            icon = { Icon(Icons.Rounded.SwapHoriz, null) },
+        )
         FloatingActionButtonMenuItem(
             onClick = { open = false; onAdd(TransactionType.INCOME) },
             text = { Text(str(R.string.income)) },

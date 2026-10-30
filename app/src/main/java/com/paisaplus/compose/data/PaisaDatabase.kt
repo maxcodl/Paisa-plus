@@ -41,6 +41,10 @@ interface ExpenseDao {
     @Query("SELECT EXISTS(SELECT 1 FROM expenses WHERE accountId = :accountId AND type = :type AND amount = :amount AND time BETWEEN :from AND :to AND (note IS NULL OR note NOT LIKE '%Ref %'))")
     suspend fun hasSimilar(accountId: Long, type: TransactionType, amount: Double, from: Long, to: Long): Boolean
 
+    /** The entry an alert already produced or was matched to: same account, direction and amount, stamped with the alert's time. */
+    @Query("SELECT * FROM expenses WHERE accountId = :accountId AND type = :type AND abs(amount - :amount) < 0.005 AND time = :time LIMIT 1")
+    suspend fun atTime(accountId: Long, type: TransactionType, amount: Double, time: Long): ExpenseEntity?
+
     @Query("SELECT EXISTS(SELECT 1 FROM expenses WHERE type = :type AND abs(amount - :amount) < 0.005 AND time BETWEEN :from AND :to)")
     suspend fun hasAmountType(type: TransactionType, amount: Double, from: Long, to: Long): Boolean
 

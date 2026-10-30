@@ -48,16 +48,12 @@ import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Category
 import androidx.compose.material.icons.rounded.EventRepeat
-import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.Insights
 import androidx.compose.material.icons.rounded.RequestQuote
 import androidx.compose.material.icons.rounded.Savings
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -66,7 +62,6 @@ import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -106,8 +101,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.background
 import java.time.LocalDate
 import java.time.ZoneId
-import com.paisaplus.compose.data.ThemeMode
-import com.paisaplus.compose.data.ThemeSettings
 import com.paisaplus.compose.data.monthTotals
 import com.paisaplus.compose.data.salaryIds
 import com.paisaplus.compose.editTransaction
@@ -133,10 +126,8 @@ import com.paisaplus.compose.ui.transactions.AddFab
 import com.paisaplus.compose.ui.theme.LocalGlass
 import com.paisaplus.compose.ui.components.ExpressiveIcon
 import com.paisaplus.compose.go
-import androidx.compose.material.icons.rounded.Search
 import com.paisaplus.compose.ui.theme.glass
 import java.time.LocalTime
-import java.time.YearMonth
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -209,7 +200,7 @@ fun HomeScreen(vm: AppViewModel, nav: NavHostController, outer: PaddingValues) {
                 },
             )
         },
-        floatingActionButton = { if (d.accounts.isNotEmpty()) Box(Modifier.padding(bottom = outer.calculateBottomPadding())) { AddFab { nav.editTransaction(type = it) } } },
+        floatingActionButton = { if (d.accounts.isNotEmpty()) Box(Modifier.padding(bottom = outer.calculateBottomPadding())) { AddFab({ nav.navigate("transfer") }) { nav.editTransaction(type = it) } } },
     ) { pad ->
         when {
             d.loading || vm.importing -> Box(Modifier.fillMaxSize().padding(pad), Alignment.Center) { LoadingIndicator() }

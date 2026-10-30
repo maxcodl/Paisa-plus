@@ -78,6 +78,7 @@ interface PayeeAliasDao {
     @Query("SELECT * FROM payee_alias") suspend fun list(): List<PayeeAliasEntity>
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun put(a: PayeeAliasEntity)
     @Query("DELETE FROM payee_alias") suspend fun clear()
+    @Query("DELETE FROM payee_alias WHERE `key` = :key") suspend fun delete(key: String)
     /** The person was renamed or merged: their aliases follow. */
     @Query("UPDATE payee_alias SET name = :to WHERE lower(name) = lower(:from)") suspend fun repoint(from: String, to: String)
 }
@@ -126,8 +127,10 @@ class MessageInboxRepository @Inject constructor(
             val seen = db.messageInbox().get(fingerprint)
             if (scan && seen != null && seen.status in setOf("DUPLICATE", "COVERED", "DISMISSED") && merge(seen.copy(body = body))) return MERGED
             // A scan re-judges earlier "duplicates": the rules were looser (any same-amount entry that day), and it costs one lookup.
-            if (scan && seen?.status == "DUPLICATE" && db.messageInbox().reopen(fingerprint, body) > 0) return settle(fingerprint, scan, notify = false)
+            if (scan && seen?.status == "DUPLICATE" && db.messageInbox().reopen(fingerprint, body) > 0) { ScanLog.note("re-checked an earlier duplicate"); return settle(fingerprint, scan, notify = false) }
             if (scan && seen?.status == "PENDING") return settle(fingerprint, scan, notify = false)
+            // Already saved earlier: a scan still records the name this alert used for that entry's payee.
+            if (scan && seen != null && seen.status in setOf("MERGED", "IMPORTED", "DUPLICATE")) learnFromSaved(seen, body)
             return "Message already detected"
         }
         return settle(fingerprint, scan, notify = !scan)
@@ -187,7 +190,9 @@ class MessageInboxRepository @Inject constructor(
             ?: AutoAdd.complete(AutoAdd.payee(hint?.merchant.takeUnless { transfer }, "") ?: AutoAdd.payee(parsed?.merchant ?: row.merchant, row.body), known)
         val old =System.currentTimeMillis() - row.receivedAt >= FRESH_MS
         // Account unknown (no digits, or an account not in the app): older than all your records means nothing to add.
+        ScanLog.note("account: ${account?.name ?: "unknown"}${name?.let { " · payee: $it" }.orEmpty()}${if (transfer) " · transfer" else ""}")
         if (old && account == null && db.expenses().firstOwnRecordAnyAccount()?.let { row.receivedAt < it } == true) {
+            ScanLog.note("older than all your records")
             db.messageInbox().finish(fingerprint, "COVERED")
             return COVERED
         }
@@ -195,11 +200,13 @@ class MessageInboxRepository @Inject constructor(
             // Before the account's first statement or entry: already counted in its opening balance.
             val start = db.expenses().firstOwnRecord(account.id)
             if (start != null && row.receivedAt < start) {
+                ScanLog.note("before ${account.name}'s first record")
                 db.messageInbox().finish(fingerprint, "COVERED")
                 return COVERED
             }
             // The statement has it: give that row what statements lack (time, readable payee, method, app); balance unchanged.
             statementRow(row, account, accounts)?.let { e ->
+                ScanLog.note("filled statement row #${e.id} \"${e.name}\"")
                 enrich(e, row, name, hint)
                 db.messageInbox().finish(fingerprint, "MERGED")
                 return MERGED
@@ -210,10 +217,14 @@ class MessageInboxRepository @Inject constructor(
             return DUPLICATE
         }
         // Only fresh alerts are added unattended; older ones not in the statement wait in Review as possibly missed.
-        if (old || (!transfer && nearMatch(row))) return ADDED_TO_REVIEW
-        if (account == null || parsed == null || parsed.hasLink || !settings.messages.first().autoAdd || settings.money.first().currency != "INR") return ADDED_TO_REVIEW
-        name ?: return ADDED_TO_REVIEW
-        val category = AutoAdd.category(name, row.body, db.categories().list(), db.expenses().list(), transfer) ?: return ADDED_TO_REVIEW
+        if (old) { ScanLog.note("older than 2 days and not in your statements"); return ADDED_TO_REVIEW }
+        if (!transfer && nearMatch(row)) { ScanLog.note("same amount saved within 3 days (maybe the same payment)"); return ADDED_TO_REVIEW }
+        if (account == null) { ScanLog.note("account not recognised"); return ADDED_TO_REVIEW }
+        if (parsed == null) { ScanLog.note("not a bank alert"); return ADDED_TO_REVIEW }
+        if (parsed.hasLink) { ScanLog.note("message has a link"); return ADDED_TO_REVIEW }
+        if (!settings.messages.first().autoAdd || settings.money.first().currency != "INR") { ScanLog.note("adding automatically is off"); return ADDED_TO_REVIEW }
+        if (name == null) { ScanLog.note("no payee name"); return ADDED_TO_REVIEW }
+        val category = AutoAdd.category(name, row.body, db.categories().list(), db.expenses().list(), transfer) ?: run { ScanLog.note("no category fits"); return ADDED_TO_REVIEW }
         val added = confirm(fingerprint, account.id, category.id, name, auto = true, app = hint?.takeUnless { transfer }?.let { appOf(it.source) })
         if (added == 0L) return DUPLICATE
         if (notify) AutoAddNotice.show(ctx, added, name, row.amountPaise / 100.0, row.type, account.name)
@@ -235,14 +246,41 @@ class MessageInboxRepository @Inject constructor(
             .minByOrNull { kotlin.math.abs(it.time - row.receivedAt) }
     }
 
+    /** The ledger entry stamped with this alert's time is the same payment: its payee gets the alert's (and any app's) name as an alias. */
+    private suspend fun learnFromSaved(row: MessageInboxEntity, body: String) {
+        if (!AutoAdd.hasName(row.merchant)) return
+        val account = AutoAdd.account(db.accounts().list(), row.accountSuffix, body) ?: return
+        val e = db.expenses().atTime(account.id, row.type, row.amountPaise / 100.0, row.receivedAt) ?: return
+        // Transfers carry generated names; cryptic statement names say nothing.
+        if (AutoAdd.crypticName(e.name) || e.name.startsWith("Transfer ") || e.name == "Credit card payment") return
+        learn(e.name, row.merchant, hintFor(row)?.merchant)
+    }
+
+    /** Each name in [seen] (alert or payment-app spelling) that differs from [name] becomes an alias of it. */
+    private suspend fun learn(name: String, vararg seen: String?, chosen: Boolean = false) {
+        val own = AutoAdd.aliasKey(name)
+        // [chosen]: you picked this name in Review, so any spelling counts; otherwise only names that look alike
+        // (an amount match can pair an alert with someone else's statement row).
+        seen.filter { AutoAdd.hasName(it) && (chosen || AutoAdd.plausibleAlias(it, name)) }.forEach { s ->
+            val key = AutoAdd.aliasKey(s)
+            if (key.length >= 4 && key != own) {
+                db.payeeAlias().put(PayeeAliasEntity(key, s!!.trim(), name.trim()))
+                ScanLog.note("name saved: ${s.trim()} → ${name.trim()}")
+            }
+        }
+    }
+
+
     /** Fills in a statement row from its alert. Amount and account are the same, so the balance doesn't move. */
     private suspend fun enrich(e: ExpenseEntity, row: MessageInboxEntity, name: String?, hint: MessageInboxEntity?) {
         val method = e.method ?: AutoAdd.method(row.body, row.isUpi)
         val app = e.upiApp ?: hint?.let { appOf(it.source) } ?: if (method == "UPI") AutoAdd.upiApp(row.body)?.name else null
+        // Statements say "UPI q6922…" or cut names at 10 characters ("Cochin Caf"): the alert's fuller name wins.
+        val finalName = if (name != null && (AutoAdd.crypticName(e.name) || (name.length > e.name.length && name.startsWith(e.name, ignoreCase = true)))) name else e.name
+        if (!AutoAdd.crypticName(finalName)) learn(finalName, row.merchant, hint?.merchant)
         expenses.update(e.copy(
             time = row.receivedAt,
-            // Statements say "UPI q6922…" or cut names at 10 characters ("Cochin Caf"): the alert's fuller name wins.
-            name = if (name != null && (AutoAdd.crypticName(e.name) || (name.length > e.name.length && name.startsWith(e.name, ignoreCase = true)))) name else e.name,
+            name = finalName,
             method = method,
             upiApp = if (method == "UPI") app else e.upiApp,
         ))
@@ -280,7 +318,8 @@ class MessageInboxRepository @Inject constructor(
         }.forEach { e ->
             val full = AutoAdd.complete(AutoAdd.payee(h.payee, ""), known)
             val better = full != null && (AutoAdd.crypticName(e.name) || full.startsWith(e.name, ignoreCase = true))
-            expenses.update(e.copy(method = "UPI", upiApp = app.name, name = if (better) full!! else e.name))
+            expenses.update(e.copy(method = "UPI", upiApp = app.name, name = if (better) full else e.name))
+            learn(if (better) full else e.name, h.payee, e.name)
         }
     }
 
@@ -305,7 +344,7 @@ class MessageInboxRepository @Inject constructor(
      * hand entries may carry only the date).
      */
     private suspend fun recorded(row: MessageInboxEntity, accountId: Long?, scan: Boolean): Boolean {
-        if (row.reference != null && db.expenses().hasNote("Ref ${row.reference}")) return true
+        if (row.reference != null && db.expenses().hasNote("Ref ${row.reference}")) { ScanLog.note("bank reference already saved"); return true }
         accountId ?: return false
         // A date-only entry (statement import, hand entry) a day either side with the same account, direction and amount,
         // and the same payee name (or an alert with no usable name): already saved.
@@ -316,14 +355,17 @@ class MessageInboxRepository @Inject constructor(
         val kept = AutoAdd.aliasFor(db.payeeAlias().list(), row.merchant)
         if (db.expenses().ownNear(listOf(accountId), row.type, row.amountPaise / 100.0, dayStart - dayMs, dayStart + 2 * dayMs - 1)
             .any { e -> java.time.Instant.ofEpochMilli(e.time).atZone(zoneId).toLocalTime() == java.time.LocalTime.MIDNIGHT &&
-                (!AutoAdd.hasName(row.merchant) || AutoAdd.sameName(row.merchant, e.name) || kept.equals(e.name, ignoreCase = true)) }) return true
+                (!AutoAdd.hasName(row.merchant) || AutoAdd.sameName(row.merchant, e.name) || kept.equals(e.name, ignoreCase = true)) }) {
+            ScanLog.note("a dated entry with the same amount and payee is already saved")
+            return true
+        }
         // Same-day matching is for history, where statements carry only dates; a fresh alert has a time, so ±30 min.
         val (from, to) = if (scan && System.currentTimeMillis() - row.receivedAt >= FRESH_MS) {
             val zone = java.time.ZoneId.systemDefault()
             val day = java.time.Instant.ofEpochMilli(row.receivedAt).atZone(zone).toLocalDate()
             day.atStartOfDay(zone).toInstant().toEpochMilli() to day.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli() - 1
         } else row.receivedAt - 30 * 60_000L to row.receivedAt + 30 * 60_000L
-        return db.expenses().hasSimilar(accountId, row.type, row.amountPaise / 100.0, from, to)
+        return db.expenses().hasSimilar(accountId, row.type, row.amountPaise / 100.0, from, to).also { if (it) ScanLog.note("same account, direction and amount saved nearby in time") }
     }
 
     /**
@@ -368,9 +410,8 @@ class MessageInboxRepository @Inject constructor(
             method = method,
             upiApp = if (method == "UPI") app ?: hintFor(row)?.let { appOf(it.source) } ?: AutoAdd.upiApp(row.body)?.name else null,
         ))
-        // Named differently from the alert: remember it, so the next alert from them lands on this name and matches saved entries.
-        val key = AutoAdd.aliasKey(row.merchant)
-        if (AutoAdd.hasName(row.merchant) && key.length >= 4 && key != AutoAdd.aliasKey(name)) db.payeeAlias().put(PayeeAliasEntity(key, row.merchant!!.trim(), name.trim()))
+        // Named differently in the bank alert or the payment app: remember both, so the next one lands on this name.
+        learn(name, row.merchant, hintFor(row)?.merchant, chosen = !auto)
         if (!auto && row.accountSuffix != null && account.number.none(Char::isDigit)) db.accounts().upsert(account.copy(number = "XX" + row.accountSuffix))
         db.messageInbox().finish(id, "IMPORTED")
         added

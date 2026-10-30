@@ -38,7 +38,6 @@ import androidx.compose.material.icons.rounded.EventRepeat
 import androidx.compose.material.icons.rounded.Handshake
 import androidx.compose.material.icons.rounded.Insights
 import androidx.compose.material.icons.rounded.NotificationsActive
-import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material.icons.rounded.RequestQuote
 import androidx.compose.material.icons.rounded.Restore
@@ -49,7 +48,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -65,7 +63,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.toggleableState
@@ -81,10 +78,6 @@ import com.paisaplus.compose.ui.components.PillButton
 import com.paisaplus.compose.ui.settings.ImportCsvScreen
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
-import kotlinx.coroutines.flow.dropWhile
-import kotlinx.coroutines.flow.first
-import androidx.compose.material.icons.rounded.Palette
 import com.paisaplus.compose.data.ThemeMode
 import com.paisaplus.compose.ui.components.SegmentedTabs
 import com.paisaplus.compose.ui.components.TintCard

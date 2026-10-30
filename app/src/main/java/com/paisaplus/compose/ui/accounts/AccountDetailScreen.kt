@@ -40,14 +40,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.SwapHoriz
 import androidx.compose.material.icons.automirrored.rounded.ReceiptLong
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -78,11 +77,10 @@ import com.paisaplus.compose.ui.money
 import com.paisaplus.compose.ui.dayFmt
 import com.paisaplus.compose.ui.moneyOrHidden
 import com.paisaplus.compose.ui.theme.LocalPaisaColors
-import java.time.YearMonth
 
 /** One account or card: the card, actions, details, this month, and its transactions. */
 @Composable
-fun AccountDetailScreen(vm: AppViewModel, id: Long, onBack: () -> Unit, onAdd: (accountId: Long) -> Unit, onOpenTx: (Long) -> Unit) {
+fun AccountDetailScreen(vm: AppViewModel, id: Long, onBack: () -> Unit, onAdd: (accountId: Long) -> Unit, onPayBill: (cardId: Long) -> Unit, onOpenTx: (Long) -> Unit) {
     val d by vm.data.collectAsStateWithLifecycle()
     val hidden by vm.hideBalance.collectAsStateWithLifecycle()
     var editing by remember { mutableStateOf(false) }
@@ -92,7 +90,7 @@ fun AccountDetailScreen(vm: AppViewModel, id: Long, onBack: () -> Unit, onAdd: (
     if (row == null) return
     val a = row.account
     val group = remember(d.accounts, d.loans, id) { cardGroup(a, d.accounts.map { it.account }, d.loans) }
-    if (group != null) { GroupDetail(vm, d, group, hidden, onBack, onAdd, onOpenTx); return }
+    if (group != null) { GroupDetail(vm, d, group, hidden, onBack, onAdd, onPayBill, onOpenTx); return }
     val txs = remember(d.expenses, id) { d.expenses.filter { it.accountId == id } }
     val groups = remember(txs) { groupByDay(txs) }
     val start = LocalMonthStart.current
@@ -112,9 +110,11 @@ fun AccountDetailScreen(vm: AppViewModel, id: Long, onBack: () -> Unit, onAdd: (
             item {
                 Row(Modifier.fillMaxWidth().padding(vertical = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     PillButton(str(R.string.add_transaction), { onAdd(id) }, Modifier.weight(1f), icon = Icons.Rounded.Add)
-                    OutlinedButton({ editing = true }, Modifier.heightIn(min = 56.dp)) {
-                        Icon(Icons.Rounded.Edit, null, Modifier.padding(end = 8.dp)); Text(str(R.string.edit))
+                    if (a.cardType == CardType.CREDIT) OutlinedButton({ onPayBill(id) }, Modifier.heightIn(min = 56.dp)) {
+                        Icon(Icons.Rounded.SwapHoriz, null, Modifier.padding(end = 8.dp)); Text(str(R.string.pay_bill))
                     }
+                    // Icon only: three labelled buttons don't fit one row without wrapping.
+                    OutlinedButton({ editing = true }, Modifier.heightIn(min = 56.dp)) { Icon(Icons.Rounded.Edit, str(R.string.edit)) }
                 }
             }
             item {
@@ -179,7 +179,7 @@ fun AccountDetailScreen(vm: AppViewModel, id: Long, onBack: () -> Unit, onAdd: (
  * The list shows every transaction ("Exclude transfers" only affects totals).
  */
 @Composable
-private fun GroupDetail(vm: AppViewModel, d: AppData, g: CardGroup, hidden: Boolean, onBack: () -> Unit, onAdd: (Long) -> Unit, onOpenTx: (Long) -> Unit) {
+private fun GroupDetail(vm: AppViewModel, d: AppData, g: CardGroup, hidden: Boolean, onBack: () -> Unit, onAdd: (Long) -> Unit, onPayBill: (Long) -> Unit, onOpenTx: (Long) -> Unit) {
     var selected by rememberSaveable { mutableStateOf<Long?>(null) } // null = All cards
     val card = g.members.firstOrNull { it.id == selected }
     val transfers = remember(d.categories) { transferIds(d.categories) }
@@ -203,7 +203,14 @@ private fun GroupDetail(vm: AppViewModel, d: AppData, g: CardGroup, hidden: Bool
                     }
                 }
             }
-            item { PillButton(str(R.string.add_transaction), { onAdd((card ?: g.members.first()).id) }, Modifier.fillMaxWidth(), icon = Icons.Rounded.Add) }
+            item {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    PillButton(str(R.string.add_transaction), { onAdd((card ?: g.members.first()).id) }, Modifier.weight(1f), icon = Icons.Rounded.Add)
+                    OutlinedButton({ onPayBill((card ?: g.members.first()).id) }, Modifier.heightIn(min = 56.dp)) {
+                        Icon(Icons.Rounded.SwapHoriz, null, Modifier.padding(end = 8.dp)); Text(str(R.string.pay_bill))
+                    }
+                }
+            }
             item { SectionTitle(str(R.string.transactions)) }
             if (txs.isEmpty()) item { EmptyState(Icons.AutoMirrored.Rounded.ReceiptLong, str(R.string.no_transactions_yet)) }
             groups.forEach { (day, list) ->

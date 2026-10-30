@@ -2,12 +2,7 @@ package com.paisaplus.compose.widget
 
 import com.paisaplus.compose.str
 
-import com.paisaplus.compose.data.currentPeriod
-import com.paisaplus.compose.data.monthTotals
-import com.paisaplus.compose.data.salaryIds
-import com.paisaplus.compose.data.transferIds
 import android.content.Context
-import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,12 +15,9 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
-import androidx.glance.appwidget.provideContent
-import androidx.glance.appwidget.updateAll
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
-import androidx.glance.layout.Column
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
@@ -45,15 +37,12 @@ import com.paisaplus.compose.data.BalanceMode
 import com.paisaplus.compose.data.balanceSummary
 import java.time.LocalDate
 import com.paisaplus.compose.R
-import com.paisaplus.compose.data.Money
 import com.paisaplus.compose.data.PaisaDatabase
 import com.paisaplus.compose.data.SettingsStore
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.first
-import java.time.YearMonth
 import java.time.ZoneId
 
 @EntryPoint

@@ -1,12 +1,23 @@
 package com.paisaplus.compose.ui.settings
 
 import android.content.Intent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.core.graphics.drawable.toBitmap
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -21,7 +32,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -43,9 +53,11 @@ fun BankingAppsRow(prefs: MessagePrefs, save: (MessagePrefs) -> Unit) {
 @Composable
 private fun BankingAppsDialog(selected: Set<String>, dismiss: () -> Unit, save: (Set<String>) -> Unit) {
     val pm = LocalContext.current.packageManager
+    // Ticked apps first (as saved when the list opened, so rows don't jump while you tick), then A–Z.
     val apps = remember {
         pm.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER), 0)
-            .map { InstalledApp(it.activityInfo.packageName, it.loadLabel(pm).toString()) }.distinctBy { it.pkg }.sortedBy { it.label.lowercase() }
+            .map { InstalledApp(it.activityInfo.packageName, it.loadLabel(pm).toString()) }.distinctBy { it.pkg }
+            .sortedWith(compareBy<InstalledApp> { it.pkg !in selected }.thenBy { it.label.lowercase() })
     }
     var picked by remember { mutableStateOf(selected) }
     var query by remember { mutableStateOf("") }
@@ -59,13 +71,18 @@ private fun BankingAppsDialog(selected: Set<String>, dismiss: () -> Unit, save: 
             Column {
                 Text(str(R.string.banking_apps_summary))
                 OutlinedTextField(query, { query = it }, Modifier.fillMaxWidth().padding(vertical = 8.dp), singleLine = true, placeholder = { Text(str(R.string.search)) })
-                LazyColumn(Modifier.heightIn(max = 360.dp)) {
+                LazyColumn(Modifier.heightIn(max = 420.dp)) {
                     items(shown, key = { it.pkg }) { a ->
                         val on = a.pkg in picked
-                        Row(Modifier.fillMaxWidth().clickable { picked = if (on) picked - a.pkg else picked + a.pkg }, verticalAlignment = Alignment.CenterVertically) {
-                            Checkbox(on, null)
-                            Text(a.label, Modifier.padding(start = 8.dp))
-                        }
+                        val icon = remember(a.pkg) { runCatching { pm.getApplicationIcon(a.pkg).toBitmap(96, 96).asImageBitmap() }.getOrNull() }
+                        ListItem(
+                            headlineContent = { Text(a.label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                            supportingContent = { Text(a.pkg, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall) },
+                            leadingContent = { if (icon != null) Image(icon, null, Modifier.size(40.dp).clip(RoundedCornerShape(10.dp))) else Spacer(Modifier.size(40.dp)) },
+                            trailingContent = { Checkbox(on, null) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable { picked = if (on) picked - a.pkg else picked + a.pkg },
+                        )
                     }
                 }
             }

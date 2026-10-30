@@ -3,8 +3,6 @@ package com.paisaplus.compose
 import com.paisaplus.compose.data.ExpenseEntity
 import com.paisaplus.compose.ui.transactions.PayeeScreen
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.platform.LocalDensity
 import android.app.Application
 import android.os.Bundle
@@ -171,6 +169,7 @@ object Routes {
     const val DEBTS = "debts"
     const val SETTINGS = "settings"
     const val IMPORT_MESSAGES = "import_messages"
+    const val SCAN_LOG = "scan_log"
     const val PAYMENTS = "payments"
     const val PEOPLE = "people"
     const val IMPORT_CSV = "import_csv"
@@ -400,7 +399,7 @@ private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () ->
             composable(Tab.ACCOUNTS.route) { AccountsScreen(vm, pad, up(Tab.ACCOUNTS)) { nav.navigate("account/$it") } }
             composable("account/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
                 val id = e.arguments!!.getLong("id")
-                AccountDetailScreen(vm, id, back, onAdd = { nav.editTransaction(account = it) }, onOpenTx = { tx -> vm.data.value.expenses.firstOrNull { it.id == tx }?.let(nav::openPayee) })
+                AccountDetailScreen(vm, id, back, onAdd = { nav.editTransaction(account = it) }, onPayBill = { nav.navigate("transfer?to=$it") }, onOpenTx = { tx -> vm.data.value.expenses.firstOrNull { it.id == tx }?.let(nav::openPayee) })
             }
             composable(Routes.PROFILE) { ProfileScreen(vm, back) { nav.go(it) } }
             composable(Tab.REPORTS.route) { ReportsScreen(vm, up(Tab.REPORTS), pad) }
@@ -420,11 +419,15 @@ private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () ->
             composable(Routes.PAYMENTS) { com.paisaplus.compose.ui.settings.PaymentsInboxScreen(vm, back, onOpenTx = { nav.editTransaction(it) }) }
             composable(Routes.IMPORT_MESSAGES) { com.paisaplus.compose.ui.settings.PaymentsInboxScreen(vm, back, onOpenTx = { nav.editTransaction(it) }) }
             composable(Routes.IMPORT_CSV) { ImportCsvScreen(vm, back) }
+            composable(Routes.SCAN_LOG) { com.paisaplus.compose.ui.settings.ScanLogScreen(back) }
             composable(Routes.SETTINGS) { SettingsScreen(vm, back, openSettings) }
             composable("${Routes.SETTINGS}/{page}") { e ->
                 val page = com.paisaplus.compose.ui.settings.SettingsPage.entries.firstOrNull { it.name == e.arguments?.getString("page") }
                     ?: com.paisaplus.compose.ui.settings.SettingsPage.MONEY
                 com.paisaplus.compose.ui.settings.SettingsPageScreen(vm, page, back, openSettings)
+            }
+            composable("transfer?to={to}", arguments = listOf(navArgument("to") { type = NavType.LongType; defaultValue = 0L })) { e ->
+                com.paisaplus.compose.ui.transactions.TransferScreen(vm, initialTo = e.arguments!!.getLong("to"), onDone = { nav.popBackStack() })
             }
             composable(
                 "tx/{id}?type={type}&account={account}",

@@ -51,8 +51,9 @@ Rules:
 - loan_type: emi (purchase converted to EMI on a credit card) or loan (home,
   car, personal, education...); empty if not a loan row
 - installment: "n/N" when the statement shows it (e.g. "3/12"); else empty
-- payment_method: upi, tap (contactless / tap to pay), swipe or insert (chip)
-  when the statement shows how a card or account payment was made; else empty
+- payment_method: upi, tap (contactless / tap to pay), swipe, insert (chip) or
+  bank app (netbanking / banking app transfer) when the statement shows how a
+  card or account payment was made; else empty
 - upi_app: for upi rows, the app if the statement names it: gpay, supermoney,
   phonepe, paytm, bhim, cred, mobikwik, freecharge, navi, nubank, mercadopago,
   picpay, pagbank, inter or other; else empty
@@ -108,6 +109,7 @@ private val methods = mapOf(
     "upi" to PaymentMethod.UPI,
     "tap" to PaymentMethod.TAP, "tap to pay" to PaymentMethod.TAP, "contactless" to PaymentMethod.TAP, "nfc" to PaymentMethod.TAP,
     "swipe" to PaymentMethod.SWIPE, "swiped" to PaymentMethod.SWIPE, "magstripe" to PaymentMethod.SWIPE,
+    "bank app" to PaymentMethod.BANK_APP, "app" to PaymentMethod.BANK_APP, "netbanking" to PaymentMethod.BANK_APP,
     "insert" to PaymentMethod.INSERT, "chip" to PaymentMethod.INSERT, "insert (chip)" to PaymentMethod.INSERT, "dip" to PaymentMethod.INSERT,
 )
 

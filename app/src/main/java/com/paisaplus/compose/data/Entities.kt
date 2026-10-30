@@ -11,7 +11,12 @@ import androidx.room.PrimaryKey
 enum class TransactionType { EXPENSE, INCOME }
 
 /** How a payment was made (stored by name on the transaction; null = not set). */
-enum class PaymentMethod { UPI, TAP, SWIPE, INSERT }
+enum class PaymentMethod { UPI, TAP, SWIPE, INSERT, BANK_APP }
+/** Banking apps a transfer or card bill can be paid from; saved in the same column as the UPI app (names don't overlap). */
+enum class BankApp(val label: String) {
+    IMOBILE("iMobile Pay"), FEDMOBILE("FedMobile"), SBICARD("SBI Card"), YONO("YONO SBI"), AXISMOBILE("Axis Mobile"),
+    HDFC("HDFC Bank"), KOTAK("Kotak"), OTHER("")
+}
 
 /** Which app made a [PaymentMethod.UPI] payment (stored by name; null = not set). */
 enum class UpiApp(val label: String) { GPAY("Google Pay"), SUPERMONEY("super.money"), PHONEPE("PhonePe"), PAYTM("Paytm"), BHIM("BHIM"), CRED("CRED"),

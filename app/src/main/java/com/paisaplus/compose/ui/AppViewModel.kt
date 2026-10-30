@@ -19,6 +19,8 @@ import com.paisaplus.compose.TabConfig
 import com.paisaplus.compose.data.BackupManager
 import com.paisaplus.compose.data.CsvImporter
 import com.paisaplus.compose.data.ImportPreview
+import androidx.room.withTransaction
+import com.paisaplus.compose.data.TransactionType
 import com.paisaplus.compose.data.CardType
 import com.paisaplus.compose.data.LockSettings
 import com.paisaplus.compose.data.MoneyFormat
@@ -194,6 +196,9 @@ class AppViewModel @Inject constructor(
     val widget = settings.widget.stateIn(viewModelScope, SharingStarted.Eagerly, WidgetPrefs())
     /** Names alerts use for people, and who they are saved as (shown on the payee page). */
     val aliases = expenses.aliases().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    fun addAlias(name: String, alias: String) = viewModelScope.launch { expenses.addAlias(name, alias) }
+    fun removeAlias(key: String) = viewModelScope.launch { expenses.removeAlias(key) }
+    fun editAlias(oldKey: String, name: String, alias: String) = viewModelScope.launch { expenses.editAlias(oldKey, name, alias) }
     val messagePrefs = settings.messages.stateIn(viewModelScope, SharingStarted.Eagerly, com.paisaplus.compose.data.MessagePrefs())
     fun setMessagePrefs(m: com.paisaplus.compose.data.MessagePrefs) = viewModelScope.launch { settings.setMessages(m) }
     fun setWidget(w: WidgetPrefs) = viewModelScope.launch { settings.setWidget(w) }
@@ -248,6 +253,12 @@ class AppViewModel @Inject constructor(
     val balanceModes = settings.balanceModes.stateIn(viewModelScope, SharingStarted.Eagerly, BalanceMode.DEFAULT)
 
     init {
+        // One time: automatic aliases saved before they had to look alike (some paired people with unrelated statement rows) go.
+        viewModelScope.launch {
+            if (settings.aliasesPruned.first()) return@launch
+            db.payeeAlias().list().filterNot { com.paisaplus.compose.messages.AutoAdd.plausibleAlias(it.alias, it.name) }.forEach { db.payeeAlias().delete(it.key) }
+            settings.setAliasesPruned()
+        }
         // Existing ledgers get "Mobile Recharge" once (new ones get it from the defaults); deleting it later sticks.
         viewModelScope.launch {
             if (settings.rechargeCategoryAdded.first()) return@launch
@@ -294,6 +305,62 @@ class AppViewModel @Inject constructor(
 
     fun saveExpense(e: ExpenseEntity) = viewModelScope.launch {
         if (e.id == 0L) expenses.add(e) else expenses.update(e)
+    }
+
+    /**
+     * Money between two of your accounts, or a card bill payment: an expense on [fromId] and an income on [toId], both in
+     * the Transfer category (made if missing). [bankApp]: the banking app it was paid from (a [BankApp] name), if any.
+     */
+    fun saveTransfer(fromId: Long, toId: Long, amount: Double, time: Long, bankApp: String?) = viewModelScope.launch {
+        val accs = data.value.accountById
+        val from = accs[fromId] ?: return@launch
+        val to = accs[toId] ?: return@launch
+        if (fromId == toId || amount <= 0) return@launch
+        val cat = transferCategory()
+        val card = to.cardType == CardType.CREDIT
+        val method = if (bankApp != null) com.paisaplus.compose.data.PaymentMethod.BANK_APP.name else null
+        db.withTransaction {
+            expenses.add(ExpenseEntity(name = if (card) "Credit card payment" else "Transfer to ${to.name}", amount = amount, time = time, type = TransactionType.EXPENSE, accountId = fromId, categoryId = cat, method = method, upiApp = bankApp))
+            expenses.add(ExpenseEntity(name = if (card) "Credit card payment" else "Transfer from ${from.name}", amount = amount, time = time, type = TransactionType.INCOME, accountId = toId, categoryId = cat, method = method, upiApp = bankApp))
+        }
+        messages.emit(UiMessage(str(R.string.transfer_saved)))
+    }
+
+    private suspend fun transferCategory() = data.value.categories.firstOrNull { it.name.trim().equals("Transfer", ignoreCase = true) }?.id
+        ?: categories.save(CategoryEntity(name = "Transfer", icon = 0xf04e1, color = 0xFF607D8B.toInt(), isDefault = false))
+
+    /** The entry on [otherId] that already is the other leg of [e]: opposite direction, same amount, within 3 days, not yet a transfer. */
+    fun transferLegOf(e: ExpenseEntity, otherId: Long): ExpenseEntity? {
+        val transfers = com.paisaplus.compose.data.transferIds(data.value.categories)
+        return data.value.expenses.filter { it.accountId == otherId && it.type != e.type && it.categoryId !in transfers && kotlin.math.abs(it.amount - e.amount) < 0.005 && kotlin.math.abs(it.time - e.time) <= 3 * 86_400_000L }
+            .minByOrNull { kotlin.math.abs(it.time - e.time) }
+    }
+
+    /**
+     * Turns [e] into one side of a transfer with [otherId]: [e] becomes Transfer, and the other account gets the opposite
+     * entry, or the one already there (same amount within 3 days) is marked Transfer too. Both then show in Transactions.
+     */
+    fun makeTransfer(e: ExpenseEntity, otherId: Long) = viewModelScope.launch {
+        val accs = data.value.accountById
+        val other = accs[otherId] ?: return@launch
+        val mine = accs[e.accountId] ?: return@launch
+        if (otherId == e.accountId) return@launch
+        val cat = transferCategory()
+        val expenseSide = e.type == TransactionType.EXPENSE
+        val to = if (expenseSide) other else mine
+        val from = if (expenseSide) mine else other
+        val card = to.cardType == CardType.CREDIT
+        val leg = transferLegOf(e, otherId)
+        db.withTransaction {
+            expenses.update(e.copy(categoryId = cat))
+            if (leg != null) expenses.update(leg.copy(categoryId = cat))
+            else expenses.add(ExpenseEntity(
+                name = if (card) "Credit card payment" else if (expenseSide) "Transfer from ${from.name}" else "Transfer to ${to.name}",
+                amount = e.amount, time = e.time, type = if (expenseSide) TransactionType.INCOME else TransactionType.EXPENSE,
+                accountId = otherId, categoryId = cat, method = e.method, upiApp = e.upiApp,
+            ))
+        }
+        messages.emit(UiMessage(str(R.string.marked_as_transfer)))
     }
 
     val recentlyDeleted = expenses.recentlyDeleted().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

@@ -76,6 +76,18 @@ object AutoAdd {
         return x.length >= 4 && y.length >= 4 && (x.startsWith(y) || y.startsWith(x))
     }
 
+    /**
+     * Two names that plausibly belong to one payee: one contains or starts the other (letters only), or they share a word of
+     * 4+ letters. Automatic aliases need this, since statement rows are matched by amount and date, not by who was paid.
+     */
+    fun plausibleAlias(alias: String?, name: String?): Boolean {
+        val x = aliasKey(alias)
+        val y = aliasKey(name)
+        if (x.length >= 4 && y.length >= 4 && (x.startsWith(y) || y.startsWith(x) || x in y || y in x)) return true
+        fun words(s: String?) = s.orEmpty().lowercase(Locale.ROOT).split(Regex("[^a-z]+")).filter { it.length >= 4 }.toSet()
+        return words(alias).intersect(words(name)).isNotEmpty()
+    }
+
     fun aliasKey(s: String?) = s.orEmpty().lowercase(Locale.ROOT).filter(Char::isLetter)
 
     /** The name you keep [merchant] under: an alias with the same letters, or one cut at the SMS's 15 characters. */

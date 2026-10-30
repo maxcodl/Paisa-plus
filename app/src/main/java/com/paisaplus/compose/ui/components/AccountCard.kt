@@ -41,7 +41,6 @@ import com.paisaplus.compose.data.CardType
 import com.paisaplus.compose.data.AccountEntity
 import com.paisaplus.compose.data.CardGroup
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.graphics.Color
 import com.paisaplus.compose.ui.AccountRow
 import com.paisaplus.compose.ui.icon
