@@ -11,6 +11,8 @@ import androidx.compose.foundation.horizontalScroll
 import com.paisaplus.compose.ui.components.last4Label
 import com.paisaplus.compose.ui.AppData
 import com.paisaplus.compose.data.transferIds
+import com.paisaplus.compose.data.groupByDay
+import com.paisaplus.compose.ui.transactions.DayHeader
 import com.paisaplus.compose.data.isGroupPayment
 import com.paisaplus.compose.data.groupTransactions
 import com.paisaplus.compose.data.cardGroup
@@ -92,6 +94,7 @@ fun AccountDetailScreen(vm: AppViewModel, id: Long, onBack: () -> Unit, onAdd: (
     val group = remember(d.accounts, d.loans, id) { cardGroup(a, d.accounts.map { it.account }, d.loans) }
     if (group != null) { GroupDetail(vm, d, group, hidden, onBack, onAdd, onOpenTx); return }
     val txs = remember(d.expenses, id) { d.expenses.filter { it.accountId == id } }
+    val groups = remember(txs) { groupByDay(txs) }
     val start = LocalMonthStart.current
     val month = remember(txs, start) { monthTotals(txs, currentPeriod(start), start = start) }
     val p = LocalPaisaColors.current
@@ -152,9 +155,12 @@ fun AccountDetailScreen(vm: AppViewModel, id: Long, onBack: () -> Unit, onAdd: (
             }
             item { SectionTitle(str(R.string.transactions)) }
             if (txs.isEmpty()) item { EmptyState(Icons.AutoMirrored.Rounded.ReceiptLong, str(R.string.no_transactions_yet)) }
-            itemsIndexed(txs, key = { _, e -> e.id }) { i, e ->
-                Box(Modifier.segmented(i, txs.size).clickable { onOpenTx(e.id) }) {
-                    TransactionRow(e, d.categoryById[e.categoryId], null)
+            groups.forEach { (day, list) ->
+                stickyHeader(key = "h$day") { DayHeader(day, list, inset = 4.dp) }
+                itemsIndexed(list, key = { _, e -> e.id }) { i, e ->
+                    Box(Modifier.segmented(i, list.size).clickable { onOpenTx(e.id) }) {
+                        TransactionRow(e, d.categoryById[e.categoryId], null)
+                    }
                 }
             }
         }
@@ -178,6 +184,7 @@ private fun GroupDetail(vm: AppViewModel, d: AppData, g: CardGroup, hidden: Bool
     val card = g.members.firstOrNull { it.id == selected }
     val transfers = remember(d.categories) { transferIds(d.categories) }
     val txs = remember(d.expenses, g, card) { if (card == null) groupTransactions(d.expenses, g) else d.expenses.filter { it.accountId == card.id } }
+    val groups = remember(txs) { groupByDay(txs) }
     var editing by remember { mutableStateOf<AccountEntity?>(null) }
     Scaffold(
         topBar = {
@@ -199,18 +206,21 @@ private fun GroupDetail(vm: AppViewModel, d: AppData, g: CardGroup, hidden: Bool
             item { PillButton(str(R.string.add_transaction), { onAdd((card ?: g.members.first()).id) }, Modifier.fillMaxWidth(), icon = Icons.Rounded.Add) }
             item { SectionTitle(str(R.string.transactions)) }
             if (txs.isEmpty()) item { EmptyState(Icons.AutoMirrored.Rounded.ReceiptLong, str(R.string.no_transactions_yet)) }
-            itemsIndexed(txs, key = { _, e -> e.id }) { i, e ->
-                // "All cards": the card's network logo; last 4 only when its name names no network.
-                val acc = d.accountById[e.accountId]
-                val network = acc?.let(::cardNetwork)
-                val badge: (@Composable () -> Unit)? = when {
-                    isGroupPayment(e, g, transfers) -> { { BadgeText(str(R.string.group_payment)) } }
-                    card != null || acc == null -> null
-                    network != null -> { { NetworkBadge(network) } }
-                    else -> { { BadgeText(acc.last4Label()) } }
-                }
-                Box(Modifier.segmented(i, txs.size).clickable { onOpenTx(e.id) }) {
-                    TransactionRow(e, d.categoryById[e.categoryId], null, badge = badge)
+            groups.forEach { (day, list) ->
+                stickyHeader(key = "h$day") { DayHeader(day, list, inset = 4.dp) }
+                itemsIndexed(list, key = { _, e -> e.id }) { i, e ->
+                    // "All cards": the card's network logo; last 4 only when its name names no network.
+                    val acc = d.accountById[e.accountId]
+                    val network = acc?.let(::cardNetwork)
+                    val badge: (@Composable () -> Unit)? = when {
+                        isGroupPayment(e, g, transfers) -> { { BadgeText(str(R.string.group_payment)) } }
+                        card != null || acc == null -> null
+                        network != null -> { { NetworkBadge(network) } }
+                        else -> { { BadgeText(acc.last4Label()) } }
+                    }
+                    Box(Modifier.segmented(i, list.size).clickable { onOpenTx(e.id) }) {
+                        TransactionRow(e, d.categoryById[e.categoryId], null, badge = badge)
+                    }
                 }
             }
         }

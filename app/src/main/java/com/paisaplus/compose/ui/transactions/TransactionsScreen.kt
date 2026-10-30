@@ -182,15 +182,16 @@ private fun MonthPicker(month: YearMonth?, months: List<YearMonth>, onChange: (Y
 
 private val monthFmt = java.time.format.DateTimeFormatter.ofPattern("MMMM yyyy")
 
+/** [inset]: start/end padding; lists that already pad their content pass less. */
 @Composable
-private fun DayHeader(day: LocalDate, list: List<ExpenseEntity>) {
+fun DayHeader(day: LocalDate, list: List<ExpenseEntity>, inset: androidx.compose.ui.unit.Dp = 20.dp) {
     val c = MaterialTheme.colorScheme
     // Sticky: rows scroll under it, so it needs a real fill (glass when on; surface is transparent then).
     val glass = LocalGlass.current
     Row(
         Modifier.fillMaxWidth()
             .then(if (glass != null) Modifier.glass(glass, RoundedCornerShape(0.dp), c.surfaceContainer, alpha = 0.8f, lens = 0.dp) else Modifier.background(c.surface))
-            .padding(horizontal = 20.dp, vertical = 8.dp),
+            .padding(horizontal = inset, vertical = 8.dp),
     ) {
         val today = LocalDate.now()
         Text(
