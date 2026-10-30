@@ -5,7 +5,9 @@ import com.paisaplus.compose.str
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
@@ -19,7 +21,9 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.paisaplus.compose.MainActivity
 import com.paisaplus.compose.R
+import com.paisaplus.compose.Routes
 import com.paisaplus.compose.data.AutoPoster
 import com.paisaplus.compose.data.BackupManager
 import com.paisaplus.compose.data.PaisaDatabase
@@ -122,6 +126,11 @@ object Reminders {
                 .setSmallIcon(R.drawable.ic_stat_paisa)
                 .setContentTitle(str(R.string.upcoming_x, name))
                 .setContentText(str(R.string.x_due_today, amount))
+                .setContentIntent(PendingIntent.getActivity(
+                    ctx, id.toInt(),
+                    Intent(ctx, MainActivity::class.java).putExtra(MainActivity.EXTRA_OPEN, Routes.RECURRING).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+                ))
                 .setAutoCancel(true)
                 .build(),
         )

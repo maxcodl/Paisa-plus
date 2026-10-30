@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.7
+
+- Tapping an "Added" notification opens that transaction to edit; tapping a recurring reminder opens Recurring
+
 ## 0.9.6
 
 - People: sort by name (A–Z) or by number of transactions

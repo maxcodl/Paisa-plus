@@ -20,11 +20,16 @@ import com.paisaplus.compose.str
 object AutoAddNotice {
     const val CHANNEL = "transactions"
 
-    fun show(ctx: Context, name: String, amount: Double, type: TransactionType, account: String) {
+    /** Tapping it opens transaction [id] in the editor. */
+    fun show(ctx: Context, id: Long, name: String, amount: Double, type: TransactionType, account: String) {
         if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return
         val nm = ctx.getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(NotificationChannel(CHANNEL, str(R.string.auto_added_transactions), NotificationManager.IMPORTANCE_DEFAULT))
-        val open = PendingIntent.getActivity(ctx, 0, Intent(ctx, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), PendingIntent.FLAG_IMMUTABLE)
+        val open = PendingIntent.getActivity(
+            ctx, id.toInt(),
+            Intent(ctx, MainActivity::class.java).putExtra(MainActivity.EXTRA_OPEN, "tx/$id").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
         val title = str(if (type == TransactionType.INCOME) R.string.auto_added_income_x else R.string.auto_added_expense_x, Money.format(amount), name)
         nm.notify((System.nanoTime() % Int.MAX_VALUE).toInt(), NotificationCompat.Builder(ctx, CHANNEL)
             .setSmallIcon(R.drawable.ic_stat_paisa).setContentTitle(title).setContentText(account)

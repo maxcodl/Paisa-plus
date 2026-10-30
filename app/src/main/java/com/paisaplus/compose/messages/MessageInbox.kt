@@ -177,8 +177,9 @@ class MessageInboxRepository @Inject constructor(
         if (account == null || parsed == null || parsed.hasLink || !settings.messages.first().autoAdd || settings.money.first().currency != "INR") return ADDED_TO_REVIEW
         name ?: return ADDED_TO_REVIEW
         val category = AutoAdd.category(name, row.body, db.categories().list(), db.expenses().list()) ?: return ADDED_TO_REVIEW
-        if (!confirm(fingerprint, account.id, category.id, name, auto = true, app = hint?.let { appOf(it.source) })) return DUPLICATE
-        if (notify) AutoAddNotice.show(ctx, name, row.amountPaise / 100.0, row.type, account.name)
+        val added = confirm(fingerprint, account.id, category.id, name, auto = true, app = hint?.let { appOf(it.source) })
+        if (added == 0L) return DUPLICATE
+        if (notify) AutoAddNotice.show(ctx, added, name, row.amountPaise / 100.0, row.type, account.name)
         return AUTO_ADDED
     }
 
@@ -276,9 +277,10 @@ class MessageInboxRepository @Inject constructor(
      * A payment already in the ledger nearby isn't added again: the alert just leaves Review (returns false).
      * An account picked for alerts ending in digits it doesn't have yet learns them, so the next one is added on its own.
      */
-    suspend fun confirm(id: String, accountId: Long, categoryId: Long, name: String, auto: Boolean = false, app: String? = null): Boolean = db.withTransaction {
-        val row = db.messageInbox().get(id) ?: return@withTransaction false
-        if (row.status != "PENDING") return@withTransaction false
+    /** Adds the alert as a transaction; returns its id, or 0 if it was already handled or is a duplicate. */
+    suspend fun confirm(id: String, accountId: Long, categoryId: Long, name: String, auto: Boolean = false, app: String? = null): Long = db.withTransaction {
+        val row = db.messageInbox().get(id) ?: return@withTransaction 0L
+        if (row.status != "PENDING") return@withTransaction 0L
         require(settings.money.first().currency == "INR") { "INR alerts require INR as the app currency. Change it in Settings before importing." }
         val account = db.accounts().get(accountId) ?: throw IllegalArgumentException("Choose an existing account")
         require(db.categories().list().any { it.id == categoryId }) { "Choose an existing category" }
@@ -286,10 +288,10 @@ class MessageInboxRepository @Inject constructor(
         val amount = row.amountPaise / 100.0
         if (db.expenses().hasSimilar(accountId, row.type, amount, row.receivedAt - 300_000L, row.receivedAt + 300_000L)) {
             db.messageInbox().finish(id, "DUPLICATE")
-            return@withTransaction false
+            return@withTransaction 0L
         }
         val method = AutoAdd.method(row.body, row.isUpi)
-        expenses.add(ExpenseEntity(
+        val added = expenses.add(ExpenseEntity(
             name = name.trim(), amount = amount, time = row.receivedAt, type = row.type,
             accountId = accountId, categoryId = categoryId,
             note = (if (auto) "Auto-added from ${row.source}" else "Reviewed ${row.source} alert") + (row.reference?.let { "; Ref $it" } ?: ""),
@@ -298,6 +300,6 @@ class MessageInboxRepository @Inject constructor(
         ))
         if (!auto && row.accountSuffix != null && account.number.none(Char::isDigit)) db.accounts().upsert(account.copy(number = "XX" + row.accountSuffix))
         db.messageInbox().finish(id, "IMPORTED")
-        true
+        added
     }
 }

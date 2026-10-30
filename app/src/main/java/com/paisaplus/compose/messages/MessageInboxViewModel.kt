@@ -40,7 +40,7 @@ class MessageInboxViewModel @Inject constructor(
     fun dismissAll() = run { com.paisaplus.compose.str(com.paisaplus.compose.R.string.dismissed_x, inbox.dismissAll()) }
     fun dismiss(id: String) = run { inbox.dismiss(id); "Message dismissed" }
     fun confirm(id: String, account: Long, category: Long, name: String) = run {
-        com.paisaplus.compose.str(if (inbox.confirm(id, account, category, name)) com.paisaplus.compose.R.string.transaction_saved else com.paisaplus.compose.R.string.already_in_transactions)
+        com.paisaplus.compose.str(if (inbox.confirm(id, account, category, name) > 0) com.paisaplus.compose.R.string.transaction_saved else com.paisaplus.compose.R.string.already_in_transactions)
     }
 
     init {
