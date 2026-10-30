@@ -9,12 +9,6 @@ A native Android rewrite of [Paisa](https://github.com/h4h13/paisa), the open-so
   <img src="docs/screenshots/06-pay-bill.png" width="210" alt="Transfer and card bill payment">
 </p>
 
-## Credits
-
-paisa+ is based on [Paisa](https://github.com/h4h13/paisa) by Hemanth S. The original app was written in Flutter. paisa+ ports its features and data model to native Compose and stays compatible with Paisa's JSON backups, so you can move your data across. All credit for the original idea, design, and app goes to the Paisa project.
-
-Special thanks to Misfit ([@SriKousik](https://github.com/SriKousik)) for the notification AI.
-
 ## Features
 
 - Accounts (bank, cash and credit cards), transactions, categories with budgets
@@ -57,6 +51,12 @@ For signed APKs/AABs, local `keystore.properties`, or an existing signing key in
 The one-time **Auto** setup lets you download the optional model, import its ZIP, or skip and use the built-in parser. You can change this later.
 
 Open **Settings → SMS & AI** to enable notification access, pick the banking apps whose notifications are read, scan past SMS, or paste an INR banking alert. Review detected payments and choose an account/category before saving. This supports new notifications and past SMS, not full Gmail inbox sync. No message text is sent to a server. An [optional downloadable AI model](tools/message_model/optional-model.md) can produce experimental local drafts; the built-in parser works without it. See [model training and limitations](tools/message_model/README.md) and [mock messages for 50 Indian banks](tools/message_model/bank-mock-messages.md).
+
+## Credits
+
+paisa+ is based on [Paisa](https://github.com/h4h13/paisa) by Hemanth S. The original app was written in Flutter. paisa+ ports its features and data model to native Compose and stays compatible with Paisa's JSON backups, so you can move your data across. All credit for the original idea, design, and app goes to the Paisa project.
+
+Special thanks to Misfit ([@SriKousik](https://github.com/SriKousik)) for the notification AI.
 
 ## License
 
