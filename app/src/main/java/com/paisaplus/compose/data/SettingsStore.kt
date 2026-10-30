@@ -186,6 +186,17 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     private val rechargeCatKey = booleanPreferencesKey("key_cat_recharge_v1")
     val rechargeCategoryAdded = ctx.store.data.map { it[rechargeCatKey] ?: false }
     suspend fun setRechargeCategoryAdded() = ctx.store.edit { it[rechargeCatKey] = true }
+    private val balanceGapsKey = stringPreferencesKey("key_balance_gaps")
+    /** Per account: saved balance minus the sum of its transactions, as last accepted (see [BalanceGuard]). Device-local. */
+    val balanceGaps = ctx.store.data.map { p ->
+        p[balanceGapsKey].orEmpty().split(';').mapNotNull { e ->
+            val kv = e.split('=')
+            val k = kv.getOrNull(0)?.toLongOrNull()
+            val v = kv.getOrNull(1)?.toDoubleOrNull()
+            if (kv.size == 2 && k != null && v != null) k to v else null
+        }.toMap()
+    }
+    suspend fun setBalanceGaps(m: Map<Long, Double>) = ctx.store.edit { it[balanceGapsKey] = m.entries.joinToString(";") { (k, v) -> "$k=$v" } }
     private val aliasPrunedKey = booleanPreferencesKey("key_alias_pruned_v1")
     val aliasesPruned = ctx.store.data.map { it[aliasPrunedKey] ?: false }
     suspend fun setAliasesPruned() = ctx.store.edit { it[aliasPrunedKey] = true }
@@ -238,7 +249,7 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     private val backupDirKey = stringPreferencesKey("key_backup_dir")
     private val lastBackupKey = longPreferencesKey("key_last_backup")
     // Image files live in app storage / device URIs, not in the backup.
-    private val local = setOf(automationIntroKey.name, backupDirKey.name, lastBackupKey.name, "key_background_image", "key_user_image")
+    private val local = setOf(automationIntroKey.name, backupDirKey.name, lastBackupKey.name, "key_background_image", "key_user_image", "key_balance_gaps")
 
     val backupDir = ctx.store.data.map { it[backupDirKey]?.ifEmpty { null } }
     suspend fun setBackupDir(uri: String?) = ctx.store.edit { if (uri == null) it.remove(backupDirKey) else it[backupDirKey] = uri }

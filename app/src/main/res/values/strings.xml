@@ -73,6 +73,7 @@
     <string name="sources">Sources</string>
     <string name="names_in_messages">Names in messages and apps</string>
     <string name="add_name">Add name</string>
+    <string name="balance_fixed_x">Balance of %1$s was off by ₹%2$s and was corrected</string>
     <string name="scan_log">Scan log</string>
     <string name="scanning_x_of_y">Scanning %1$d / %2$d</string>
     <string name="copy">Copy</string>

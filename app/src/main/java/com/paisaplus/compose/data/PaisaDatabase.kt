@@ -37,6 +37,10 @@ interface ExpenseDao {
 
     @Query("SELECT * FROM expenses ORDER BY id") suspend fun list(): List<ExpenseEntity>
 
+    /** What each account's transactions add up to (income minus expense): the balance check compares this with the saved balance. */
+    @Query("SELECT accountId, SUM(CASE WHEN type = 'INCOME' THEN amount ELSE -amount END) AS total FROM expenses GROUP BY accountId")
+    suspend fun sums(): List<AccountSum>
+
     // An entry carrying another bank reference ("Ref …") is a different payment of the same amount, not this one.
     @Query("SELECT EXISTS(SELECT 1 FROM expenses WHERE accountId = :accountId AND type = :type AND amount = :amount AND time BETWEEN :from AND :to AND (note IS NULL OR note NOT LIKE '%Ref %'))")
     suspend fun hasSimilar(accountId: Long, type: TransactionType, amount: Double, from: Long, to: Long): Boolean
@@ -99,6 +103,13 @@ interface AccountDao {
 
     @Query("UPDATE accounts SET amount = amount + :delta WHERE id = :id")
     suspend fun adjust(id: Long, delta: Double)
+
+    /** Card type, limit and group only, for the same reason as [setNumber]. */
+    @Query("UPDATE accounts SET cardType = :type, creditLimit = :limit, limitGroup = :group WHERE id = :id")
+    suspend fun setCardMeta(id: Long, type: CardType, limit: Double?, group: String?)
+
+    /** Sets only the number: saving a whole earlier copy of the account would overwrite a balance changed since. */
+    @Query("UPDATE accounts SET number = :number WHERE id = :id") suspend fun setNumber(id: Long, number: String)
 
     @Query("DELETE FROM accounts") suspend fun clear()
 }

@@ -100,6 +100,7 @@ private const val FRESH_MS = 2 * 86_400_000L
 class MessageInboxRepository @Inject constructor(
     @dagger.hilt.android.qualifiers.ApplicationContext private val ctx: android.content.Context,
     private val db: PaisaDatabase, private val expenses: ExpenseRepository, private val settings: SettingsStore,
+    private val guard: com.paisaplus.compose.data.BalanceGuard,
 ) {
     fun pending() = db.messageInbox().pending()
 
@@ -412,8 +413,11 @@ class MessageInboxRepository @Inject constructor(
         ))
         // Named differently in the bank alert or the payment app: remember both, so the next one lands on this name.
         learn(name, row.merchant, hintFor(row)?.merchant, chosen = !auto)
-        if (!auto && row.accountSuffix != null && account.number.none(Char::isDigit)) db.accounts().upsert(account.copy(number = "XX" + row.accountSuffix))
+        if (!auto && row.accountSuffix != null && account.number.none(Char::isDigit)) db.accounts().setNumber(account.id, "XX" + row.accountSuffix)
         db.messageInbox().finish(id, "IMPORTED")
         added
-    }
+    }.also { guard.check() } // after the transaction commits: puts back any balance this save lost
+
+    /** Balance check for the scan, which adds and merges many entries. */
+    suspend fun checkBalances() = guard.check()
 }

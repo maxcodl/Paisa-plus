@@ -72,6 +72,7 @@
     <string name="sources">Fontes</string>
     <string name="names_in_messages">Nomes em mensagens e apps</string>
     <string name="add_name">Adicionar nome</string>
+    <string name="balance_fixed_x">O saldo de %1$s estava errado em ₹%2$s e foi corrigido</string>
     <string name="scan_log">Registro da busca</string>
     <string name="scanning_x_of_y">Buscando %1$d / %2$d</string>
     <string name="copy">Copiar</string>

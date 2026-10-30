@@ -134,7 +134,7 @@ object FlutterBackup {
     private fun JsonObject.bool(k: String) = p(k)?.booleanOrNull
 }
 
-class BackupImporter @Inject constructor(private val db: PaisaDatabase) {
+class BackupImporter @Inject constructor(private val db: PaisaDatabase, private val guard: BalanceGuard) {
     /** Replaces expenses, accounts, categories, loans and recurring rules, like the Flutter restore. */
     suspend fun import(text: String): BackupData {
         val data = FlutterBackup.parse(text)
@@ -153,6 +153,7 @@ class BackupImporter @Inject constructor(private val db: PaisaDatabase) {
             data.categories.forEach { db.categories().insert(it) }
             data.expenses.chunked(500).forEach { db.expenses().insertAll(it) }
         }
+        guard.rebaseline() // new accounts and balances: start the balance check over
         return data
     }
 }

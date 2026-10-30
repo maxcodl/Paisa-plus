@@ -334,7 +334,8 @@ class CsvImporter @Inject constructor(private val db: PaisaDatabase, private val
                         creditLimit = row.creditLimit?.takeIf { it > 0 } ?: account.creditLimit,
                         limitGroup = row.limitGroup.ifEmpty { null } ?: account.limitGroup,
                     )
-                    if (updated != account) { db.accounts().upsert(updated); account = updated }
+                    // Only these fields: the cached copy's balance is older than the entries added so far.
+                    if (updated != account) { db.accounts().setCardMeta(updated.id, updated.cardType, updated.creditLimit, updated.limitGroup); account = updated }
                     accounts[row.account.lowercase()] = account
                     if (row.loan.isNotEmpty()) trackInstallment(loans, row, zone)
                     val category = categories[row.category.lowercase()] ?: run {

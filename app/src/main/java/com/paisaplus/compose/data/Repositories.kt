@@ -74,10 +74,11 @@ class ExpenseRepository @Inject constructor(private val db: PaisaDatabase) {
 
 /** Deleting an account also deletes its transactions, as in the Flutter app. */
 @Singleton
-class AccountRepository @Inject constructor(private val db: PaisaDatabase) {
+class AccountRepository @Inject constructor(private val db: PaisaDatabase, private val guard: BalanceGuard) {
     private val dao = db.accounts()
     fun all() = dao.all()
-    suspend fun save(a: AccountEntity) = dao.upsert(a)
+    /** You edited this account (its balance included), so its balance check starts over from what you saved. */
+    suspend fun save(a: AccountEntity) = dao.upsert(a).also { guard.rebaseline(setOf(if (a.id != 0L) a.id else it)) }
     suspend fun delete(a: AccountEntity) = db.withTransaction {
         db.expenses().deleteByAccount(a.id)
         dao.delete(a)

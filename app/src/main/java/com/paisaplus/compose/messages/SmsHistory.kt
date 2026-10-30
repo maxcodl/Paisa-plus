@@ -57,6 +57,7 @@ suspend fun MessageInboxRepository.scanSmsHistory(ctx: Context, days: Int): IntA
             }
         }
     } finally {
+        runCatching { checkBalances() }
         ScanLog.finish(ctx, "$total messages · $added added · $review to review · $merged merged · $dupes duplicate/covered · $seen seen before · $ignored not payments")
     }
     return intArrayOf(added, review, dupes, seen, merged)

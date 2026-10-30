@@ -104,8 +104,8 @@ private val DEFAULT_CATEGORIES = listOf(
     Triple("Other", 0xf04f9, 0xFF795548),
 )
 
-/** [sticky]: stays until dismissed or replaced (used for Undo). */
-data class UiMessage(val text: String, val action: String? = null, val sticky: Boolean = false, val onAction: () -> Unit = {})
+/** [sticky]: stays until dismissed or replaced (used for Undo). [holdMs]: stays this long, or until swiped away. */
+data class UiMessage(val text: String, val action: String? = null, val sticky: Boolean = false, val holdMs: Long = 0, val onAction: () -> Unit = {})
 
 /** Activity-scoped: shared by every tab so data and snackbars survive navigation. */
 @HiltViewModel
@@ -122,6 +122,7 @@ class AppViewModel @Inject constructor(
     private val backup: BackupManager,
     private val debtRepo: DebtRepository,
     private val csv: CsvImporter,
+    private val guard: com.paisaplus.compose.data.BalanceGuard,
 ) : ViewModel() {
     // CSV statement import (ImportCsvScreen); kept here so a commit survives leaving the screen.
     var csvPreview by mutableStateOf<ImportPreview?>(null)
@@ -253,6 +254,15 @@ class AppViewModel @Inject constructor(
     val balanceModes = settings.balanceModes.stateIn(viewModelScope, SharingStarted.Eagerly, BalanceMode.DEFAULT)
 
     init {
+        // Fail-safe: a balance that moved away from its transactions without you editing the account is put back, and you're told.
+        // The check runs at start, before the screen is listening to [messages] (it has no replay): wait for a listener.
+        viewModelScope.launch {
+            guard.fixed.collect { f ->
+                messages.subscriptionCount.first { it > 0 }
+                messages.emit(UiMessage(str(R.string.balance_fixed_x, f.account, "%,.2f".format(kotlin.math.abs(f.by))), holdMs = 12_000))
+            }
+        }
+        viewModelScope.launch { runCatching { guard.check() }.onFailure { android.util.Log.e("BalanceGuard", "balance check failed", it) } }
         // One time: automatic aliases saved before they had to look alike (some paired people with unrelated statement rows) go.
         viewModelScope.launch {
             if (settings.aliasesPruned.first()) return@launch

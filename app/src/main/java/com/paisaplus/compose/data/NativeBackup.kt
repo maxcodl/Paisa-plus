@@ -130,6 +130,7 @@ class BackupManager @Inject constructor(
     private val db: PaisaDatabase,
     private val settings: SettingsStore,
     private val flutter: BackupImporter,
+    private val guard: BalanceGuard,
 ) {
     val appVersion: String
         get() = runCatching { ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName }.getOrNull() ?: "?"
@@ -167,6 +168,7 @@ class BackupManager @Inject constructor(
             if (s.deleted.isNotEmpty()) db.deleted().insertAll(s.deleted)
         }
         settings.import(s.settings)
+        guard.rebaseline() // restored balances are the new baseline
     }
 
     /** Reads either format; returns a one-line summary. */

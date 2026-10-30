@@ -1,4 +1,10 @@
 # Changelog
+## 0.10.1
+
+- Fixed an account balance losing an update when confirming an alert in Review for an account whose last digits weren't saved yet (the balance was overwritten with an older copy); CSV import had the same flaw
+- Balance check: the app remembers each account's balance against its transactions and, if one drifts without you editing the account, puts it back and tells you; it runs at start, after Review and after a scan
+- Messages can stay longer and every message can be swiped away; the correction notice stays 12 seconds
+
 ## 0.10.0
 
 - Transfer: new item in the + menu and Pay bill on a credit card save a transfer or card bill payment as one expense and one income; pick the banking app it was paid from

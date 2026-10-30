@@ -51,6 +51,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -293,6 +294,17 @@ private fun PaisaRoot(addRequested: Boolean, onAddHandled: () -> Unit, openReque
 }
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+/** The app's snackbar in the theme's rounded shape; swipe it either way to dismiss. */
+@Composable
+private fun SwipeSnackbar(data: androidx.compose.material3.SnackbarData) {
+    val state = androidx.compose.material3.rememberSwipeToDismissBoxState(
+        confirmValueChange = { v -> (v != androidx.compose.material3.SwipeToDismissBoxValue.Settled).also { if (it) data.dismiss() } },
+    )
+    androidx.compose.material3.SwipeToDismissBox(state, backgroundContent = {}) {
+        androidx.compose.material3.Snackbar(data, Modifier.padding(horizontal = 12.dp), shape = MaterialTheme.shapes.extraLarge)
+    }
+}
+
 @Composable
 private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () -> Unit, openRequested: String? = null, onOpenHandled: () -> Unit = {}) {
     val nav = rememberNavController()
@@ -311,11 +323,13 @@ private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () ->
     LaunchedEffect(Unit) {
         vm.messages.collect { m ->
             snackbar.currentSnackbarData?.dismiss()
+            // [holdMs]: stays that long (or until swiped away) instead of the few seconds of a normal message.
+            if (m.holdMs > 0) launch { delay(150); val shown = snackbar.currentSnackbarData; delay(m.holdMs); shown?.dismiss() }
             val r = snackbar.showSnackbar(
                 m.text, m.action,
-                withDismissAction = m.sticky,
+                withDismissAction = m.sticky || m.holdMs > 0,
                 duration = when {
-                    m.sticky -> SnackbarDuration.Indefinite
+                    m.sticky || m.holdMs > 0 -> SnackbarDuration.Indefinite
                     m.action != null -> SnackbarDuration.Long
                     else -> SnackbarDuration.Short
                 },
@@ -331,7 +345,7 @@ private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () ->
 
     Scaffold(
         containerColor = Color.Transparent,
-        snackbarHost = { SnackbarHost(snackbar) },
+        snackbarHost = { SnackbarHost(snackbar) { data -> key(data) { SwipeSnackbar(data) } } },
         bottomBar = {
             if (tab != null && behindBar != null) GlassTabBar(tabs, tab, labels, bg!!.copy(backdrop = behindBar)) { nav.openTab(it) }
             else if (tab != null) NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainerLow) {
