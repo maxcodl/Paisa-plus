@@ -1,27 +1,44 @@
-# paisa+
+<p align="center">
+  <img src="docs/icon.svg" width="96" alt="paisa+ icon">
+</p>
 
-A native Android rewrite of [Paisa](https://github.com/h4h13/paisa), the open-source expense tracker by **Hemanth S** ([@h4h13](https://github.com/h4h13)), built with Kotlin and Jetpack Compose.
+<h1 align="center">paisa+</h1>
 
 <p align="center">
-  <img src="docs/screenshots/01-home.png" width="210" alt="Home">
-  <img src="docs/screenshots/03-accounts.png" width="210" alt="Accounts">
-  <img src="docs/screenshots/05-card.png" width="210" alt="Credit card">
-  <img src="docs/screenshots/06-pay-bill.png" width="210" alt="Transfer and card bill payment">
+  A native Android rewrite of <a href="https://github.com/h4h13/paisa">Paisa</a>, the open-source expense tracker.<br>
+  Built with Kotlin and Jetpack Compose. Everything stays on your device.
 </p>
+
+<p align="center">
+  <a href="https://github.com/maxcodl/Paisa-plus/releases/latest"><img src="https://img.shields.io/github/v/release/maxcodl/Paisa-plus?style=flat-square&color=944A02" alt="Latest release"></a>
+  <img src="https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=flat-square&logo=android&logoColor=white" alt="Android 8.0+">
+  <img src="https://img.shields.io/badge/Kotlin-Jetpack%20Compose-7F52FF?style=flat-square&logo=kotlin&logoColor=white" alt="Kotlin, Jetpack Compose">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square" alt="GPL-3.0"></a>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/01-home.png" width="200" alt="Home">
+  <img src="docs/screenshots/03-accounts.png" width="200" alt="Accounts">
+  <img src="docs/screenshots/05-card.png" width="200" alt="Credit card">
+  <img src="docs/screenshots/06-pay-bill.png" width="200" alt="Transfer and card bill payment">
+</p>
+
+## Overview
+
+paisa+ tracks accounts, spending and budgets without an account or a server. It reads bank alerts on the phone, turns them into transactions you review, and keeps all of it in a local database. It stays compatible with Paisa's JSON backups, so existing data moves across.
 
 ## Features
 
-- Accounts (bank, cash and credit cards), transactions, categories with budgets
-- Transfers between your accounts and credit card bill payments, from the **+** menu or **Pay bill** on a card; any transaction can be turned into a transfer afterwards
-- Loans and card EMIs, debts (lending/borrowing), recurring rules
-- Monthly reports
-- People: everyone you pay or get paid by, with the other names bank messages and payment apps use for them
-- Statement CSV import
-- Offline SMS, Gmail and banking-app notification parsing with a trained local model and review inbox; UPI and Pix app notices (Google Pay, PhonePe, Paytm, super money, Nubank and others) tag the app and the full payee name
-- Past-SMS scan with a live log of what was done with each message and why
-- Versioned JSON backup and restore, plus restore from Flutter Paisa backups
-- App lock, home-screen widgets, Material You theming
-- Everything stays on your device. No account and no cloud.
+| | |
+|---|---|
+| **Money** | Bank, cash and credit card accounts, transactions, categories with budgets, monthly reports |
+| **Transfers** | Between your own accounts and for credit card bills, from the **+** menu or **Pay bill** on a card; any transaction can be turned into a transfer afterwards |
+| **Commitments** | Loans and card EMIs, debts (lending and borrowing), recurring rules |
+| **People** | Everyone you pay or get paid by, with the other names bank messages and payment apps use for them. Set a category for all of a person's transactions at once |
+| **Messages** | Offline SMS, Gmail and banking-app notification parsing with a local model and a review inbox. UPI and Pix app notices (Google Pay, PhonePe, Paytm, super money, Nubank and others) tag the app and the full payee name |
+| **Scanning** | Past-SMS scan with a live log of what was done with each message and why |
+| **Data** | Statement CSV import, versioned JSON backup and restore, restore from Flutter Paisa backups |
+| **App** | App lock, home-screen widgets, Material You theming, update notifications |
 
 ## Screenshots
 
@@ -35,6 +52,16 @@ Shown with sample data.
 
 The profile picture is from [DiceBear](https://www.dicebear.com/) (Notionists by Zoish, CC0).
 
+## Privacy
+
+No account, no analytics, no cloud. Transactions, accounts and settings live only on the device, and no message text is sent to a server. The network is used only for what you ask for: checking GitHub for app updates and downloading the optional AI model.
+
+## Local message parsing
+
+The one-time **Auto** setup lets you download the optional model, import its ZIP, or skip and use the built-in parser. You can change this later.
+
+Open **Settings → SMS & AI** to enable notification access, pick the banking apps whose notifications are read, scan past SMS, or paste an INR banking alert. Review detected payments and choose an account and category before saving. This supports new notifications and past SMS, not full Gmail inbox sync. An [optional downloadable AI model](tools/message_model/optional-model.md) can produce experimental local drafts; the built-in parser works without it. See [model training and limitations](tools/message_model/README.md) and [mock messages for 50 Indian banks](tools/message_model/bank-mock-messages.md).
+
 ## Build
 
 Requires JDK 21 and Android SDK 37.
@@ -46,15 +73,9 @@ Requires JDK 21 and Android SDK 37.
 
 For signed APKs/AABs, local `keystore.properties`, or an existing signing key in the manually triggered GitHub Actions workflow, see [release builds](docs/release-builds.md).
 
-## Local message parsing
-
-The one-time **Auto** setup lets you download the optional model, import its ZIP, or skip and use the built-in parser. You can change this later.
-
-Open **Settings → SMS & AI** to enable notification access, pick the banking apps whose notifications are read, scan past SMS, or paste an INR banking alert. Review detected payments and choose an account/category before saving. This supports new notifications and past SMS, not full Gmail inbox sync. No message text is sent to a server. An [optional downloadable AI model](tools/message_model/optional-model.md) can produce experimental local drafts; the built-in parser works without it. See [model training and limitations](tools/message_model/README.md) and [mock messages for 50 Indian banks](tools/message_model/bank-mock-messages.md).
-
 ## Credits
 
-paisa+ is based on [Paisa](https://github.com/h4h13/paisa) by Hemanth S. The original app was written in Flutter. paisa+ ports its features and data model to native Compose and stays compatible with Paisa's JSON backups, so you can move your data across. All credit for the original idea, design, and app goes to the Paisa project.
+paisa+ is based on [Paisa](https://github.com/h4h13/paisa) by **Hemanth S** ([@h4h13](https://github.com/h4h13)). The original app was written in Flutter; paisa+ ports its features and data model to native Compose. All credit for the original idea, design and app goes to the Paisa project.
 
 Special thanks to Misfit ([@SriKousik](https://github.com/SriKousik)) for the notification AI.
 
