@@ -5,7 +5,7 @@
 <h1 align="center">paisa+</h1>
 
 <p align="center">
-  A native Android rewrite of <a href="https://github.com/h4h13/paisa">Paisa</a>, the open-source expense tracker.<br>
+  A native Android rewrite of <a href="https://github.com/h4h13/paisa-app">Paisa</a>, the open-source expense tracker.<br>
   Built with Kotlin and Jetpack Compose. Everything stays on your device.
 </p>
 
