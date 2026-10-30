@@ -146,6 +146,8 @@ enum class SettingsPage(val icon: ImageVector, val hue: Int, val title: Int, val
     PRIVACY(Icons.Rounded.Lock, 0, R.string.privacy_security, R.string.privacy_security_summary),
     DATA(Icons.Rounded.Backup, 7, R.string.backup_data, R.string.backup_data_summary),
     UPDATES(Icons.Rounded.SystemUpdate, 5, R.string.app_updates, R.string.app_updates_summary),
+    PRIVACY_POLICY(Icons.Rounded.PrivacyTip, 3, R.string.privacy_policy, R.string.privacy_policy_summary),
+    COFFEE(Icons.Rounded.Coffee, 7, R.string.buy_me_a_coffee, R.string.buy_me_a_coffee_summary),
 }
 
 /** Large collapsing title over a padded list; shared by the hub and every sub-page. */
@@ -483,6 +485,8 @@ fun SettingsPageScreen(vm: AppViewModel, page: SettingsPage, onBack: () -> Unit,
             }
 
             SettingsPage.UPDATES -> item { UpdatesSection() }
+            SettingsPage.PRIVACY_POLICY -> item { PrivacyPolicySection() }
+            SettingsPage.COFFEE -> item { CoffeeSection() }
             SettingsPage.AUTOMATION -> item { AutomationSection(vm, open) }
             SettingsPage.NOTIFICATIONS -> item { NotificationsSection() }
 

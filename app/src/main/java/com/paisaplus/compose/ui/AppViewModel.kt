@@ -1,6 +1,7 @@
 package com.paisaplus.compose.ui
 
 import com.paisaplus.compose.R
+import com.paisaplus.compose.plural
 import com.paisaplus.compose.str
 
 import android.content.Context
@@ -378,6 +379,11 @@ class AppViewModel @Inject constructor(
     fun renamePayee(from: String, to: String, merged: Boolean) = viewModelScope.launch {
         expenses.renamePayee(from, to)
         messages.emit(UiMessage(str(if (merged) R.string.merged_into_x else R.string.renamed_to_x, to)))
+    }
+
+    fun setCategory(ids: List<Long>, categoryId: Long) = viewModelScope.launch {
+        expenses.setCategory(ids, categoryId)
+        messages.emit(UiMessage(plural(R.plurals.category_set_for_x, ids.size)))
     }
 
     fun deleteExpense(e: ExpenseEntity) = viewModelScope.launch {

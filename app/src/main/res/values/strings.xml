@@ -73,6 +73,27 @@
     <string name="sources">Sources</string>
     <string name="names_in_messages">Names in messages and apps</string>
     <string name="add_name">Add name</string>
+    <string name="privacy_policy">Privacy policy</string>
+    <string name="privacy_policy_summary">Short version: I don\'t want your data</string>
+    <string name="pp_title">Privacy, in plain words</string>
+    <string name="pp_1">I\'m not interested in your data. Not even a little.</string>
+    <string name="pp_2">No data is collected. No accounts, no analytics, no trackers, no ads.</string>
+    <string name="pp_3">Everything stays on your phone. Your transactions, accounts, names and settings live only on this device.</string>
+    <string name="pp_4">Your SMS and notifications are read on your phone to spot payments, and never sent anywhere.</string>
+    <string name="pp_5">The internet is only used for stuff you ask for, like checking for app updates or downloading the optional AI model. Backups go only where you save them.</string>
+    <string name="buy_me_a_coffee">Buy me a coffee</string>
+    <string name="buy_me_a_coffee_summary">Totally worth it, trust me</string>
+    <string name="coffee_intro">Want to buy me a coffee? ☕</string>
+    <string name="coffee_button">Donate</string>
+    <string name="coffee_last">Okay okay, one last thing… 🎁</string>
+    <string name="meme_1">🫘 Bro you have 2 kidneys.\nI have 0 coffee.\nDo the math.</string>
+    <string name="meme_2">Me: \"just ₹50 for chai\"\nAlso me, 47 chais later: 💀</string>
+    <string name="meme_3">Loading your generosity…\n99%… ⏳\n(stuck forever)</string>
+    <string name="meme_4">Sir, this is an expense tracker 🤡</string>
+    <string name="telegram">Telegram</string>
+    <string name="set_category">Set category</string>
+    <string name="set_category_all">Category for all</string>
+    <string name="set_category_selected">Category for %1$d selected</string>
     <string name="balance_fixed_x">Balance of %1$s was off by ₹%2$s and was corrected</string>
     <string name="scan_log">Scan log</string>
     <string name="scanning_x_of_y">Scanning %1$d / %2$d</string>
@@ -638,6 +659,10 @@
     <plurals name="cards_count">
         <item quantity="one">%1$d card</item>
         <item quantity="other">%1$d cards</item>
+    </plurals>
+    <plurals name="category_set_for_x">
+        <item quantity="one">Category changed for %1$d transaction</item>
+        <item quantity="other">Category changed for %1$d transactions</item>
     </plurals>
     <plurals name="transactions_count">
         <item quantity="one">%1$d transaction</item>

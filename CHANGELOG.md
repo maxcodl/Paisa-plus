@@ -1,4 +1,8 @@
 # Changelog
+## 0.10.2
+
+- Set a category for everything a person has in one go from their page, or long-press rows to pick just some
+- Privacy policy (short version: I don't want your data) and a Buy me a coffee page, both on the profile page; Telegram link included
 ## 0.10.1
 
 - Fixed an account balance losing an update when confirming an alert in Review for an account whose last digits weren't saved yet (the balance was overwritten with an older copy); CSV import had the same flaw

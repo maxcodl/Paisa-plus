@@ -72,6 +72,27 @@
     <string name="sources">Fontes</string>
     <string name="names_in_messages">Nomes em mensagens e apps</string>
     <string name="add_name">Adicionar nome</string>
+    <string name="privacy_policy">Política de privacidade</string>
+    <string name="privacy_policy_summary">Resumo: não quero seus dados</string>
+    <string name="pp_title">Privacidade, sem enrolação</string>
+    <string name="pp_1">Não tenho o menor interesse nos seus dados. Nem um pouquinho.</string>
+    <string name="pp_2">Nenhum dado é coletado. Sem contas, sem análises, sem rastreadores, sem anúncios.</string>
+    <string name="pp_3">Tudo fica no seu celular. Transações, contas, nomes e ajustes vivem só neste aparelho.</string>
+    <string name="pp_4">Seus SMS e notificações são lidos no celular pra achar pagamentos e nunca vão pra lugar nenhum.</string>
+    <string name="pp_5">A internet só é usada pro que você pede, como checar atualizações ou baixar o modelo de IA opcional. Backups vão só pra onde você salvar.</string>
+    <string name="buy_me_a_coffee">Me pague um café</string>
+    <string name="buy_me_a_coffee_summary">Vale muito a pena, confia</string>
+    <string name="coffee_intro">Quer me pagar um café? ☕</string>
+    <string name="coffee_button">Doar</string>
+    <string name="coffee_last">Tá bom, tá bom, só mais uma coisinha… 🎁</string>
+    <string name="meme_1">🫘 Mano, você tem 2 rins.\nEu tenho 0 café.\nFaz a conta.</string>
+    <string name="meme_2">Eu: \"só R$ 5 de café\"\nEu, 47 cafés depois: 💀</string>
+    <string name="meme_3">Carregando sua generosidade…\n99%… ⏳\n(travou pra sempre)</string>
+    <string name="meme_4">Senhor, isso é um app de gastos 🤡</string>
+    <string name="telegram">Telegram</string>
+    <string name="set_category">Definir categoria</string>
+    <string name="set_category_all">Categoria pra todas</string>
+    <string name="set_category_selected">Categoria pra %1$d selecionadas</string>
     <string name="balance_fixed_x">O saldo de %1$s estava errado em ₹%2$s e foi corrigido</string>
     <string name="scan_log">Registro da busca</string>
     <string name="scanning_x_of_y">Buscando %1$d / %2$d</string>
@@ -638,6 +659,10 @@
     <plurals name="cards_count">
         <item quantity="one">%1$d cartão</item>
         <item quantity="other">%1$d cartões</item>
+    </plurals>
+    <plurals name="category_set_for_x">
+        <item quantity="one">Categoria trocada em %1$d movimentação</item>
+        <item quantity="other">Categoria trocada em %1$d movimentações</item>
     </plurals>
     <plurals name="transactions_count">
         <item quantity="one">%1$d movimentação</item>

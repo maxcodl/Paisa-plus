@@ -81,6 +81,7 @@ interface ExpenseDao {
     suspend fun byCategory(id: Long): List<ExpenseEntity>
 
     @Query("UPDATE expenses SET name = :name WHERE id IN (:ids)") suspend fun rename(ids: List<Long>, name: String)
+    @Query("UPDATE expenses SET categoryId = :categoryId WHERE id IN (:ids)") suspend fun setCategory(ids: List<Long>, categoryId: Long)
 
     @Query("DELETE FROM expenses WHERE accountId = :id") suspend fun deleteByAccount(id: Long)
     @Query("DELETE FROM expenses WHERE categoryId = :id") suspend fun deleteByCategory(id: Long)

@@ -1,7 +1,11 @@
 package com.paisaplus.compose.ui.transactions
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.material.icons.rounded.Category
+import androidx.compose.ui.graphics.Color
+import com.paisaplus.compose.ui.components.CategoryPicker
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,6 +67,7 @@ private val monthFmt = DateTimeFormatter.ofPattern("MMMM yyyy")
  * Everyone you paid or got paid by is a payee: all transactions with [txId]'s name, by month, newest first.
  * Opened from any transaction; a row opens the usual edit screen; Rename renames (or merges) the whole payee.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PayeeScreen(vm: AppViewModel, txId: Long, onBack: () -> Unit, onOpenTx: (Long) -> Unit) {
     val d by vm.data.collectAsStateWithLifecycle()
@@ -71,6 +76,8 @@ fun PayeeScreen(vm: AppViewModel, txId: Long, onBack: () -> Unit, onOpenTx: (Lon
     var name by rememberSaveable { mutableStateOf("") }
     d.expenses.firstOrNull { it.id == txId }?.name?.let { if (it != name) name = it }
     var renaming by remember { mutableStateOf(false) }
+    var picking by remember { mutableStateOf(false) }
+    var selected by remember { mutableStateOf(emptySet<Long>()) } // long-press a row to select; empty = the whole payee
     val myAliases = aliases.filter { it.name.equals(name.trim(), ignoreCase = true) }
     var editingAlias by remember { mutableStateOf<String?>(null) } // null = closed, "" = adding, else the alias key being edited
     var aliasText by rememberSaveable { mutableStateOf("") }
@@ -81,7 +88,12 @@ fun PayeeScreen(vm: AppViewModel, txId: Long, onBack: () -> Unit, onOpenTx: (Lon
     val p = LocalPaisaColors.current
 
     Scaffold(
-        topBar = { BackTopBar(name.trim(), onBack) { IconButton({ renaming = true }) { Icon(Icons.Rounded.Edit, str(R.string.rename)) } } },
+        topBar = {
+            BackTopBar(name.trim(), onBack) {
+                IconButton({ picking = true }) { Icon(Icons.Rounded.Category, str(R.string.set_category)) }
+                IconButton({ renaming = true }) { Icon(Icons.Rounded.Edit, str(R.string.rename)) }
+            }
+        },
     ) { pad ->
         LazyColumn(contentPadding = PaddingValues(16.dp, pad.calculateTopPadding() + 8.dp, 16.dp, pad.calculateBottomPadding() + 24.dp)) {
             item {
@@ -101,8 +113,14 @@ fun PayeeScreen(vm: AppViewModel, txId: Long, onBack: () -> Unit, onOpenTx: (Lon
                             Total(str(R.string.sent), txs.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }, p.expense, Modifier.weight(1f))
                             Total(str(R.string.received), txs.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }, p.income, Modifier.weight(1f))
                         }
-                        TextButton({ renaming = true }) {
-                            Icon(Icons.Rounded.Edit, null, Modifier.padding(end = 8.dp)); Text(str(R.string.rename_or_merge))
+                        Row {
+                            TextButton({ renaming = true }) {
+                                Icon(Icons.Rounded.Edit, null, Modifier.padding(end = 8.dp)); Text(str(R.string.rename_or_merge))
+                            }
+                            TextButton({ picking = true }) {
+                                Icon(Icons.Rounded.Category, null, Modifier.padding(end = 8.dp))
+                                Text(str(if (selected.isEmpty()) R.string.set_category_all else R.string.set_category_selected, selected.size))
+                            }
                         }
                     }
                 }
@@ -126,7 +144,15 @@ fun PayeeScreen(vm: AppViewModel, txId: Long, onBack: () -> Unit, onOpenTx: (Lon
             months.forEach { (month, rows) ->
                 item(key = "m$month") { SectionTitle(month.format(monthFmt)) }
                 itemsIndexed(rows, key = { _, e -> e.id }) { i, e ->
-                    Box(Modifier.segmented(i, rows.size).clickable { onOpenTx(e.id) }) {
+                    val on = e.id in selected
+                    Box(
+                        Modifier.segmented(i, rows.size)
+                            .background(if (on) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent)
+                            .combinedClickable(
+                                onClick = { if (selected.isEmpty()) onOpenTx(e.id) else selected = if (on) selected - e.id else selected + e.id },
+                                onLongClick = { selected = if (on) selected - e.id else selected + e.id },
+                            ),
+                    ) {
                         TransactionRow(e, d.categoryById[e.categoryId], d.accountById[e.accountId]?.name)
                     }
                 }
@@ -146,6 +172,23 @@ fun PayeeScreen(vm: AppViewModel, txId: Long, onBack: () -> Unit, onOpenTx: (Lon
                 }, enabled = aliasText.isNotBlank()) { Text(str(R.string.save)) }
             },
             dismissButton = { TextButton({ editingAlias = null }) { Text(str(R.string.cancel)) } },
+        )
+    }
+
+    if (picking) {
+        val ids = if (selected.isEmpty()) txs.map { it.id } else selected.toList()
+        var cat by rememberSaveable { mutableStateOf(-1L) }
+        AlertDialog(
+            onDismissRequest = { picking = false },
+            title = { Text(str(R.string.set_category)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    CategoryPicker(d.categories, cat, { cat = it })
+                    Text(plural(R.plurals.transactions_count, ids.size), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            },
+            confirmButton = { TextButton({ vm.setCategory(ids, cat); picking = false; selected = emptySet() }) { Text(str(R.string.save)) } },
+            dismissButton = { TextButton({ picking = false }) { Text(str(R.string.cancel)) } },
         )
     }
 

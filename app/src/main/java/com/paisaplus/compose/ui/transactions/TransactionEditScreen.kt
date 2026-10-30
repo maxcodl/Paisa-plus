@@ -193,17 +193,7 @@ fun TransactionEditScreen(vm: AppViewModel, id: Long, initialType: TransactionTy
                 }
             }
             SectionTitle(str(R.string.category))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                d.categories.forEach { c ->
-                    FilterChip(
-                        selected = c.id == categoryId,
-                        onClick = { categoryId = if (categoryId == c.id) -1 else c.id },
-                        label = { Text(c.name) },
-                        // The same badge colours as the lists (an uncoloured category gets its icon's hue there too).
-                        leadingIcon = { com.paisaplus.compose.ui.components.IconBadge(paisaIcon(c.icon), Color(c.color), 22.dp, autoHue = true) },
-                    )
-                }
-            }
+            com.paisaplus.compose.ui.components.CategoryPicker(d.categories, categoryId, { categoryId = it })
             if (original != null && d.accountById.containsKey(original.accountId) && d.accounts.size > 1) {
                 OutlinedButton(onClick = { convertTo = vm.data.value.accounts.map { it.account.id }.firstOrNull { it != original.accountId && vm.transferLegOf(original, it) != null } ?: -1L; converting = true }, Modifier.fillMaxWidth()) {
                     Icon(Icons.Rounded.SwapHoriz, null, Modifier.padding(end = 8.dp)); Text(str(R.string.make_transfer))

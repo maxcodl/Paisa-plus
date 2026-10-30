@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.People
 import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.Coffee
+import androidx.compose.material.icons.rounded.PrivacyTip
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.AutoAwesome
@@ -126,6 +128,8 @@ fun ProfileScreen(vm: AppViewModel, onBack: () -> Unit, open: (String) -> Unit) 
                 ListGroup {
                     item { LinkRow(Icons.Rounded.SystemUpdate, 5, str(R.string.app_updates), str(R.string.version_x, version)) { open("${Routes.SETTINGS}/UPDATES") } }
                     item { LinkRow(Icons.Rounded.Code, 2, str(R.string.source_code), "github.com/maxcodl/Paisa-plus") { uri.openUri("https://github.com/maxcodl/Paisa-plus/") } }
+                    item { LinkRow(Icons.Rounded.PrivacyTip, 3, str(R.string.privacy_policy), str(R.string.privacy_policy_summary)) { open("${Routes.SETTINGS}/PRIVACY_POLICY") } }
+                    item { LinkRow(Icons.Rounded.Coffee, 7, str(R.string.buy_me_a_coffee), str(R.string.buy_me_a_coffee_summary)) { open("${Routes.SETTINGS}/COFFEE") } }
                 }
             }
             item {
