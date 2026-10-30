@@ -96,7 +96,7 @@ data class MessagePrefs(
 enum class UpdateFrequency(val days: Int) { OFF(0), DAILY(1), WEEKLY(7), MONTHLY(30) }
 
 /** In-app updates from GitHub releases. [notified]: last version a notification was shown for (once per version). */
-data class UpdatePrefs(val frequency: UpdateFrequency = UpdateFrequency.WEEKLY, val beta: Boolean = false, val lastCheck: Long = 0, val notified: String = "", val prompted: String = "", val shizuku: Boolean = false)
+data class UpdatePrefs(val frequency: UpdateFrequency = UpdateFrequency.WEEKLY, val beta: Boolean = false, val lastCheck: Long = 0, val notified: String = "", val prompted: String = "", val shizuku: Boolean = false, val promptedAt: Long = 0)
 
 private val Context.store by preferencesDataStore("settings")
 
@@ -151,6 +151,7 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     private val updNotifiedKey = stringPreferencesKey("key_update_notified")
     private val updPromptedKey = stringPreferencesKey("key_update_prompted")
     private val updShizukuKey = booleanPreferencesKey("key_update_shizuku")
+    private val updPromptedAtKey = longPreferencesKey("key_update_prompted_at")
 
     private val userNameKey = stringPreferencesKey("key_user_name")
     private val currencyKey = stringPreferencesKey("key_currency")
@@ -207,11 +208,11 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     val updates = ctx.store.data.map { p ->
         UpdatePrefs(
             UpdateFrequency.entries.firstOrNull { it.name == p[updFreqKey] } ?: UpdateFrequency.WEEKLY,
-            p[updBetaKey] ?: false, p[updLastKey] ?: 0L, p[updNotifiedKey].orEmpty(), p[updPromptedKey].orEmpty(), p[updShizukuKey] ?: false,
+            p[updBetaKey] ?: false, p[updLastKey] ?: 0L, p[updNotifiedKey].orEmpty(), p[updPromptedKey].orEmpty(), p[updShizukuKey] ?: false, p[updPromptedAtKey] ?: 0L,
         )
     }
     suspend fun setUpdates(u: UpdatePrefs) = ctx.store.edit {
-        it[updFreqKey] = u.frequency.name; it[updBetaKey] = u.beta; it[updLastKey] = u.lastCheck; it[updNotifiedKey] = u.notified; it[updPromptedKey] = u.prompted; it[updShizukuKey] = u.shizuku
+        it[updFreqKey] = u.frequency.name; it[updBetaKey] = u.beta; it[updLastKey] = u.lastCheck; it[updNotifiedKey] = u.notified; it[updPromptedKey] = u.prompted; it[updShizukuKey] = u.shizuku; it[updPromptedAtKey] = u.promptedAt
     }
 
     val widget = ctx.store.data.map { p ->

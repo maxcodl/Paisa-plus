@@ -65,7 +65,8 @@ fun ReleaseNotesText(notes: String, modifier: Modifier = Modifier) {
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun UpdatePrompt(vm: UpdatesViewModel = hiltViewModel()) {
-    LaunchedEffect(Unit) { vm.checkOnOpen() }
+    // Every time the app comes to the front, not only on a cold start (it usually stays alive in the background).
+    androidx.lifecycle.compose.LifecycleStartEffect(Unit) { vm.checkOnOpen(); onStopOrDispose { } }
     val prompt by vm.prompt.collectAsStateWithLifecycle()
     val state by vm.state.collectAsStateWithLifecycle()
     val release = prompt ?: return

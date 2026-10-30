@@ -1,4 +1,9 @@
 # Changelog
+## 0.10.3
+
+- An update now also shows as a notification when you open the app, once per version
+- The update check runs every time the app comes to the front, not only on a cold start
+- Closing the update dialog keeps it away for 6 hours; App updates still shows the release
 ## 0.10.2
 
 - Set a category for everything a person has in one go from their page, or long-press rows to pick just some

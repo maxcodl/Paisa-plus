@@ -60,6 +60,7 @@ private const val REPO = "maxcodl/Paisa-plus"
 private const val WORK = "app-update-check"
 private const val CHANNEL = "updates"
 private const val NOTIFY_ID = 4201
+private val QUIET_AFTER_LATER_MS = TimeUnit.HOURS.toMillis(6)
 
 /** A newer app release on GitHub with its APK; [sha256] is GitHub's own asset digest, required before installing. */
 data class AppRelease(val version: String, val name: String, val notes: String, val page: String, val apkUrl: String, val apkBytes: Long, val sha256: String?)
@@ -276,17 +277,19 @@ class UpdatesViewModel @Inject constructor(
         val p = settings.updates.first()
         if (p.frequency == com.paisaplus.compose.data.UpdateFrequency.OFF) return@launch
         val r = runCatching { UpdateChecker.check(ctx, p.beta) }.getOrNull()
-        settings.setUpdates(settings.updates.first().copy(lastCheck = System.currentTimeMillis()))
+        val notify = r != null && r.version != p.notified
+        settings.setUpdates(settings.updates.first().copy(lastCheck = System.currentTimeMillis(), notified = if (notify) r!!.version else p.notified))
         if (r != null) {
             _state.value = UpdateState.Available(r)
-            if (r.version != p.prompted) _prompt.value = r
+            if (System.currentTimeMillis() - p.promptedAt >= QUIET_AFTER_LATER_MS) _prompt.value = r
+            if (notify) notifyUpdate(ctx, r)
         }
     }
 
-    /** Later: not offered on opening again for this version. */
+    /** Later: the dialog stays away for [QUIET_AFTER_LATER_MS]; App updates still shows the release. */
     fun later(r: AppRelease) = viewModelScope.launch {
         _prompt.value = null
-        settings.setUpdates(settings.updates.first().copy(prompted = r.version))
+        settings.setUpdates(settings.updates.first().copy(prompted = r.version, promptedAt = System.currentTimeMillis()))
     }
 
     fun check() = viewModelScope.launch {
