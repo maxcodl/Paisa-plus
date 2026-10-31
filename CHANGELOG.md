@@ -1,4 +1,14 @@
 # Changelog
+## 0.10.5
+
+- Loans page redesigned: net balance, lending and monthly payments tiles, and overall repayment progress
+- Loan cards: per-month amounts, percent paid, no card numbers or "from imports" line
+- The days/months/years chip on loans and debts changes for all of them and is remembered
+- Same font and numerals everywhere: rounded Google Sans Flex, no monospaced digits
+- Transaction notes no longer show in lists, only when you open a transaction
+- Home overview order: Accounts, Credit cards, Loans, Reports
+- Fixed a boxy flash when pressing the Borrowing, Lending and Completed tabs
+
 ## 0.10.4
 
 - Transactions look new everywhere: bigger rounded icons, the time and account under the name, and the category as a coloured tag

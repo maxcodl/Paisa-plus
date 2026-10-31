@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package com.paisaplus.compose.ui.more
 
 import com.paisaplus.compose.R
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -32,6 +35,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.PlaylistAddCheck
+import androidx.compose.material.icons.automirrored.rounded.TrendingUp
 import androidx.compose.material.icons.rounded.AccountBalance
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.CalendarMonth
@@ -91,6 +95,8 @@ import com.paisaplus.compose.ui.DateField
 import com.paisaplus.compose.ui.components.AmountText
 import com.paisaplus.compose.ui.components.BackTopBar
 import com.paisaplus.compose.ui.components.EmptyState
+import com.paisaplus.compose.ui.components.ExpressiveIcon
+import com.paisaplus.compose.ui.components.WrapText
 import com.paisaplus.compose.ui.components.SectionTitle
 import com.paisaplus.compose.ui.components.SegmentedTabs
 import com.paisaplus.compose.ui.components.TintCard
@@ -100,6 +106,7 @@ import com.paisaplus.compose.ui.components.WavyProgress
 import com.paisaplus.compose.ui.components.segmented
 import com.paisaplus.compose.ui.money
 import com.paisaplus.compose.ui.plainOrEmpty
+import com.paisaplus.compose.ui.theme.LocalPaisaColors
 import com.paisaplus.compose.ui.theme.rememberTonal
 import com.paisaplus.compose.ui.toAmount
 import java.time.Instant
@@ -183,14 +190,7 @@ fun LoansScreen(vm: AppViewModel, onBack: () -> Unit, onOpenLoan: (Long) -> Unit
         },
     ) { pad ->
         LazyColumn(contentPadding = PaddingValues(16.dp, pad.calculateTopPadding() + 8.dp, 16.dp, pad.calculateBottomPadding() + 88.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            item { Summary(lentRows.sumOf { it.remaining }, owedRows.sumOf { it.remaining } + active.sumOf { it.remaining }) }
-            item {
-                Text(
-                    plural(R.plurals.loans_count, shownDebts.size + shownLoans.size),
-                    style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(top = 8.dp),
-                )
-            }
+            item { LoansHero(lentRows.sumOf { it.remaining }, owedRows.sumOf { it.remaining } + active.sumOf { it.remaining }, lentRows.count { !it.settled }, active) }
             if (shownDebts.isEmpty() && shownLoans.isEmpty()) item {
                 EmptyState(
                     Icons.Rounded.RequestQuote,
@@ -199,7 +199,7 @@ fun LoansScreen(vm: AppViewModel, onBack: () -> Unit, onOpenLoan: (Long) -> Unit
             }
             if (shownDebts.isNotEmpty()) item { SectionTitle(if (tab == LoanTab.COMPLETED) str(R.string.completed) else str(R.string.active), Modifier.padding(top = 0.dp)) }
             items(shownDebts, key = { "d" + it.debt.id }) { DebtCard(it) { onOpenDebt(it.debt.id) } }
-            if (shownLoans.isNotEmpty()) item { SectionTitle(str(R.string.loans_emis), Modifier.padding(top = 0.dp)) }
+            if (shownLoans.isNotEmpty()) item { Text(str(R.string.loans_emis), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(top = 8.dp)) }
             items(shownLoans, key = { "l" + it.id }) { LoanCard(it) { onOpenLoan(it.id) } }
         }
     }
@@ -215,6 +215,52 @@ fun LoansScreen(vm: AppViewModel, onBack: () -> Unit, onOpenLoan: (Long) -> Unit
     }
 }
 
+/** Equal-size stat tile in the Home overview style: expressive icon, label, amount, one-line note. */
+@Composable
+private fun HeroTile(icon: androidx.compose.ui.graphics.vector.ImageVector, index: Int, label: String, amount: Double, note: String, modifier: Modifier) {
+    val c = MaterialTheme.colorScheme
+    Column(modifier.background(c.surfaceContainerHigh, MaterialTheme.shapes.large).padding(12.dp)) {
+        ExpressiveIcon(icon, index, 40.dp)
+        Spacer(Modifier.height(8.dp))
+        WrapText(label, style = MaterialTheme.typography.bodyLarge, color = c.onSurfaceVariant)
+        AmountText(amount, style = MaterialTheme.typography.titleLargeEmphasized, color = c.primary)
+        WrapText(note, style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
+    }
+}
+
+/** Net balance, lent vs monthly EMI due, and overall repayment progress across active loans/EMIs. */
+@Composable
+private fun LoansHero(lent: Double, owed: Double, lentOpen: Int, loans: List<LoanEntity>) {
+    val p = LocalPaisaColors.current
+    val c = MaterialTheme.colorScheme
+    val total = loans.sumOf { it.total }
+    val paid = loans.sumOf { it.paid * it.emi }
+    val progress = if (total > 0) (paid / total).toFloat().coerceIn(0f, 1f) else 0f
+    TintCard(Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.extraLarge) {
+        Column(Modifier.padding(20.dp)) {
+            Text(str(R.string.net_balance), style = MaterialTheme.typography.titleMediumEmphasized)
+            Text(if (lent >= owed) str(R.string.owed_more_than_you_owe) else str(R.string.owe_more_than_owed), style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant)
+            AmountText(lent - owed, Modifier.padding(top = 4.dp), color = if (lent >= owed) p.income else p.expense, style = MaterialTheme.typography.headlineLargeEmphasized)
+            Row(Modifier.padding(top = 16.dp).height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                HeroTile(Icons.AutoMirrored.Rounded.TrendingUp, 0, str(R.string.lending), lent, str(R.string.x_open, lentOpen), Modifier.weight(1f).fillMaxHeight())
+                HeroTile(
+                    Icons.Rounded.Payments, 1, str(R.string.monthly_payments), loans.sumOf { it.emi },
+                    if (loans.isEmpty()) "" else str(R.string.next_x, dateText(loans.minOf { it.nextDue })), Modifier.weight(1f).fillMaxHeight(),
+                )
+            }
+            if (total > 0) {
+                Spacer(Modifier.height(16.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(str(R.string.x_repaid, money(paid)), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                    Text(str(R.string.x_completed, (progress * 100).roundToInt()), style = MaterialTheme.typography.labelLarge, color = c.onSurfaceVariant)
+                }
+                Spacer(Modifier.height(8.dp))
+                WavyProgress(progress, colors = rememberTonal(c.primary))
+            }
+        }
+    }
+}
+
 @Composable
 private fun LoanCard(l: LoanEntity, onClick: () -> Unit) {
     val c = MaterialTheme.colorScheme
@@ -226,14 +272,14 @@ private fun LoanCard(l: LoanEntity, onClick: () -> Unit) {
                 }
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(l.title, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text((if (l.label.isNotBlank()) "${l.name} · " else "") + l.account + if (!l.autoPost) str(R.string.from_imports) else "", style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(l.title, style = MaterialTheme.typography.titleMediumEmphasized, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    if (l.label.isNotBlank()) Text(l.name, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 if (!l.closed) DaysPill(l.daysLeft, t, left = false)
             }
             Spacer(Modifier.height(16.dp))
             Row(Modifier.height(IntrinsicSize.Min)) {
-                Stat(str(R.string.monthly_installment), l.emi, t.content, Modifier.weight(1f))
+                Stat(str(R.string.monthly_installment), l.emi, t.content, Modifier.weight(1f), suffix = str(R.string.per_month))
                 VerticalDivider(color = t.track)
                 Stat(str(R.string.remaining), l.remaining, t.content, Modifier.weight(1f).padding(start = 16.dp))
             }
@@ -249,7 +295,7 @@ private fun LoanCard(l: LoanEntity, onClick: () -> Unit) {
                     if (l.closed) str(R.string.closed) else str(R.string.next_x, dateText(l.nextDue)),
                     style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f),
                 )
-                Text(if (l.tenure > 0) str(R.string.x_x_paid, l.paid, l.tenure) else str(R.string.x_paid, l.paid), style = MaterialTheme.typography.labelLarge)
+                Text(if (l.tenure > 0) str(R.string.x_x_paid, l.paid, l.tenure) + " · ${(l.progress * 100).roundToInt()}%" else str(R.string.x_paid, l.paid), style = MaterialTheme.typography.labelLarge)
             }
         }
     }

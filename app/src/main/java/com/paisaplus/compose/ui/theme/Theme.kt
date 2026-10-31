@@ -70,18 +70,17 @@ private fun sansFlex(w: Int, round: Float) = Font(
     variationSettings = FontVariation.Settings(FontVariation.weight(w), FontVariation.Setting("ROND", round)),
 )
 private fun sansFlexFamily(round: Float) = FontFamily(listOf(300, 400, 500, 600, 700, 800).map { sansFlex(it, round) })
-private val SansFlex = sansFlexFamily(0f)
-/** Emphasized styles: heavier and rounded, the Expressive "hero" voice. */
-private val SansFlexRounded = sansFlexFamily(100f)
+/** Fully rounded (ROND 100): the Expressive voice, used for every style so the app reads as one face. */
+private val SansFlex = sansFlexFamily(100f)
 
 /**
- * DESIGN.md "Typography": one family everywhere, tabular numerals so amounts align. Sizes sit 1sp above the
- * M3 baseline for legibility. Emphasized = same size, +200 weight (rounded with Google Sans Flex).
+ * DESIGN.md "Typography": one family everywhere, proportional numerals. Sizes sit 1sp above the
+ * M3 baseline for legibility. Emphasized = same size, +200 weight, same face.
  */
 private fun paisaTypography(font: AppFont): Typography {
     val base = if (font == AppFont.OUTFIT) Outfit else SansFlex
-    val bold = if (font == AppFont.OUTFIT) Outfit else SansFlexRounded
-    fun s(size: Int, line: Int, weight: Int) = TextStyle(fontFamily = base, fontSize = size.sp, lineHeight = line.sp, fontWeight = FontWeight(weight), fontFeatureSettings = "tnum")
+    val bold = base
+    fun s(size: Int, line: Int, weight: Int) = TextStyle(fontFamily = base, fontSize = size.sp, lineHeight = line.sp, fontWeight = FontWeight(weight))
     fun TextStyle.em() = copy(fontFamily = bold, fontWeight = FontWeight((fontWeight?.weight ?: 400) + 200))
     val dl = s(57, 64, 400); val dm = s(45, 52, 400); val ds = s(40, 48, 600)
     val hl = s(32, 40, 400); val hm = s(28, 36, 400); val hs = s(25, 32, 500)

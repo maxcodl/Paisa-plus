@@ -252,9 +252,9 @@ private fun Dashboard(d: AppData, skip: Set<Long>, name: String, hidden: Boolean
     val tiles = listOf(
         Tile(Icons.Rounded.AccountBalance, str(R.string.accounts), plural(R.plurals.accounts_count, banks.size), banks.sumOf { it.account.amount }) { accountsShowCards = false; nav.openTab(Tab.ACCOUNTS) },
         Tile(Icons.Rounded.CreditCard, str(R.string.credit_cards), plural(R.plurals.cards_count, cards.size), cards.sumOf { it.totalOutstanding }) { accountsShowCards = true; nav.openTab(Tab.ACCOUNTS) },
+        Tile(Icons.Rounded.RequestQuote, str(R.string.loans), str(R.string.x_active, loans.size), loans.sumOf { it.remaining }) { nav.navigate(Routes.LOANS) },
         Tile(Icons.Rounded.Insights, str(R.string.reports), plural(R.plurals.transactions_count, month.count), month.expense) { nav.openTab(Tab.REPORTS) },
         Tile(Icons.Rounded.Savings, str(R.string.budgets), plural(R.plurals.budgets_count, budgets.size), budgets.sumOf { it.budget }) { nav.navigate(Routes.BUDGETS) },
-        Tile(Icons.Rounded.RequestQuote, str(R.string.loans), str(R.string.x_active, loans.size), loans.sumOf { it.remaining }) { nav.navigate(Routes.LOANS) },
         Tile(Icons.Rounded.EventRepeat, str(R.string.recurring), plural(R.plurals.rules_count, d.rules.size), null) { nav.navigate(Routes.RECURRING) },
         Tile(Icons.Rounded.Category, str(R.string.categories), plural(R.plurals.categories_count, d.categories.size), null) { nav.navigate(Routes.CATEGORIES) },
     )

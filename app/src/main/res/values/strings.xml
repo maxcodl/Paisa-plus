@@ -386,6 +386,11 @@
     <string name="card">Card</string>
     <string name="paid_from">Paid from</string>
     <string name="monthly_installment">Monthly installment</string>
+    <string name="monthly_payments">Monthly payments</string>
+    <string name="x_repaid">Repaid %1$s</string>
+    <string name="x_completed">%1$d%% completed</string>
+    <string name="per_month">/mo</string>
+    <string name="x_open">%1$d open</string>
     <string name="tenure_months">Tenure (months)</string>
     <string name="paid">Paid</string>
     <string name="principal_optional">Principal (optional)</string>

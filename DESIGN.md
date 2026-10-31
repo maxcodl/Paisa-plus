@@ -62,7 +62,6 @@ typography:
     fontSize: "40sp"
     fontWeight: 600
     lineHeight: "48sp"
-    fontFeature: "tnum"
   headline:
     fontFamily: "Outfit"
     fontSize: "24sp"
@@ -83,7 +82,6 @@ typography:
     fontSize: "15sp"
     fontWeight: 600
     lineHeight: "20sp"
-    fontFeature: "tnum"
   body-large:
     fontFamily: "Outfit"
     fontSize: "16sp"
@@ -230,17 +228,17 @@ A monochrome warm-brown scheme, plus green and red reserved for money direction.
 
 ### Hierarchy
 
-- **Display** (600, 40sp/48sp, tnum): the Total balance amount only.
+- **Display** (600, 40sp/48sp): the Total balance amount only.
 - **Headline** (500, 24sp/32sp): onboarding page titles.
 - **Title Large** (500, 22sp/28sp): top-bar titles, overview tile titles and tile amounts.
 - **Title Medium** (500, 18sp/24sp): the greeting (name at 700), section headers, card titles.
-- **Title Small** (600, 15sp/20sp, tnum): amounts in cards and rows.
+- **Title Small** (600, 15sp/20sp): amounts in cards and rows.
 - **Body** (400, 16/14/12sp): field text, descriptions, meta and "compared to" lines.
 - **Label** (600 16sp for buttons, 500 12sp for chips, nav and badges).
 
 ### Named Rules
 
-**The Tabular Rule.** Every rendered amount sets `tnum`, so columns of money align.
+**No tabular numerals.** Digits use the same proportional glyphs as the letters, so amounts read as part of the text.
 
 ## Layout
 

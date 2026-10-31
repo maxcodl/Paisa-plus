@@ -193,7 +193,7 @@ fun <T> SegmentedTabs(options: List<T>, selected: T, label: (T) -> String, onSel
                 val bg by animateColorAsState(if (on) p.fixedDim else Color.Transparent, spec)
                 val fg by animateColorAsState(if (on) p.onFixed else c.onSurfaceVariant, spec)
                 Box(
-                    Modifier.weight(1f).heightIn(min = 48.dp).background(bg, CircleShape)
+                    Modifier.weight(1f).heightIn(min = 48.dp).clip(CircleShape).background(bg)
                         .selectable(on, role = Role.Tab) { onSelect(o) }.padding(horizontal = 8.dp),
                     Alignment.Center,
                 ) { Text(label(o), color = fg, style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis) }
@@ -393,9 +393,6 @@ fun EmptyState(icon: ImageVector, text: String, modifier: Modifier = Modifier, a
     }
 }
 
-/** Notes the alert importer writes ("Reviewed SMS alert; Ref …"): kept for de-duplication, hidden in lists. */
-private val systemNote = Regex("""^(Reviewed \S+ alert|Auto-added from \S+|Added from \S+)(; Ref \S+)?$""")
-
 @Composable
 fun TransactionRow(e: ExpenseEntity, category: CategoryEntity?, accountName: String?, modifier: Modifier = Modifier, badge: (@Composable () -> Unit)? = null) {
     Row(modifier.fillMaxWidth().heightIn(min = 72.dp).padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -414,9 +411,6 @@ fun TransactionRow(e: ExpenseEntity, category: CategoryEntity?, accountName: Str
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
-            e.note?.takeUnless { systemNote.matches(it) }?.let {
-                Text(it, style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic), color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
-            }
             if (category != null || badge != null) Row(Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
                 category?.let { CategoryTag(it) }
                 badge?.invoke()

@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package com.paisaplus.compose.ui.more
 
 import com.paisaplus.compose.R
@@ -120,39 +122,17 @@ internal fun newDebt(type: DebtType): DebtEntity {
 }
 
 @Composable
-internal fun Summary(lent: Double, owed: Double) {
-    val p = LocalPaisaColors.current
-    val c = MaterialTheme.colorScheme
-    TintCard(Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.extraLarge) {
-        Column(Modifier.padding(20.dp)) {
-            Row(Modifier.height(IntrinsicSize.Min)) {
-                Stat(str(R.string.lending), lent, p.income, Modifier.weight(1f), Alignment.CenterHorizontally, MaterialTheme.typography.headlineSmall)
-                VerticalDivider()
-                Stat(str(R.string.borrowing), owed, p.expense, Modifier.weight(1f), Alignment.CenterHorizontally, MaterialTheme.typography.headlineSmall)
-            }
-            HorizontalDivider(Modifier.padding(vertical = 16.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text(str(R.string.net_balance), style = MaterialTheme.typography.titleMedium)
-                    Text(
-                        if (lent >= owed) str(R.string.owed_more_than_you_owe) else str(R.string.owe_more_than_owed),
-                        style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant,
-                    )
-                }
-                AmountText(lent - owed, color = if (lent >= owed) p.income else p.expense, style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 8.dp))
-            }
-        }
-    }
-}
-
-@Composable
 internal fun Stat(
     label: String, v: Double, color: Color?, modifier: Modifier,
-    align: Alignment.Horizontal = Alignment.Start, style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.titleMedium,
+    align: Alignment.Horizontal = Alignment.Start, style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.titleMediumEmphasized,
+    suffix: String? = null,
 ) {
     Column(modifier, horizontalAlignment = align) {
         Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        AmountText(v, style = style, color = color ?: androidx.compose.material3.LocalContentColor.current)
+        Row(verticalAlignment = Alignment.Bottom) {
+            AmountText(v, style = style, color = color ?: androidx.compose.material3.LocalContentColor.current)
+            if (suffix != null) Text(suffix, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 2.dp, bottom = 2.dp))
+        }
     }
 }
 
@@ -166,7 +146,7 @@ internal fun DebtCard(r: DebtRow, onClick: () -> Unit) {
                 }
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(r.debt.name.ifBlank { str(R.string.unnamed) }, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(r.debt.name.ifBlank { str(R.string.unnamed) }, style = MaterialTheme.typography.titleMediumEmphasized, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     if (r.debt.description.isNotBlank()) Text(r.debt.description, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 if (!r.settled) DaysPill(r.daysLeft, t, left = false)
@@ -195,6 +175,9 @@ internal fun DebtCard(r: DebtRow, onClick: () -> Unit) {
 
 private val DebtType.icon get() = if (this == DebtType.CREDIT) Icons.AutoMirrored.Rounded.TrendingUp else Icons.AutoMirrored.Rounded.TrendingDown
 
+/** Shared by every pill so one tap switches them all; persisted in the "ui" prefs. 0 days, 1 months, 2 years. */
+private val PillUnit = mutableIntStateOf(-1)
+
 /**
  * Time until the end date: "N days" in cards, "N days left" on detail pages; red when late.
  * Tap cycles days → months → years.
@@ -203,7 +186,9 @@ private val DebtType.icon get() = if (this == DebtType.CREDIT) Icons.AutoMirrore
 internal fun DaysPill(days: Long, t: TonalColors, left: Boolean) {
     val c = MaterialTheme.colorScheme
     val late = days < 0
-    var unit by rememberSaveable { mutableIntStateOf(0) } // 0 days, 1 months, 2 years
+    val prefs = androidx.compose.ui.platform.LocalContext.current.getSharedPreferences("ui", 0)
+    if (PillUnit.intValue < 0) PillUnit.intValue = prefs.getInt("pill_unit", 0)
+    val unit = PillUnit.intValue
     val n = kotlin.math.abs(days)
     val span = when (unit) {
         1 -> str(R.string.x_months, (n * 12 / 365.25).roundToInt())
@@ -214,7 +199,7 @@ internal fun DaysPill(days: Long, t: TonalColors, left: Boolean) {
         Icons.Rounded.Timer,
         when { late -> str(R.string.x_late, span); days == 0L -> str(R.string.due_today); left -> str(R.string.x_left, span); else -> span },
         if (late) c.errorContainer else t.track, if (late) c.onErrorContainer else t.content,
-        onClick = { unit = (unit + 1) % 3 },
+        onClick = { PillUnit.intValue = (unit + 1) % 3; prefs.edit().putInt("pill_unit", PillUnit.intValue).apply() },
     )
 }
 
