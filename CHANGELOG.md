@@ -1,4 +1,11 @@
 # Changelog
+## 0.10.4
+
+- Transactions look new everywhere: bigger rounded icons, the time and account under the name, and the category as a coloured tag
+- Debts: Borrowing, Lending and Completed tabs, a net balance, days left, repayment progress and a payment history on each debt
+- Loans: Loans, Card EMIs and Completed tabs, with installments paid, time remaining and late payments; loans can have a name
+- The thin outline around tab switchers is gone
+- The debts home-screen widget is removed
 ## 0.10.3
 
 - An update now also shows as a notification when you open the app, once per version
