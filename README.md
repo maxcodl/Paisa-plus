@@ -17,6 +17,10 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/maxcodl/Paisa-plus/releases/latest"><img src="https://img.shields.io/badge/Download-latest%20APK-944A02?style=for-the-badge&logo=android&logoColor=white" alt="Download latest APK"></a>
+</p>
+
+<p align="center">
   <img src="docs/screenshots/01-home.png" width="200" alt="Home">
   <img src="docs/screenshots/03-accounts.png" width="200" alt="Accounts">
   <img src="docs/screenshots/05-card.png" width="200" alt="Credit card">
@@ -60,7 +64,7 @@ No account, no analytics, no cloud. Transactions, accounts and settings live onl
 
 The one-time **Auto** setup lets you download the optional model, import its ZIP, or skip and use the built-in parser. You can change this later.
 
-Open **Settings → SMS & AI** to enable notification access, pick the banking apps whose notifications are read, scan past SMS, or paste an INR banking alert. Review detected payments and choose an account and category before saving. This supports new notifications and past SMS, not full Gmail inbox sync. An [optional downloadable AI model](tools/message_model/optional-model.md) can produce experimental local drafts; the built-in parser works without it. See [model training and limitations](tools/message_model/README.md) and [mock messages for 50 Indian banks](tools/message_model/bank-mock-messages.md).
+Open **Settings → SMS & AI** to enable notification access, pick the banking apps whose notifications are read, scan past SMS, or paste an INR banking alert. Review detected payments and choose an account and category before saving. This supports new notifications and past SMS, not full Gmail inbox sync. An [optional downloadable AI model](tools/message_model/optional-model.md) can produce experimental local drafts; the built-in parser works without it. Model source and reference: [banking-sms-json-parser-v8](https://huggingface.co/rawsun00001/banking-sms-json-parser-v8). See [model training and limitations](tools/message_model/README.md) and [mock messages for 50 Indian banks](tools/message_model/bank-mock-messages.md).
 
 ## Build
 
@@ -77,7 +81,7 @@ For signed APKs/AABs, local `keystore.properties`, or an existing signing key in
 
 paisa+ is based on [Paisa](https://github.com/h4h13/paisa) by **Hemanth S** ([@h4h13](https://github.com/h4h13)). The original app was written in Flutter; paisa+ ports its features and data model to native Compose. All credit for the original idea, design and app goes to the Paisa project.
 
-Special thanks to Misfit ([@SriKousik](https://github.com/SriKousik)) for the notification AI.
+Special thanks to Misfit ([@SriKousik](https://github.com/SriKousik)) for the notification AI. The model is based on [banking-sms-json-parser-v8](https://huggingface.co/rawsun00001/banking-sms-json-parser-v8) on Hugging Face.
 
 ## License
 
