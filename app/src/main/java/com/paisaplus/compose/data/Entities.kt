@@ -102,6 +102,7 @@ data class LoanEntity(
     val nextDue: Long,
     val autoPost: Boolean = true, // imported loans = false
     @ColumnInfo(defaultValue = "0") val dueDay: Int = 0, // intended day-of-month; 0 = use nextDue's day
+    @ColumnInfo(defaultValue = "") val label: String = "", // your own name ("Bike loan"); [name] stays the bank/import name installments match on
 ) {
     val closed get() = tenure > 0 && paid >= tenure
     val remaining get() = if (tenure > 0) (tenure - paid).coerceIn(0, tenure) * emi else 0.0

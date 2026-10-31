@@ -331,10 +331,12 @@ fun SearchScreen(vm: AppViewModel, onBack: (() -> Unit)?, outer: PaddingValues, 
                     Text(str(R.string.x_results, results.size), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
-            val shown = results.take(300)
-            itemsIndexed(shown, key = { _, e -> e.id }) { i, e ->
-                Box(Modifier.padding(horizontal = 16.dp).segmented(i, shown.size).clickable { onOpen(e.id) }) {
-                    TransactionRow(e, d.categoryById[e.categoryId], d.accountById[e.accountId]?.name)
+            com.paisaplus.compose.data.groupByDay(results.take(300)).forEach { (day, list) ->
+                stickyHeader(key = "h$day") { com.paisaplus.compose.ui.transactions.DayHeader(day, list) }
+                itemsIndexed(list, key = { _, e -> e.id }) { i, e ->
+                    Box(Modifier.padding(horizontal = 16.dp).segmented(i, list.size).clickable { onOpen(e.id) }) {
+                        TransactionRow(e, d.categoryById[e.categoryId], d.accountById[e.accountId]?.name)
+                    }
                 }
             }
         }

@@ -668,6 +668,46 @@
         <item quantity="one">%1$d movimentação</item>
         <item quantity="other">%1$d movimentações</item>
     </plurals>
+    <plurals name="debts_count">
+        <item quantity="one">%1$d dívida</item>
+        <item quantity="other">%1$d dívidas</item>
+    </plurals>
+    <string name="completed">Quitados</string>
+    <string name="nothing_completed">Nada quitado ainda</string>
+    <string name="net_balance">Saldo líquido</string>
+    <string name="owed_more_than_you_owe">Te devem mais do que você deve</string>
+    <string name="owe_more_than_owed">Você deve mais do que te devem</string>
+    <string name="total">Total</string>
+    <string name="remaining">Restante</string>
+    <string name="in_x_days">em %1$s dias</string>
+    <string name="x_days_left">Faltam %1$s dias</string>
+    <string name="amount_lent">Valor emprestado</string>
+    <string name="amount_borrowed">Valor pego emprestado</string>
+    <string name="repayment_progress">Progresso do pagamento</string>
+    <string name="details">Detalhes</string>
+    <string name="start_date">Data de início</string>
+    <string name="end_date">Vencimento</string>
+    <string name="notes">Notas</string>
+    <string name="mark_as_done">Marcar como quitado</string>
+    <string name="payment_history">Histórico de pagamentos</string>
+    <string name="no_payments_yet">Nenhum pagamento ainda</string>
+    <string name="add_payment">Adicionar pagamento</string>
+    <string name="loans_tab">Empréstimos</string>
+    <string name="card_emis">Parcelas do cartão</string>
+    <string name="nothing_closed">Nada encerrado ainda</string>
+    <string name="x_remaining">%1$s restantes</string>
+    <plurals name="loans_count">
+        <item quantity="one">%1$d empréstimo</item>
+        <item quantity="other">%1$d empréstimos</item>
+    </plurals>
+    <string name="x_of_x_installments">%1$s de %2$s parcelas</string>
+    <string name="x_months">%1$s meses</string>
+    <string name="x_years">%1$s anos</string>
+    <string name="x_late">%1$s de atraso</string>
+    <string name="loan_name">Nome do empréstimo (opcional)</string>
+    <string name="loan_name_hint">ex.: Financiamento da moto</string>
+    <string name="bank_name">Nome nas mensagens do banco</string>
+    <string name="principal">Valor principal</string>
     <plurals name="budgets_count">
         <item quantity="one">%1$d meta</item>
         <item quantity="other">%1$d metas</item>

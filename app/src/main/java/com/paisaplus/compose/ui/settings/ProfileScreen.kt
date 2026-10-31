@@ -103,8 +103,7 @@ fun ProfileScreen(vm: AppViewModel, onBack: () -> Unit, open: (String) -> Unit) 
             item {
                 ListGroup {
                     item { LinkRow(Icons.Rounded.Savings, 1, str(R.string.budgets), str(R.string.monthly_limits_per_category)) { open(Routes.BUDGETS) } }
-                    item { LinkRow(Icons.Rounded.RequestQuote, 2, str(R.string.loans_emis), str(R.string.instalments_and_what_s_left)) { open(Routes.LOANS) } }
-                    item { LinkRow(Icons.Rounded.Handshake, 3, str(R.string.debts), str(R.string.money_lent_and_borrowed)) { open(Routes.DEBTS) } }
+                    item { LinkRow(Icons.Rounded.RequestQuote, 2, str(R.string.loans_tab), str(R.string.money_lent_and_borrowed)) { open(Routes.LOANS) } }
                     item { LinkRow(Icons.Rounded.EventRepeat, 4, str(R.string.recurring), str(R.string.bills_and_income_that_repeat)) { open(Routes.RECURRING) } }
                     item { LinkRow(Icons.Rounded.People, 0, str(R.string.people), str(R.string.people_summary)) { open(Routes.PEOPLE) } }
                     item { LinkRow(Icons.Rounded.Category, 5, str(R.string.categories), str(R.string.icons_colours_budgets)) { open(Routes.CATEGORIES) } }

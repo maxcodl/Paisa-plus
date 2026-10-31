@@ -56,12 +56,6 @@ import com.paisaplus.compose.ui.components.TintCard
 import com.paisaplus.compose.ui.components.TransactionRow
 import com.paisaplus.compose.ui.components.segmented
 import com.paisaplus.compose.ui.theme.LocalPaisaColors
-import java.time.Instant
-import java.time.YearMonth
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-
-private val monthFmt = DateTimeFormatter.ofPattern("MMMM yyyy")
 
 /**
  * Everyone you paid or got paid by is a payee: all transactions with [txId]'s name, by month, newest first.
@@ -83,8 +77,7 @@ fun PayeeScreen(vm: AppViewModel, txId: Long, onBack: () -> Unit, onOpenTx: (Lon
     var aliasText by rememberSaveable { mutableStateOf("") }
     val txs = remember(d.expenses, name) { payeeTransactions(d.expenses, name) }
     LaunchedEffect(txs.isEmpty(), d.loading) { if (txs.isEmpty() && !d.loading && name.isNotEmpty()) onBack() }
-    val zone = ZoneId.systemDefault()
-    val months = remember(txs) { txs.groupBy { YearMonth.from(Instant.ofEpochMilli(it.time).atZone(zone)) }.toList() }
+    val days = remember(txs) { com.paisaplus.compose.data.groupByDay(txs) }
     val p = LocalPaisaColors.current
 
     Scaffold(
@@ -141,8 +134,8 @@ fun PayeeScreen(vm: AppViewModel, txId: Long, onBack: () -> Unit, onOpenTx: (Lon
                     }
                 }
             }
-            months.forEach { (month, rows) ->
-                item(key = "m$month") { SectionTitle(month.format(monthFmt)) }
+            days.forEach { (day, rows) ->
+                stickyHeader(key = "h$day") { DayHeader(day, rows, inset = 4.dp) }
                 itemsIndexed(rows, key = { _, e -> e.id }) { i, e ->
                     val on = e.id in selected
                     Box(

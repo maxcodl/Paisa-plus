@@ -68,7 +68,6 @@ import androidx.work.Configuration
 import com.paisaplus.compose.ui.more.BudgetsScreen
 import com.paisaplus.compose.ui.more.LoansScreen
 import com.paisaplus.compose.ui.more.MoreScreen
-import com.paisaplus.compose.ui.more.DebtsScreen
 import com.paisaplus.compose.ui.more.RecurringScreen
 import com.paisaplus.compose.ui.settings.BackupScreen
 import com.paisaplus.compose.ui.more.ReportsScreen
@@ -425,11 +424,16 @@ private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () ->
             composable(Tab.CATEGORIES.route) { CategoriesScreen(vm, pad, up(Tab.CATEGORIES)) }
             composable(Tab.MORE.route) { MoreScreen(nav, pad, up(Tab.MORE)) }
             composable(Routes.BUDGETS) { BudgetsScreen(vm, back) }
-            composable(Routes.LOANS) { LoansScreen(vm, back) }
+            composable(Routes.LOANS) { LoansScreen(vm, back, onOpenLoan = { nav.navigate("loan/$it") }, onOpenDebt = { nav.navigate("debt/$it") }) }
             composable(Routes.RECURRING) { RecurringScreen(vm, back) }
             composable(Routes.BACKUP) { BackupScreen(vm, back) }
-            composable(Routes.DEBTS) { DebtsScreen(vm, back) }
-            composable(Routes.PEOPLE) { com.paisaplus.compose.ui.settings.PeopleScreen(vm, back, onOpenPayee = { nav.navigate("payee/$it") }, onOpenDebts = { nav.navigate(Routes.DEBTS) }) }
+            composable("loan/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
+                com.paisaplus.compose.ui.more.LoanDetailScreen(vm, e.arguments!!.getLong("id"), back) { nav.editTransaction(it) }
+            }
+            composable("debt/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
+                com.paisaplus.compose.ui.more.DebtDetailScreen(vm, e.arguments!!.getLong("id"), back)
+            }
+            composable(Routes.PEOPLE) { com.paisaplus.compose.ui.settings.PeopleScreen(vm, back, onOpenPayee = { nav.navigate("payee/$it") }, onOpenDebts = { nav.navigate(Routes.LOANS) }) }
             composable(Routes.PAYMENTS) { com.paisaplus.compose.ui.settings.PaymentsInboxScreen(vm, back, onOpenTx = { nav.editTransaction(it) }) }
             composable(Routes.IMPORT_MESSAGES) { com.paisaplus.compose.ui.settings.PaymentsInboxScreen(vm, back, onOpenTx = { nav.editTransaction(it) }) }
             composable(Routes.IMPORT_CSV) { ImportCsvScreen(vm, back) }

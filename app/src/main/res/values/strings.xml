@@ -668,6 +668,46 @@
         <item quantity="one">%1$d transaction</item>
         <item quantity="other">%1$d transactions</item>
     </plurals>
+    <plurals name="debts_count">
+        <item quantity="one">%1$d debt</item>
+        <item quantity="other">%1$d debts</item>
+    </plurals>
+    <string name="completed">Completed</string>
+    <string name="nothing_completed">Nothing settled yet</string>
+    <string name="net_balance">Net balance</string>
+    <string name="owed_more_than_you_owe">You\'re owed more than you owe</string>
+    <string name="owe_more_than_owed">You owe more than you\'re owed</string>
+    <string name="total">Total</string>
+    <string name="remaining">Remaining</string>
+    <string name="in_x_days">in %1$s days</string>
+    <string name="x_days_left">%1$s days left</string>
+    <string name="amount_lent">Amount lent</string>
+    <string name="amount_borrowed">Amount borrowed</string>
+    <string name="repayment_progress">Repayment progress</string>
+    <string name="details">Details</string>
+    <string name="start_date">Start date</string>
+    <string name="end_date">Due date</string>
+    <string name="notes">Notes</string>
+    <string name="mark_as_done">Mark as done</string>
+    <string name="payment_history">Payment history</string>
+    <string name="no_payments_yet">No payments yet</string>
+    <string name="add_payment">Add payment</string>
+    <string name="loans_tab">Loans</string>
+    <string name="card_emis">Card EMIs</string>
+    <string name="nothing_closed">Nothing closed yet</string>
+    <string name="x_remaining">%1$s remaining</string>
+    <plurals name="loans_count">
+        <item quantity="one">%1$d loan</item>
+        <item quantity="other">%1$d loans</item>
+    </plurals>
+    <string name="x_of_x_installments">%1$s of %2$s installments</string>
+    <string name="x_months">%1$s months</string>
+    <string name="x_years">%1$s years</string>
+    <string name="x_late">%1$s late</string>
+    <string name="loan_name">Loan name (optional)</string>
+    <string name="loan_name_hint">e.g. Bike loan, Personal loan</string>
+    <string name="bank_name">Name in bank messages</string>
+    <string name="principal">Principal</string>
     <plurals name="budgets_count">
         <item quantity="one">%1$d budget</item>
         <item quantity="other">%1$d budgets</item>

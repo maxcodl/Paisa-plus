@@ -151,7 +151,7 @@ internal val widgetVersion = MutableStateFlow(0)
 /** Every widget with data or colours (Quick add too: it follows the style). */
 private val allWidgets get() = listOf(
     BalanceWidget(), TotalBalanceWidget(), BudgetTrackerWidget(), BudgetSummaryWidget(), ThisMonthWidget(),
-    UpcomingWidget(), DebtsWidget(), QuickAddWidget(), OverviewTileWidget(), OverviewGridWidget(),
+    UpcomingWidget(), QuickAddWidget(), OverviewTileWidget(), OverviewGridWidget(),
 )
 
 /** Redraws every widget with fresh data, settings and colours. */
@@ -410,44 +410,12 @@ class UpcomingWidget : PaisaWidget<List<Due>>() {
     }
 }
 
-class Debts internal constructor(val lent: String, val owed: String, val owes: Boolean, val next: String?)
-
-/** 2×2: lent and borrowed still outstanding, and the next one due. */
-class DebtsWidget : PaisaWidget<Debts>() {
-    override suspend fun load(context: Context): Debts {
-        val m = moneyOf(context)
-        val ep = entryPoint(context)
-        val byDebt = ep.db().debts().allTransactions().groupBy { it.debtId }
-        val open = ep.db().debts().list().map { DebtRow(it, byDebt[it.id].orEmpty()) }.filter { it.remaining > 0 }
-        val owed = open.filter { it.debt.debtType == DebtType.DEBT }.sumOf { it.remaining }
-        val next = open.minByOrNull { it.debt.expiryDateTime }?.let {
-            "${it.debt.name} · " + str(R.string.due_x, Instant.ofEpochMilli(it.debt.expiryDateTime).atZone(ZoneId.systemDefault()).toLocalDate().format(dayFmt))
-        }
-        return Debts(m(open.filter { it.debt.debtType == DebtType.CREDIT }.sumOf { it.remaining }), m(owed), owed > 0, next)
-    }
-
-    @Composable
-    override fun Content(context: Context, data: Debts) {
-        Card(openApp(context)) {
-            Title(str(R.string.debts))
-            Spacer(GlanceModifier.defaultWeight())
-            Line(str(R.string.owed_to_you), data.lent)
-            Line(str(R.string.you_owe), data.owed, if (data.owes) WidgetError else WidgetFg)
-            if (data.next != null) Text(data.next, style = TextStyle(color = WidgetFg, fontSize = 11.sp), maxLines = 1)
-        }
-    }
-}
-
 class ThisMonthWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = ThisMonthWidget()
 }
 
 class UpcomingWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = UpcomingWidget()
-}
-
-class DebtsWidgetReceiver : GlanceAppWidgetReceiver() {
-    override val glanceAppWidget: GlanceAppWidget = DebtsWidget()
 }
 
 class TotalBalanceWidgetReceiver : GlanceAppWidgetReceiver() {

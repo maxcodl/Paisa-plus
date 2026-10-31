@@ -81,7 +81,6 @@ import com.paisaplus.compose.ui.MDI_TAG
 import com.paisaplus.compose.ui.amountColor
 import com.paisaplus.compose.ui.money
 import com.paisaplus.compose.ui.paisaIcon
-import com.paisaplus.compose.ui.theme.LocalDarkTheme
 import com.paisaplus.compose.ui.theme.LocalGlass
 import com.paisaplus.compose.ui.theme.LocalIconStyle
 import com.paisaplus.compose.data.IconStyle
@@ -175,19 +174,17 @@ fun NetworkBadge(n: CardNetwork, tint: Color = MaterialTheme.colorScheme.primary
 fun WrapText(text: String, modifier: Modifier = Modifier, style: TextStyle = LocalTextStyle.current, color: Color = LocalContentColor.current) =
     Text(text, modifier, color = color, style = style, maxLines = 2, overflow = TextOverflow.Ellipsis)
 
-/** Pill segmented control: outlined track, filled pill on the selected segment. */
+/** Pill segmented control: filled pill on the selected segment. */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun <T> SegmentedTabs(options: List<T>, selected: T, label: (T) -> String, onSelect: (T) -> Unit, modifier: Modifier = Modifier) {
     val c = MaterialTheme.colorScheme
     val p = LocalPaisaColors.current
     val spec = MaterialTheme.motionScheme.defaultEffectsSpec<Color>()
-    val stroke = if (LocalDarkTheme.current) c.outlineVariant else c.primaryContainer
     val glass = LocalGlass.current
     Surface(
         shape = CircleShape,
         color = Color.Transparent,
-        border = if (glass == null) BorderStroke(1.dp, stroke) else null,
         modifier = modifier.fillMaxWidth().then(if (glass != null) Modifier.glass(glass, CircleShape, c.surfaceContainer, alpha = 0.4f) else Modifier),
     ) {
         Row(Modifier.padding(4.dp).selectableGroup()) {
@@ -266,7 +263,7 @@ private val DefaultCategoryColor = Color(0xFFFFC107)
 
 /** Round icon badge. With [tint], uses that colour's tonal pair; otherwise the secondary container. */
 @Composable
-fun IconBadge(icon: ImageVector, tint: Color? = null, size: Dp = 40.dp, autoHue: Boolean = false) {
+fun IconBadge(icon: ImageVector, tint: Color? = null, size: Dp = 40.dp, autoHue: Boolean = false, shape: Shape = CircleShape) {
     val c = MaterialTheme.colorScheme
     // Colourful icons: vivid inverted pair (as ExpressiveIcon); Plain/Monet keep the soft container.
     val colorful = LocalIconStyle.current == IconStyle.COLORFUL
@@ -276,9 +273,19 @@ fun IconBadge(icon: ImageVector, tint: Color? = null, size: Dp = 40.dp, autoHue:
     val vivid = t != null && colorful
     val bg = if (vivid) t!!.content else t?.container ?: c.secondaryContainer
     val fg = if (vivid) t!!.container else t?.content ?: c.onSecondaryContainer
-    Box(Modifier.size(size).background(bg, CircleShape), Alignment.Center) {
+    Box(Modifier.size(size).background(bg, shape), Alignment.Center) {
         Icon(icon, null, tint = fg, modifier = Modifier.size(size * 0.5f))
     }
+}
+
+/** Category tag under a transaction title, tinted from the category colour. */
+@Composable
+private fun CategoryTag(c: CategoryEntity) {
+    val t = rememberTonal(Color(c.color))
+    Text(
+        c.name, Modifier.background(t.container, MaterialTheme.shapes.extraSmall).padding(horizontal = 8.dp, vertical = 2.dp),
+        style = MaterialTheme.typography.labelMedium, color = t.content, maxLines = 1, overflow = TextOverflow.Ellipsis,
+    )
 }
 
 internal val iconHues = longArrayOf(0xFF4285F4, 0xFF34A853, 0xFFF29900, 0xFFEA4335, 0xFF9C27B0, 0xFF00ACC1, 0xFFE91E63, 0xFF5C6BC0)
@@ -391,39 +398,32 @@ private val systemNote = Regex("""^(Reviewed \S+ alert|Auto-added from \S+|Added
 
 @Composable
 fun TransactionRow(e: ExpenseEntity, category: CategoryEntity?, accountName: String?, modifier: Modifier = Modifier, badge: (@Composable () -> Unit)? = null) {
-    Row(modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 16.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-        IconBadge(paisaIcon(category?.icon ?: MDI_TAG), category?.let { Color(it.color) }, autoHue = true)
+    Row(modifier.fillMaxWidth().heightIn(min = 72.dp).padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+        IconBadge(paisaIcon(category?.icon ?: MDI_TAG), category?.let { Color(it.color) }, size = 52.dp, autoHue = true, shape = MaterialTheme.shapes.large)
         Spacer(Modifier.width(16.dp))
-        Column(Modifier.weight(1f)) {
-            val title = e.name.ifBlank { category?.name ?: str(R.string.transaction) }
-            if (badge == null) Text(title, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            else Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(title, Modifier.weight(1f, fill = false), style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Spacer(Modifier.width(6.dp))
-                badge()
-            }
-            Text(
-                listOfNotNull(category?.name, accountName, e.methodLabel()).joinToString(" · ").ifEmpty { str(R.string.no_category_or_account) },
-                style = MaterialTheme.typography.bodySmall,
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(e.name.ifBlank { category?.name ?: str(R.string.transaction) }, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            // Imported rows carry a date only (midnight); a "12:00 AM" on each of them is noise.
+            val at = java.time.Instant.ofEpochMilli(e.time).atZone(java.time.ZoneId.systemDefault()).toLocalTime()
+            val meta = listOfNotNull(at.takeIf { it != java.time.LocalTime.MIDNIGHT }?.format(timeFmt), accountName, e.methodLabel())
+                .joinToString(" • ").ifEmpty { if (category == null) str(R.string.no_category_or_account) else null }
+            if (meta != null) Text(
+                meta,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
             e.note?.takeUnless { systemNote.matches(it) }?.let {
                 Text(it, style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic), color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
+            if (category != null || badge != null) Row(Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                category?.let { CategoryTag(it) }
+                badge?.invoke()
+            }
         }
         Spacer(Modifier.width(8.dp))
-        Column(Modifier.widthIn(max = 160.dp), horizontalAlignment = Alignment.End) {
-            AmountText(e.amount, type = e.type, signed = true)
-            // Imported rows carry a date only (midnight); a "12:00 AM" on each of them is noise.
-            val at = java.time.Instant.ofEpochMilli(e.time).atZone(java.time.ZoneId.systemDefault()).toLocalTime()
-            if (at != java.time.LocalTime.MIDNIGHT) Text(
-                at.format(timeFmt),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        AmountText(e.amount, Modifier.widthIn(max = 160.dp), style = MaterialTheme.typography.titleMedium, type = e.type, signed = true)
     }
 }
 

@@ -284,11 +284,14 @@ private fun Dashboard(d: AppData, skip: Set<Long>, name: String, hidden: Boolean
         }
         val recent = d.expenses.take(5)
         if (recent.isEmpty()) item { Text(str(R.string.no_transactions_yet), color = c.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium) }
-        recent.forEachIndexed { i, e ->
-            item(key = e.id) {
-                // Same segmented group as the Transactions screen.
-                Box(Modifier.segmented(i, recent.size).clickable { nav.openPayee(e) }) {
-                    TransactionRow(e, d.categoryById[e.categoryId], d.accountById[e.accountId]?.name)
+        // Same day groups as the Transactions screen.
+        com.paisaplus.compose.data.groupByDay(recent).forEach { (day, list) ->
+            item(key = "h$day") { com.paisaplus.compose.ui.transactions.DayHeader(day, list, inset = 4.dp) }
+            list.forEachIndexed { i, e ->
+                item(key = e.id) {
+                    Box(Modifier.segmented(i, list.size).clickable { nav.openPayee(e) }) {
+                        TransactionRow(e, d.categoryById[e.categoryId], d.accountById[e.accountId]?.name)
+                    }
                 }
             }
         }

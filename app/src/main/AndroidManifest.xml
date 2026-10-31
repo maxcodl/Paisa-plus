@@ -78,10 +78,6 @@
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/upcoming_widget_info" />
         </receiver>
-        <receiver android:name=".widget.DebtsWidgetReceiver" android:exported="true" android:label="@string/debts">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/debts_widget_info" />
-        </receiver>
         <receiver android:name=".widget.OverviewTileWidgetReceiver" android:exported="true" android:label="@string/overview_tile">
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/overview_tile_widget_info" />
