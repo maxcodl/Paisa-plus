@@ -55,7 +55,7 @@ fun dueLoans(loans: List<LoanEntity>, now: LocalDateTime, zone: ZoneId): Pair<Li
         var loan = start
         var guard = 0
         while (!loan.closed && !loan.nextDue.local(zone).isAfter(end) && guard++ < GUARD) {
-            rows += StatementRow(
+            if (!loan.charged) rows += StatementRow(
                 name = "${loan.name} ${loan.category} ${loan.paid + 1}" + if (loan.tenure > 0) "/${loan.tenure}" else "",
                 amount = loan.emi,
                 time = loan.nextDue,

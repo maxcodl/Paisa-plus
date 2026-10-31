@@ -89,6 +89,7 @@ import com.paisaplus.compose.data.ExpenseEntity
 import com.paisaplus.compose.data.LoanEntity
 import com.paisaplus.compose.data.LoanKind
 import com.paisaplus.compose.data.dayOfMonth
+import com.paisaplus.compose.data.likelyPurchase
 import com.paisaplus.compose.ui.AmountField
 import com.paisaplus.compose.ui.AppViewModel
 import com.paisaplus.compose.ui.DateField
@@ -354,6 +355,18 @@ fun LoanDetailScreen(vm: AppViewModel, id: Long, onBack: () -> Unit, onOpenTx: (
                     }
                 }
             }
+            val purchase = d.accounts.firstOrNull { it.account.name.equals(l.account, true) }?.let { likelyPurchase(l, it.account.id, d.expenses) }
+            if (purchase != null) item {
+                TintCard(Modifier.fillMaxWidth(), color = c.errorContainer, shape = MaterialTheme.shapes.extraLarge) {
+                    Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text(str(R.string.purchase_counted_twice, purchase.name, money(purchase.amount)), style = MaterialTheme.typography.bodyMedium, color = c.onErrorContainer)
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Button({ vm.saveLoan(l.copy(charged = true)) }) { Text(str(R.string.mark_charged)) }
+                            TextButton({ onOpenTx(purchase.id) }) { Text(str(R.string.view)) }
+                        }
+                    }
+                }
+            }
             item { SectionTitle(str(R.string.details)) }
             item {
                 TintCard(Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.extraLarge) {
@@ -426,6 +439,7 @@ private fun LoanSheet(l: LoanEntity, accounts: List<String>, onDismiss: () -> Un
     var principal by rememberSaveable { mutableStateOf(l.principal.plainOrEmpty()) }
     var next by rememberSaveable { mutableLongStateOf(l.nextDue) }
     var autoPost by rememberSaveable { mutableStateOf(l.autoPost) }
+    var charged by rememberSaveable { mutableStateOf(l.charged) }
     var confirmDelete by remember { mutableStateOf(false) }
     val emiV = emi.toAmount()
     val tenureV = if (tenure.isBlank()) 0 else tenure.toIntOrNull()
@@ -454,6 +468,13 @@ private fun LoanSheet(l: LoanEntity, accounts: List<String>, onDismiss: () -> Un
             }
             AmountField(principal, { principal = it }, str(R.string.principal_optional))
             DateField(str(R.string.next_due), next, { next = it }, Modifier.fillMaxWidth())
+            if (kind == LoanKind.EMI) Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text(str(R.string.purchase_on_card), style = MaterialTheme.typography.titleSmall)
+                    Text(str(R.string.purchase_on_card_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Switch(charged, { charged = it })
+            }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(str(R.string.auto_add_installments), style = MaterialTheme.typography.titleSmall)
@@ -468,7 +489,7 @@ private fun LoanSheet(l: LoanEntity, accounts: List<String>, onDismiss: () -> Un
                         onSave(
                             l.copy(
                                 name = name.trim(), label = label.trim(), kind = kind, account = account, emi = emiV!!, tenure = tenureV!!, paid = paidV!!,
-                                principal = principal.toAmount() ?: 0.0, nextDue = next, autoPost = autoPost,
+                                principal = principal.toAmount() ?: 0.0, nextDue = next, autoPost = autoPost, charged = charged && kind == LoanKind.EMI,
                                 dueDay = if (isNew || next != l.nextDue) dayOfMonth(next) else l.dueDay,
                             ),
                         )

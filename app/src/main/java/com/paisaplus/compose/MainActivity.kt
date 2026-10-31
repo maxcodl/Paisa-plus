@@ -232,7 +232,8 @@ class MainActivity : FragmentActivity() {
             val money by settings.money.collectAsStateWithLifecycle(Money.format)
             Money.use(money)
             val monthStart by settings.monthStart.collectAsStateWithLifecycle(1)
-            PaisaTheme(theme) { androidx.compose.runtime.CompositionLocalProvider(com.paisaplus.compose.ui.theme.LocalMonthStart provides monthStart) {
+            val debug by settings.debugInfo.collectAsStateWithLifecycle(false)
+            PaisaTheme(theme) { androidx.compose.runtime.CompositionLocalProvider(com.paisaplus.compose.ui.theme.LocalMonthStart provides monthStart, com.paisaplus.compose.ui.theme.LocalDebug provides debug) {
                 // Recompose every amount when the currency/locale changes.
                 key(money) {
                     if (locked) LockScreen { AppLock.prompt(this) { locked = false } }

@@ -390,6 +390,16 @@
     <string name="x_repaid">Repaid %1$s</string>
     <string name="x_completed">%1$d%% completed</string>
     <string name="per_month">/mo</string>
+    <string name="purchase_counted_twice">%1$s (%2$s) looks like this purchase, already charged to the card. Mark it so the EMI is not counted or posted again.</string>
+    <string name="mark_charged">Already on the card</string>
+    <string name="purchase_on_card">Purchase already on the card</string>
+    <string name="purchase_on_card_hint">The full amount is already a charge: installments are tracked, not posted again</string>
+    <string name="view">View</string>
+    <string name="used">Used</string>
+    <string name="limit">Limit</string>
+    <string name="emi">EMI</string>
+    <string name="debug_info">Debug info</string>
+    <string name="debug_info_summary">Show ids and the owed, EMI and used breakdown on cards and transactions</string>
     <string name="x_open">%1$d open</string>
     <string name="tenure_months">Tenure (months)</string>
     <string name="paid">Paid</string>

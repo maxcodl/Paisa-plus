@@ -181,7 +181,7 @@ class AppViewModel @Inject constructor(
         AppData(
             loading = false,
             accounts = a.map { acc ->
-                val emi = l.filter { it.kind == LoanKind.EMI && it.account.equals(acc.name, ignoreCase = true) }.sumOf { it.remaining }
+                val emi = l.filter { it.kind == LoanKind.EMI && !it.charged && it.account.equals(acc.name, ignoreCase = true) }.sumOf { it.remaining }
                 AccountRow(acc, creditUsage(acc, a, l), emi, nextBill(acc, e, l, today, ZoneId.systemDefault()))
             },
             categories = c,
@@ -195,6 +195,8 @@ class AppViewModel @Inject constructor(
     val hideBalance = settings.hideBalance.stateIn(viewModelScope, SharingStarted.Eagerly, false)
     val excludeTransfers = settings.excludeTransfers.stateIn(viewModelScope, SharingStarted.Eagerly, true)
     fun setExcludeTransfers(v: Boolean) = viewModelScope.launch { settings.setExcludeTransfers(v) }
+    val debugInfo = settings.debugInfo.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    fun setDebugInfo(v: Boolean) = viewModelScope.launch { settings.setDebugInfo(v) }
     val widget = settings.widget.stateIn(viewModelScope, SharingStarted.Eagerly, WidgetPrefs())
     /** Names alerts use for people, and who they are saved as (shown on the payee page). */
     val aliases = expenses.aliases().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

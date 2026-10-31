@@ -46,7 +46,7 @@ data class BalanceSummary(
 
 fun balanceSummary(accounts: List<AccountEntity>, expenses: List<ExpenseEntity>, loans: List<LoanEntity>, today: LocalDate, zone: ZoneId): BalanceSummary {
     val cards = accounts.filter { it.cardType == CardType.CREDIT }
-    val emiOnCards = loans.filter { l -> l.kind == LoanKind.EMI && cards.any { it.name.equals(l.account, ignoreCase = true) } }.sumOf { it.remaining }
+    val emiOnCards = loans.filter { l -> l.kind == LoanKind.EMI && !l.charged && cards.any { it.name.equals(l.account, ignoreCase = true) } }.sumOf { it.remaining }
     // Cards in one limitGroup share a limit: count each group once.
     val groups = cards.groupBy { it.limitGroup?.trim()?.lowercase()?.ifEmpty { null } ?: "#${it.id}" }.values
         .mapNotNull { creditUsage(it.first(), accounts, loans) }

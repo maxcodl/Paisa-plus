@@ -234,6 +234,7 @@ fun SettingsPageScreen(vm: AppViewModel, page: SettingsPage, onBack: () -> Unit,
     val money by vm.money.collectAsStateWithLifecycle()
     val hidden by vm.hideBalance.collectAsStateWithLifecycle()
     val excludeTransfers by vm.excludeTransfers.collectAsStateWithLifecycle()
+    val debugInfo by vm.debugInfo.collectAsStateWithLifecycle()
     val tabs by vm.tabs.collectAsStateWithLifecycle()
     val balanceModes by vm.balanceModes.collectAsStateWithLifecycle()
     val widget by vm.widget.collectAsStateWithLifecycle()

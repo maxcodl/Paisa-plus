@@ -229,9 +229,9 @@ class Migration1To2(private val zone: ZoneId = ZoneId.systemDefault()) : Migrati
         DebtEntity::class, DebtTransactionEntity::class, LoanEntity::class,
         RecurringRuleEntity::class, DeletedExpenseEntity::class, MessageInboxEntity::class, com.paisaplus.compose.messages.PayeeAliasEntity::class,
     ],
-    version = 9,
+    version = 10,
     // accounts.statementDay, accounts.network, expenses/deleted_expenses .note, then .method + .upiApp, then payee_alias
-    autoMigrations = [AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5), AutoMigration(from = 5, to = 6), AutoMigration(from = 6, to = 7), AutoMigration(from = 7, to = 8), AutoMigration(from = 8, to = 9)],
+    autoMigrations = [AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5), AutoMigration(from = 5, to = 6), AutoMigration(from = 6, to = 7), AutoMigration(from = 7, to = 8), AutoMigration(from = 8, to = 9), AutoMigration(from = 9, to = 10)],
 )
 abstract class PaisaDatabase : RoomDatabase() {
     abstract fun payeeAlias(): com.paisaplus.compose.messages.PayeeAliasDao

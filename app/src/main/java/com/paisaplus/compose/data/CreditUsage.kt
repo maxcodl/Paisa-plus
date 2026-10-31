@@ -21,7 +21,7 @@ fun creditUsage(a: AccountEntity, all: List<AccountEntity>, loans: List<LoanEnti
     val limit = members.maxOf { it.creditLimit ?: 0.0 }
     if (limit <= 0) return null
     val names = members.map { it.name.lowercase() }.toSet()
-    val emi = loans.filter { it.kind == LoanKind.EMI && it.account.lowercase() in names }.sumOf { it.remaining }
+    val emi = loans.filter { it.kind == LoanKind.EMI && !it.charged && it.account.lowercase() in names }.sumOf { it.remaining }
     return CreditUsage(limit, members.sumOf { -it.amount }, emi, members.filter { it.id != a.id })
 }
 
@@ -45,7 +45,20 @@ fun nextBill(a: AccountEntity, expenses: List<ExpenseEntity>, loans: List<LoanEn
     val dueBy = next.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
     val charges = expenses.filter { it.accountId == a.id && it.time >= after }
         .sumOf { if (it.type == TransactionType.EXPENSE) it.amount else -it.amount }
-    val emi = loans.filter { it.kind == LoanKind.EMI && it.autoPost && !it.closed && it.account.equals(a.name, ignoreCase = true) && it.nextDue < dueBy }
+    val emi = loans.filter { it.kind == LoanKind.EMI && it.autoPost && !it.charged && !it.closed && it.account.equals(a.name, ignoreCase = true) && it.nextDue < dueBy }
         .sumOf { it.emi }
     return NextBill(next, charges, emi)
+}
+
+/**
+ * An EMI loan's installments are charged to the card month by month, so the purchase itself must not be on the card too.
+ * Returns the charge that looks like the full purchase (about the loan's total, not one of its installments), else null.
+ */
+fun likelyPurchase(l: LoanEntity, accountId: Long, expenses: List<ExpenseEntity>): ExpenseEntity? {
+    if (l.kind != LoanKind.EMI || l.charged || l.closed || l.tenure <= 0) return null
+    val total = l.emi * l.tenure
+    return expenses.filter {
+        it.accountId == accountId && it.type == TransactionType.EXPENSE && !it.name.startsWith("${l.name} ", true) && !it.name.equals(l.name, true) &&
+            it.amount in total * 0.8..total * 1.05
+    }.minByOrNull { kotlin.math.abs(it.amount - total) }
 }

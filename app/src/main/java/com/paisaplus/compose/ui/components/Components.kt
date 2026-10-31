@@ -411,6 +411,7 @@ fun TransactionRow(e: ExpenseEntity, category: CategoryEntity?, accountName: Str
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
+            if (com.paisaplus.compose.ui.theme.LocalDebug.current) Text("#${e.id}${e.note?.let { " · $it" }.orEmpty()}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, maxLines = 2, overflow = TextOverflow.Ellipsis)
             if (category != null || badge != null) Row(Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
                 category?.let { CategoryTag(it) }
                 badge?.invoke()

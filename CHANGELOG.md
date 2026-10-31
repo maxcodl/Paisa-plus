@@ -1,4 +1,10 @@
 # Changelog
+## 0.10.6
+
+- Card EMIs can be marked "purchase already on the card": they stay tracked but are no longer added to the card's used amount or posted again
+- A loan page warns when a charge on the card looks like the EMI's full purchase
+- Credit cards on Home are large cards: available amount, progress, used, limit, EMI and next bill
+- New Settings › Data › Debug info switch: ids, notes and the owed, EMI and used breakdown
 ## 0.10.5
 
 - Loans page redesigned: net balance, lending and monthly payments tiles, and overall repayment progress

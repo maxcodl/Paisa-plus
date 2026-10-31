@@ -38,6 +38,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NotificationsActive
@@ -273,8 +275,8 @@ private fun Dashboard(d: AppData, skip: Set<Long>, name: String, hidden: Boolean
         }
         if (credit.isNotEmpty()) {
             item { SectionTitle(str(R.string.credit_cards), Modifier.semantics { heading() }) }
-            items(credit, key = { "cc" + it.account.id }) { r ->
-                CreditSummary(r, d.accounts.filter { it.account.id == r.account.id || it.account in r.credit!!.shared }, hidden)
+            itemsIndexed(credit, key = { _, r -> "cc" + r.account.id }) { i, r ->
+                CreditSummary(r, d.accounts.filter { it.account.id == r.account.id || it.account in r.credit!!.shared }, i, hidden)
             }
         }
         item {
@@ -464,26 +466,45 @@ private fun OverviewTile(t: Tile, index: Int, hidden: Boolean, modifier: Modifie
 }
 
 @Composable
-private fun CreditSummary(row: AccountRow, members: List<AccountRow>, hidden: Boolean) {
+private fun CreditSummary(row: AccountRow, members: List<AccountRow>, index: Int, hidden: Boolean) {
     val u = row.credit ?: return
+    val c = MaterialTheme.colorScheme
     val names = (listOf(row.account) + u.shared).joinToString { it.name }
-    TintCard(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
+    TintCard(Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.extraLarge) {
+        Column(Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(names, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Spacer(Modifier.width(8.dp))
-                Text(str(R.string.x_left, moneyOrHidden(u.available, hidden)), style = MaterialTheme.typography.titleMediumEmphasized, color = MaterialTheme.colorScheme.primary, maxLines = 1)
+                ExpressiveIcon(Icons.Rounded.CreditCard, index + 1, 48.dp)
+                Spacer(Modifier.width(12.dp))
+                WrapText(names, Modifier.weight(1f), style = MaterialTheme.typography.titleMediumEmphasized)
             }
-            Spacer(Modifier.height(12.dp))
-            WavyProgress((u.used / u.limit).toFloat())
-            Spacer(Modifier.height(8.dp))
-            // Home shows the headline only; the owed / EMI / bill breakdown lives on the card's own screen.
-            val used = str(R.string.used_x_of_x, moneyOrHidden(u.used, hidden), money(u.limit)) +
-                if (u.emi > 0) " · " + str(R.string.emi_x, moneyOrHidden(u.emi, hidden)) else ""
-            Text(used, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.height(16.dp))
+            Text(str(R.string.available), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
+            AmountText(u.available, style = MaterialTheme.typography.headlineLargeEmphasized, color = if (u.available < 0) c.error else c.primary, hidden = hidden)
+            Spacer(Modifier.height(16.dp))
+            WavyProgress((u.used / u.limit).toFloat().coerceIn(0f, 1f))
+            Spacer(Modifier.height(16.dp))
+            Row {
+                CardStat(str(R.string.used), u.used, hidden, Modifier.weight(1f))
+                CardStat(str(R.string.limit), u.limit, false, Modifier.weight(1f))
+                if (u.emi > 0) CardStat(str(R.string.emi), u.emi, hidden, Modifier.weight(1f))
+            }
             members.mapNotNull { it.nextBill }.minByOrNull { it.date }?.let { b ->
-                Text(str(R.string.next_bill_x_x, b.date.format(dayFmt), moneyOrHidden(b.total, hidden)), style = MaterialTheme.typography.bodyMedium)
+                Spacer(Modifier.height(16.dp))
+                Row(Modifier.fillMaxWidth().background(c.surfaceContainerHigh, MaterialTheme.shapes.large).padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Rounded.CalendarMonth, null, Modifier.size(20.dp), tint = c.primary)
+                    Spacer(Modifier.width(8.dp))
+                    Text(str(R.string.next_bill_x_x, b.date.format(dayFmt), moneyOrHidden(b.total, hidden)), style = MaterialTheme.typography.bodyMedium)
+                }
             }
+            if (com.paisaplus.compose.ui.theme.LocalDebug.current) Text("Owed ${money(u.owed)} + EMI left ${money(u.emi)} = used ${money(u.used)}", Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodySmall, color = c.error)
         }
+    }
+}
+
+@Composable
+private fun CardStat(label: String, v: Double, hidden: Boolean, modifier: Modifier) {
+    Column(modifier) {
+        Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        AmountText(v, style = MaterialTheme.typography.titleMediumEmphasized, hidden = hidden)
     }
 }

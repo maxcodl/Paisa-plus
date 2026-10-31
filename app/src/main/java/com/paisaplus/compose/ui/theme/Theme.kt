@@ -221,6 +221,9 @@ val LocalNavLabels = staticCompositionLocalOf { true }
 val LocalWavy = staticCompositionLocalOf { true }
 /** Settings › Month starts on (1 = calendar months). */
 val LocalMonthStart = staticCompositionLocalOf { 1 }
+
+/** Settings › Data › Debug info. */
+val LocalDebug = staticCompositionLocalOf { false }
 val LocalIconStyle = staticCompositionLocalOf { com.paisaplus.compose.data.IconStyle.COLORFUL }
 
 private object NoHaptics : HapticFeedback {

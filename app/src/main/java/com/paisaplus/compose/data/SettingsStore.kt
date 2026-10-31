@@ -134,6 +134,7 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
     private val lockMinutesKey = intPreferencesKey("key_lock_minutes")
     private val secureKey = booleanPreferencesKey("key_secure")
     private val excludeTransfersKey = booleanPreferencesKey("key_exclude_transfers")
+    private val debugInfoKey = booleanPreferencesKey("key_debug_info")
     private val monthStartKey = intPreferencesKey("key_month_start")
     private val widgetOpacityKey = floatPreferencesKey("key_widget_opacity")
     private val widgetStyleKey = stringPreferencesKey("key_widget_style")
@@ -162,6 +163,9 @@ class SettingsStore @Inject constructor(@ApplicationContext private val ctx: Con
 
     val excludeTransfers = ctx.store.data.map { it[excludeTransfersKey] ?: true }
     suspend fun setExcludeTransfers(v: Boolean) = ctx.store.edit { it[excludeTransfersKey] = v }
+    /** Settings › Data › Debug info: extra ids and breakdowns on cards and transactions. */
+    val debugInfo = ctx.store.data.map { it[debugInfoKey] ?: false }
+    suspend fun setDebugInfo(v: Boolean) = ctx.store.edit { it[debugInfoKey] = v }
 
     /** Day of the month a budget month starts on (1–31; see periodOf). */
     val monthStart = ctx.store.data.map { (it[monthStartKey] ?: 1).coerceIn(1, 31) }
