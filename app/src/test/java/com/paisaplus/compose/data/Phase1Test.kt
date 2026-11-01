@@ -107,11 +107,13 @@ class CreditUsageTest {
         )
         val a = nextBill(amazon, e, loans, today, zone)!!
         assertEquals(LocalDate.of(2026, 11, 1), a.date)
-        assertEquals(900.0, a.charges, 0.0); assertEquals(2000.0, a.emi, 0.0); assertEquals(2900.0, a.total, 0.0)
+        assertEquals(1200.0, a.charges, 0.0); assertEquals(2000.0, a.emi, 0.0); assertEquals(3200.0, a.total, 0.0) // full usage, payments not netted
         val f = nextBill(federal, e, loans, today, zone)!!
         assertEquals(LocalDate.of(2026, 11, 21), f.date)
         assertEquals(700.0, f.charges, 0.0); assertEquals(0.0, f.emi, 0.0)
-        assertNull(nextBill(federal.copy(statementDay = null), e, loans, today, zone))
+        // No statement day: the calendar month is the cycle, billed on its last day.
+        val m = nextBill(federal.copy(statementDay = null), e, loans, today, zone)!!
+        assertEquals(LocalDate.of(2026, 10, 31), m.date)
     }
 
     @Test fun installmentPostedAfterStatementCountsOnceAsCharge() {

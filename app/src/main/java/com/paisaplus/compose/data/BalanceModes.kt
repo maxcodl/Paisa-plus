@@ -33,7 +33,7 @@ data class BalanceSummary(
     val cardOwed: Double,
     val cardLimit: Double,
     val cardAvailable: Double,
-    /** Each card's next statement (its own cycle), soonest first. */
+    /** Each card's (or shared-limit group's) next bill by payment due date, soonest first. */
     val bills: List<CardBill>,
     /** Remaining on non-card loans. */
     val loans: Double,
@@ -44,14 +44,17 @@ data class BalanceSummary(
     val netWorth get() = bank - liabilities
 }
 
-fun balanceSummary(accounts: List<AccountEntity>, expenses: List<ExpenseEntity>, loans: List<LoanEntity>, today: LocalDate, zone: ZoneId): BalanceSummary {
+fun balanceSummary(accounts: List<AccountEntity>, expenses: List<ExpenseEntity>, loans: List<LoanEntity>, today: LocalDate, zone: ZoneId, statements: List<StatementEntity> = emptyList()): BalanceSummary {
     val cards = accounts.filter { it.cardType == CardType.CREDIT }
     val emiOnCards = loans.filter { l -> l.kind == LoanKind.EMI && !l.charged && cards.any { it.name.equals(l.account, ignoreCase = true) } }.sumOf { it.remaining }
     // Cards in one limitGroup share a limit: count each group once.
     val groups = cards.groupBy { it.limitGroup?.trim()?.lowercase()?.ifEmpty { null } ?: "#${it.id}" }.values
         .mapNotNull { creditUsage(it.first(), accounts, loans) }
-    val bills = cards.mapNotNull { c -> nextBill(c, expenses, loans, today, zone)?.let { CardBill(c.name, it.date, it.total.coerceAtLeast(0.0)) } }
-        .sortedBy { it.date }
+    // Cards sharing a limit are billed together by the bank: one row per group, due on its earliest due date.
+    val bills = cards.groupBy { it.limitGroup?.trim()?.lowercase()?.ifEmpty { null } ?: "#${it.id}" }.values.mapNotNull { members ->
+        val b = combineBills(members.mapNotNull { nextBill(it, expenses, loans, today, zone, statements, accounts) }) ?: return@mapNotNull null
+        CardBill(if (members.size > 1) members.first().limitGroup!!.trim() else members.first().name, b.due ?: b.date, b.total.coerceAtLeast(0.0))
+    }.sortedBy { it.date }
     return BalanceSummary(
         total = accounts.sumOf { it.amount },
         bank = accounts.filter { it.cardType != CardType.CREDIT }.sumOf { it.amount },

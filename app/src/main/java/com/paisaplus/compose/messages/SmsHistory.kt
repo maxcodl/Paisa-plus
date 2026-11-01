@@ -47,6 +47,7 @@ suspend fun MessageInboxRepository.scanSmsHistory(ctx: Context, days: Int): IntA
                 when (val r = result.getOrNull()) {
                     AUTO_ADDED -> { added++; ScanLog.add("ADDED", at, what, why) }
                     ADDED_TO_REVIEW -> { review++; ScanLog.add("REVIEW", at, what, why) }
+                    STATEMENT_SAVED -> { merged++; ScanLog.add("STATEMENT", at, what, why) }
                     MERGED -> { merged++; ScanLog.add("MERGED", at, what, why) }
                     DUPLICATE -> { dupes++; ScanLog.add("DUPLICATE", at, what, why) }
                     COVERED -> { dupes++; ScanLog.add("COVERED", at, what, why) }

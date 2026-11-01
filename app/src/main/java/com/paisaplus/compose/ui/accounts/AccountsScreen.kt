@@ -109,7 +109,7 @@ fun AccountsScreen(vm: AppViewModel, outer: PaddingValues, onBack: (() -> Unit)?
             val all = d.accounts.map { it.account }
             val tiles: List<Any> = shown.map { cardGroup(it.account, all, d.loans) ?: it }.distinct()
             items(tiles, key = { if (it is CardGroup) "g:${it.name}" else (it as AccountRow).account.id }) { t ->
-                if (t is CardGroup) GroupHeroCard(t, hidden, Modifier.animateItem()) { onOpen(t.members.first().id) }
+                if (t is CardGroup) GroupHeroCard(t, hidden, Modifier.animateItem(), com.paisaplus.compose.data.combineBills(d.accounts.filter { it.account.id in t.ids }.mapNotNull { it.nextBill })) { onOpen(t.members.first().id) }
                 else (t as AccountRow).let { r -> AccountHeroCard(r, hidden, Modifier.animateItem()) { onOpen(r.account.id) } }
             }
         }
@@ -143,6 +143,8 @@ fun AccountSheet(a: AccountEntity, txCount: Int, onDismiss: () -> Unit, onSave: 
     var group by rememberSaveable { mutableStateOf(a.limitGroup.orEmpty()) }
     var network by rememberSaveable { mutableStateOf(a.network.orEmpty()) } // "" = Auto
     var stmt by rememberSaveable { mutableStateOf(a.statementDay?.toString().orEmpty()) }
+    var dueD by rememberSaveable { mutableStateOf(a.dueDay?.toString().orEmpty()) }
+    var remind by rememberSaveable { mutableStateOf(a.remindDays.toString()) }
     val stmtOk = stmt.isBlank() || stmt.toIntOrNull() in 1..31
     var confirmDelete by remember { mutableStateOf(false) }
     val num = { s: String -> s.replace(',', '.').toDoubleOrNull() }
@@ -188,6 +190,16 @@ fun AccountSheet(a: AccountEntity, txCount: Int, onDismiss: () -> Unit, onSave: 
                     stmt, { stmt = it.filter(Char::isDigit).take(2) }, label = { Text(str(R.string.statement_day_1_31)) }, isError = !stmtOk,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true, modifier = Modifier.fillMaxWidth(),
                 )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        dueD, { dueD = it.filter(Char::isDigit).take(2) }, label = { Text(str(R.string.due_day_1_31)) }, isError = dueD.isNotBlank() && dueD.toIntOrNull() !in 1..31,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true, modifier = Modifier.weight(1f),
+                    )
+                    OutlinedTextField(
+                        remind, { remind = it.filter(Char::isDigit).take(2) }, label = { Text(str(R.string.remind_days_before)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true, modifier = Modifier.weight(1f),
+                    )
+                }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (!isNew) OutlinedButton(onClick = { confirmDelete = true }) { Text(str(R.string.delete)) }
@@ -203,6 +215,8 @@ fun AccountSheet(a: AccountEntity, txCount: Int, onDismiss: () -> Unit, onSave: 
                                 creditLimit = if (credit) num(limit) else null,
                                 limitGroup = if (credit) group.trim().ifEmpty { null } else null,
                                 statementDay = if (credit) stmt.toIntOrNull() else null,
+                                dueDay = if (credit) dueD.toIntOrNull()?.takeIf { it in 1..31 } else null,
+                                remindDays = remind.toIntOrNull() ?: 3,
                                 network = if (credit) network.ifEmpty { null } else null,
                             ),
                         )

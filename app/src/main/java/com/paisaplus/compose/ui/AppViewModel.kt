@@ -65,7 +65,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-data class AccountRow(val account: AccountEntity, val credit: CreditUsage?, val emiRemaining: Double, val nextBill: NextBill? = null) {
+data class AccountRow(val account: AccountEntity, val credit: CreditUsage?, val emiRemaining: Double, val nextBill: NextBill? = null, val emiIncluded: Double = 0.0) {
+    // emiIncluded: remaining installments of EMIs whose purchase is already a charge on the card (inside [owed], not added on top).
     /** Credit only: charges − payments, incl. installments already posted. */
     val owed get() = -account.amount
     val totalOutstanding get() = owed + emiRemaining
@@ -78,6 +79,7 @@ data class AppData(
     val expenses: List<ExpenseEntity> = emptyList(),
     val loans: List<LoanEntity> = emptyList(),
     val rules: List<RecurringRuleEntity> = emptyList(),
+    val statements: List<com.paisaplus.compose.data.StatementEntity> = emptyList(),
 ) {
     val accountById = accounts.associate { it.account.id to it.account }
     val categoryById = categories.associateBy { it.id }
@@ -124,6 +126,7 @@ class AppViewModel @Inject constructor(
     private val debtRepo: DebtRepository,
     private val csv: CsvImporter,
     private val guard: com.paisaplus.compose.data.BalanceGuard,
+    private val statementRepo: com.paisaplus.compose.data.StatementRepository,
 ) : ViewModel() {
     // CSV statement import (ImportCsvScreen); kept here so a commit survives leaving the screen.
     var csvPreview by mutableStateOf<ImportPreview?>(null)
@@ -176,18 +179,21 @@ class AppViewModel @Inject constructor(
     fun addPayment(debtId: Long, amount: Double, time: Long) = viewModelScope.launch { debtRepo.addTransaction(DebtTransactionEntity(debtId = debtId, amount = amount, time = time)) }
     fun deletePayment(t: DebtTransactionEntity) = viewModelScope.launch { debtRepo.deleteTransaction(t) }
 
-    val data = combine(accounts.all(), loans.all(), expenses.all(), categories.all(), recurring.all()) { a, l, e, c, r ->
+    val data = combine(accounts.all(), combine(loans.all(), statementRepo.all()) { l, st -> l to st }, expenses.all(), categories.all(), recurring.all()) { a, ls, e, c, r ->
+        val (l, st) = ls
         val today = LocalDate.now()
         AppData(
             loading = false,
             accounts = a.map { acc ->
                 val emi = l.filter { it.kind == LoanKind.EMI && !it.charged && it.account.equals(acc.name, ignoreCase = true) }.sumOf { it.remaining }
-                AccountRow(acc, creditUsage(acc, a, l), emi, nextBill(acc, e, l, today, ZoneId.systemDefault()))
+                AccountRow(acc, creditUsage(acc, a, l), emi, nextBill(acc, e, l, today, ZoneId.systemDefault(), st, a),
+                    l.filter { it.kind == LoanKind.EMI && it.charged && !it.closed && it.account.equals(acc.name, ignoreCase = true) }.sumOf { it.remaining })
             },
             categories = c,
             expenses = e,
             loans = l,
             rules = r,
+            statements = st,
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, AppData())
 
@@ -257,6 +263,8 @@ class AppViewModel @Inject constructor(
     val balanceModes = settings.balanceModes.stateIn(viewModelScope, SharingStarted.Eagerly, BalanceMode.DEFAULT)
 
     init {
+        // A payment (or any entry) moves a card's bill, so its reminders follow.
+        viewModelScope.launch { expenses.all().drop(1).debounce(2000).collect { Reminders.reschedule(ctx, db) } }
         // Fail-safe: a balance that moved away from its transactions without you editing the account is put back, and you're told.
         // The check runs at start, before the screen is listening to [messages] (it has no replay): wait for a listener.
         viewModelScope.launch {
@@ -395,7 +403,15 @@ class AppViewModel @Inject constructor(
 
     fun restore(deletedId: Long) = viewModelScope.launch { expenses.restore(deletedId) }
 
-    fun saveAccount(a: AccountEntity) = viewModelScope.launch { accounts.save(a) }
+    /** A new statement or due day moves the cycle: the auto-made statement is rebuilt for it and reminders follow. */
+    fun saveAccount(a: AccountEntity) = viewModelScope.launch {
+        val old = data.value.accountById[a.id]
+        accounts.save(a)
+        if (old != null && (old.statementDay != a.statementDay || old.dueDay != a.dueDay)) db.statements().clearAuto(a.id)
+        postDueNow(report = false).join()
+    }
+    fun saveStatement(st: com.paisaplus.compose.data.StatementEntity) = viewModelScope.launch { statementRepo.save(st); Reminders.reschedule(ctx, db) }
+    fun deleteStatement(st: com.paisaplus.compose.data.StatementEntity) = viewModelScope.launch { statementRepo.delete(st); Reminders.reschedule(ctx, db) }
     fun deleteAccount(a: AccountEntity) = viewModelScope.launch {
         accounts.delete(a)
         messages.emit(UiMessage(str(R.string.deleted_account_x, a.name)))
@@ -414,7 +430,7 @@ class AppViewModel @Inject constructor(
         if (report || n > 0) messages.emit(UiMessage(if (n == 0) str(R.string.nothing_due) else if (n == 1) str(R.string.posted_1_transaction) else str(R.string.posted_x_transactions, n)))
     }
 
-    fun saveLoan(l: LoanEntity) = viewModelScope.launch { loans.save(l); postDueNow(report = false) }
+    fun saveLoan(l: LoanEntity) = viewModelScope.launch { loans.save(l); postDueNow(report = false) }  // postDueNow reschedules reminders
     fun deleteLoan(l: LoanEntity) = viewModelScope.launch { loans.delete(l) }
     fun saveRule(r: RecurringRuleEntity) = viewModelScope.launch { recurring.save(r); postDueNow(report = false) }
     fun deleteRule(r: RecurringRuleEntity) = viewModelScope.launch { recurring.delete(r); Reminders.reschedule(ctx, db) }

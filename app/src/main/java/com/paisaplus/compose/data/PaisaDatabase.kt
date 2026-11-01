@@ -223,15 +223,29 @@ class Migration1To2(private val zone: ZoneId = ZoneId.systemDefault()) : Migrati
     }
 }
 
+@Dao
+interface StatementDao {
+    @Query("SELECT * FROM statements ORDER BY statementDate DESC") fun all(): Flow<List<StatementEntity>>
+    @Query("SELECT * FROM statements ORDER BY id") suspend fun list(): List<StatementEntity>
+    @Query("SELECT * FROM statements WHERE accountId = :a AND statementDate = :d LIMIT 1") suspend fun find(a: Long, d: Long): StatementEntity?
+    @Upsert suspend fun upsert(s: StatementEntity): Long
+    @Insert suspend fun insertAll(s: List<StatementEntity>)
+    @Delete suspend fun delete(s: StatementEntity)
+    @Query("DELETE FROM statements") suspend fun clear()
+    @Query("DELETE FROM statements WHERE accountId = :accountId AND source = 'AUTO'") suspend fun clearAuto(accountId: Long)
+    @Query("UPDATE statements SET paid = 1 WHERE id = :id") suspend fun markPaid(id: Long)
+}
+
 @Database(
     entities = [
+        StatementEntity::class,
         ExpenseEntity::class, AccountEntity::class, CategoryEntity::class,
         DebtEntity::class, DebtTransactionEntity::class, LoanEntity::class,
         RecurringRuleEntity::class, DeletedExpenseEntity::class, MessageInboxEntity::class, com.paisaplus.compose.messages.PayeeAliasEntity::class,
     ],
-    version = 10,
+    version = 11,
     // accounts.statementDay, accounts.network, expenses/deleted_expenses .note, then .method + .upiApp, then payee_alias
-    autoMigrations = [AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5), AutoMigration(from = 5, to = 6), AutoMigration(from = 6, to = 7), AutoMigration(from = 7, to = 8), AutoMigration(from = 8, to = 9), AutoMigration(from = 9, to = 10)],
+    autoMigrations = [AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5), AutoMigration(from = 5, to = 6), AutoMigration(from = 6, to = 7), AutoMigration(from = 7, to = 8), AutoMigration(from = 8, to = 9), AutoMigration(from = 9, to = 10), AutoMigration(from = 10, to = 11)],
 )
 abstract class PaisaDatabase : RoomDatabase() {
     abstract fun payeeAlias(): com.paisaplus.compose.messages.PayeeAliasDao
@@ -243,6 +257,7 @@ abstract class PaisaDatabase : RoomDatabase() {
     abstract fun loans(): LoanDao
     abstract fun recurring(): RecurringDao
     abstract fun deleted(): DeletedExpenseDao
+    abstract fun statements(): StatementDao
 }
 
 @Module
@@ -260,4 +275,5 @@ object DatabaseModule {
     @Provides fun debts(db: PaisaDatabase) = db.debts()
     @Provides fun loans(db: PaisaDatabase) = db.loans()
     @Provides fun recurring(db: PaisaDatabase) = db.recurring()
+    @Provides fun statements(db: PaisaDatabase) = db.statements()
 }

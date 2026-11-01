@@ -29,7 +29,7 @@ class BalanceModesTest {
         assertEquals(6_000.0 + 4_000.0, s.cardOwed, 0.0) // charges + remaining EMI on a card
         assertEquals(70_000.0, s.cardLimit, 0.0) // shared group counted once
         assertEquals((50_000.0 - 5_000.0 - 4_000.0) + (20_000.0 - 1_000.0), s.cardAvailable, 0.0)
-        assertEquals(LocalDate.of(2026, 11, 5), s.dueDate)
+        assertEquals(LocalDate.of(2026, 11, 20), s.dueDate) // no statement day: month-end statement (31 Oct), due 20 days later; the shared group is one bill
         assertEquals(30_000.0, s.loans, 0.0)
         assertEquals(10_500.0 - 40_000.0, s.netWorth, 0.0)
     }

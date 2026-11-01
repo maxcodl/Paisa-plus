@@ -55,6 +55,8 @@ data class AccountEntity(
     val limitGroup: String? = null,
     val statementDay: Int? = null, // credit only, 1-31; null = no next-bill estimate
     val network: String? = null, // credit only: CardNetwork name picked in the edit sheet; null = guess from the name
+    val dueDay: Int? = null, // credit only: payment due day-of-month; null = unknown
+    @ColumnInfo(defaultValue = "3") val remindDays: Int = 3, // days before due date to remind; 0 = same day only
 )
 
 @Entity(tableName = "categories")
@@ -104,6 +106,8 @@ data class LoanEntity(
     @ColumnInfo(defaultValue = "0") val dueDay: Int = 0, // intended day-of-month; 0 = use nextDue's day
     @ColumnInfo(defaultValue = "") val label: String = "", // your own name ("Bike loan"); [name] stays the bank/import name installments match on
     @ColumnInfo(defaultValue = "0") val charged: Boolean = false, // the whole purchase is already a charge on the card: installments are tracked, never posted or added to used
+    @ColumnInfo(defaultValue = "3") val remindDays: Int = 3,
+    @ColumnInfo(defaultValue = "") val accountNo: String = "", // last digits of the bank loan account ("9692"), matches due-date SMS
 ) {
     val closed get() = tenure > 0 && paid >= tenure
     val remaining get() = if (tenure > 0) (tenure - paid).coerceIn(0, tenure) * emi else 0.0
@@ -147,3 +151,16 @@ data class DeletedExpenseEntity(
         fun of(e: ExpenseEntity, at: Long) = DeletedExpenseEntity(0, e.id, e.name, e.amount, e.time, e.type, e.accountId, e.categoryId, at, e.note, e.method, e.upiApp)
     }
 }
+
+/** A bank-issued statement for one cycle. [source] MANUAL or SMS. [paid] flips when a bill payment covers it. */
+@Entity(tableName = "statements", indices = [androidx.room.Index("accountId")])
+data class StatementEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val accountId: Long,
+    val statementDate: Long, // epoch millis, start of day
+    val dueDate: Long,
+    val total: Double,
+    val minDue: Double = 0.0,
+    val source: String = "MANUAL",
+    val paid: Boolean = false,
+)

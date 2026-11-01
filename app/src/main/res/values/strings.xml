@@ -234,6 +234,7 @@
     <string name="recurring_transactions">Recurring transactions</string>
     <string name="upcoming_x">Upcoming: %1$s</string>
     <string name="x_due_today">%1$s due today</string>
+    <string name="x_due_in_n_days">%1$s due in %2$d days</string>
     <string name="edit_x">Edit %1$s</string>
     <string name="add_transaction">Add transaction</string>
     <string name="edit">Edit</string>
@@ -788,4 +789,22 @@
     <string name="auto_setup_continue">Continue to Paisa+</string>
     <string name="auto_setup_skip">Skip for now</string>
     <string name="auto_setup_background">Continue in background</string>
+    <string name="due_day_1_31">Payment due day (1-31)</string>
+    <string name="remind_days_before">Remind days before</string>
+    <string name="loan_account_digits">Loan A/c last digits</string>
+    <string name="statement_and_due">Statement &amp; due date</string>
+    <string name="add_bank_statement">Add bank statement</string>
+    <string name="statement_date">Statement date</string>
+    <string name="payment_due_date">Payment due date</string>
+    <string name="statement_total">Statement total</string>
+    <string name="minimum_due">Minimum due</string>
+    <string name="app_estimate_x">App estimate: %1$s</string>
+    <string name="bank_vs_estimate_x">Bank vs estimate: %1$s</string>
+    <string name="past_statements">Past statements</string>
+    <string name="this_cycle">This cycle</string>
+    <string name="from_sms">From SMS</string>
+    <string name="entered_by_you">Entered by you</string>
+    <string name="estimate_breakdown">Charges so far + upcoming EMI</string>
+    <string name="bill_x_due_on_x">Bill %1$s · due %2$s</string>
+    <string name="est_bill_x_on_x">Est. bill %1$s · %2$s</string>
 </resources>

@@ -413,9 +413,12 @@ private fun MainNav(vm: AppViewModel, addRequested: Boolean, onAddHandled: () ->
             composable(Tab.ACCOUNTS.route) { AccountsScreen(vm, pad, up(Tab.ACCOUNTS)) { nav.navigate("account/$it") } }
             composable("account/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
                 val id = e.arguments!!.getLong("id")
-                AccountDetailScreen(vm, id, back, onAdd = { nav.editTransaction(account = it) }, onPayBill = { nav.navigate("transfer?to=$it") }, onOpenTx = { tx -> vm.data.value.expenses.firstOrNull { it.id == tx }?.let(nav::openPayee) })
+                AccountDetailScreen(vm, id, back, onAdd = { nav.editTransaction(account = it) }, onPayBill = { nav.navigate("transfer?to=$it") }, onStatement = { nav.navigate("statement/$it") }, onOpenLoan = { nav.navigate("loan/$it") }, onOpenTx = { tx -> vm.data.value.expenses.firstOrNull { it.id == tx }?.let(nav::openPayee) })
             }
-            composable(Routes.PROFILE) { ProfileScreen(vm, back) { nav.go(it) } }
+            composable("statement/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
+                com.paisaplus.compose.ui.accounts.StatementScreen(vm, e.arguments!!.getLong("id"), back)
+            }
+            composable(Routes.PROFILE){ ProfileScreen(vm, back) { nav.go(it) } }
             composable(Tab.REPORTS.route) { ReportsScreen(vm, up(Tab.REPORTS), pad) }
             composable(Tab.SEARCH.route) { SearchScreen(vm, up(Tab.SEARCH), pad) { tx -> vm.data.value.expenses.firstOrNull { it.id == tx }?.let(nav::openPayee) } }
             composable("payee/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->

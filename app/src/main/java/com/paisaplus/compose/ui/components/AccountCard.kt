@@ -88,9 +88,11 @@ fun AccountHeroCard(row: AccountRow, hidden: Boolean, modifier: Modifier = Modif
             Text(if (credit) str(R.string.total_outstanding) else str(R.string.balance), style = MaterialTheme.typography.labelLarge, color = fg.copy(alpha = 0.75f))
             AmountText(owed, style = MaterialTheme.typography.headlineLargeEmphasized, color = fg, hidden = hidden)
             if (credit) Text(
-                str(R.string.owed_x_emi_x, moneyOrHidden(row.owed, hidden), moneyOrHidden(row.emiRemaining, hidden)),
+                // An EMI whose purchase is already on the card sits inside what's owed: show it on the EMI side, like the other cards (the total is unchanged).
+                str(R.string.owed_x_emi_x, moneyOrHidden(row.owed - row.emiIncluded, hidden), moneyOrHidden(row.emiRemaining + row.emiIncluded, hidden)),
                 style = MaterialTheme.typography.labelMedium, color = fg.copy(alpha = 0.8f), maxLines = 1, overflow = TextOverflow.Ellipsis,
             )
+            row.nextBill?.takeIf { credit }?.let { BillLine(it, hidden, fg) }
             if (u != null) Text(
                 str(R.string.available_x_of_x_2, moneyOrHidden(u.available, hidden), money(u.limit)) +
                     (u.shared.takeIf { it.isNotEmpty() }?.let { s -> str(R.string.shared_with_x, s.joinToString { it.name }) } ?: ""),
@@ -136,7 +138,13 @@ fun AccountEntity.last4Label() = number.takeLast(4).ifBlank { null }?.let { "•
 
 /** A joint card (limitGroup): combined outstanding, owed + EMI, available of the shared limit, and its cards. */
 @Composable
-fun GroupHeroCard(g: CardGroup, hidden: Boolean, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null) {
+fun BillLine(b: com.paisaplus.compose.data.NextBill, hidden: Boolean, fg: Color) = Text(
+    str(if (b.actual) R.string.bill_x_due_on_x else R.string.est_bill_x_on_x, moneyOrHidden(b.total.coerceAtLeast(0.0), hidden), (b.due ?: b.date).format(java.time.format.DateTimeFormatter.ofPattern("d MMM"))),
+    style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, color = fg, maxLines = 1, overflow = TextOverflow.Ellipsis,
+)
+
+@Composable
+fun GroupHeroCard(g: CardGroup, hidden: Boolean, modifier: Modifier = Modifier, bill: com.paisaplus.compose.data.NextBill? = null, onClick: (() -> Unit)? = null) {
     val c = MaterialTheme.colorScheme
     val fg = c.onPrimary
     val u = g.usage
@@ -152,6 +160,7 @@ fun GroupHeroCard(g: CardGroup, hidden: Boolean, modifier: Modifier = Modifier, 
             Text(str(R.string.total_outstanding), style = MaterialTheme.typography.labelLarge, color = fg.copy(alpha = 0.75f))
             AmountText(u.used, style = MaterialTheme.typography.headlineLargeEmphasized, color = fg, hidden = hidden)
             Text(str(R.string.owed_x_emi_x, moneyOrHidden(u.owed, hidden), moneyOrHidden(u.emi, hidden)), style = small, color = fg.copy(alpha = 0.8f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+            bill?.let { BillLine(it, hidden, fg) }
             Text(str(R.string.available_x_of_x_2, moneyOrHidden(u.available, hidden), money(u.limit)), style = small, color = fg.copy(alpha = 0.8f), maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         // Each card of the group: its network logo (when known) and last 4.

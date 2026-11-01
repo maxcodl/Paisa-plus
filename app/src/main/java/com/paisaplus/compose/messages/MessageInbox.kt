@@ -91,6 +91,8 @@ const val DUPLICATE = "Already in your transactions"
 const val COVERED = "Before your records"
 /** An older alert matched to its statement row, which got the alert's time, payee and app. */
 const val MERGED = "Matched to your statement"
+/** A due-date or statement alert filled in a loan's next due date or a card's bank statement. */
+const val STATEMENT_SAVED = "Statement saved"
 /** How far apart a UPI app's notice and the bank's alert for one payment may be. */
 private const val HINT_MS = 10 * 60_000L
 /** Alerts younger than this may be added unattended; anything older goes through Review. */
@@ -111,7 +113,7 @@ class MessageInboxRepository @Inject constructor(
      */
     suspend fun receive(body: String, source: String, receivedAt: Long, scan: Boolean = false): String {
         val result = BankMessageParser.parse(body)
-        if (result is MessageParseResult.Ignored) return result.reason
+        if (result is MessageParseResult.Ignored) return StatementParser.parse(body)?.let { applyStatement(it, receivedAt) } ?: result.reason
         val p = (result as MessageParseResult.Candidate).transaction
         val fingerprint = messageFingerprint(body, p, receivedAt)
         val inserted = db.withTransaction {
@@ -134,7 +136,58 @@ class MessageInboxRepository @Inject constructor(
             if (scan && seen != null && seen.status in setOf("MERGED", "IMPORTED", "DUPLICATE")) learnFromSaved(seen, body)
             return "Message already detected"
         }
-        return settle(fingerprint, scan, notify = !scan)
+        return settle(fingerprint, scan, notify = !scan).also { if (it == AUTO_ADDED && !scan) com.paisaplus.compose.work.Reminders.reschedule(ctx, db) }
+    }
+
+    /**
+     * A due-date / statement alert: sets a loan's next due date (matched by its account digits) or saves a card's bank statement,
+     * so the estimate is replaced by the bank's figure. Stale alerts (a rescan of old texts) never move a date backwards.
+     * Returns [STATEMENT_SAVED] or why nothing changed.
+     */
+    private suspend fun applyStatement(m: StatementMessage, receivedAt: Long): String {
+        val zone = java.time.ZoneId.systemDefault()
+        val today = java.time.LocalDate.now(zone)
+        fun ms(d: java.time.LocalDate) = d.atStartOfDay(zone).toInstant().toEpochMilli()
+        val sent = java.time.Instant.ofEpochMilli(receivedAt).atZone(zone).toLocalDate()
+        return when (m) {
+            is StatementMessage.LoanDue -> {
+                if (m.due < today || m.due > today.plusDays(45)) return "Old due date"
+                val loans = db.loans().list().filter { !it.closed }
+                val loan = loans.singleOrNull { it.accountNo.isNotBlank() && it.accountNo.takeLast(4) == m.suffix.takeLast(4) }
+                    // First alert for a loan: the one loan of this bank without digits yet adopts them.
+                    ?: loans.filter { it.accountNo.isBlank() && (it.name + " " + it.label).contains(m.bank.substringBefore(' '), ignoreCase = true) }.singleOrNull()
+                    ?: return "No loan matches XX${m.suffix}: set its account digits on the loan"
+                db.loans().upsert(loan.copy(accountNo = m.suffix, emi = m.amount, nextDue = ms(m.due), dueDay = m.due.dayOfMonth))
+                com.paisaplus.compose.work.Reminders.reschedule(ctx, db)
+                STATEMENT_SAVED
+            }
+            is StatementMessage.PayLater -> {
+                if (sent < today.minusDays(35)) return "Old due date"
+                val due = com.paisaplus.compose.data.clampDay(java.time.YearMonth.from(sent), m.day)
+                if (due < today.minusDays(5)) return "Old due date"
+                val card = db.accounts().list().filter { Regex("pay ?later|axio", RegexOption.IGNORE_CASE).containsMatchIn(it.name + " " + it.bankName) }.singleOrNull()
+                    ?: return "No Pay Later account: name an account 'Axio Pay Later'"
+                saveStatement(card, due.withDayOfMonth(1), due, m.amount, 0.0, ::ms)
+            }
+            is StatementMessage.CardStatement -> {
+                if (m.due < today.minusDays(5)) return "Old due date"
+                val cards = db.accounts().list().filter { it.cardType == com.paisaplus.compose.data.CardType.CREDIT }
+                val card = (m.suffix?.let { s -> cards.singleOrNull { a -> a.number.filter(Char::isDigit).endsWith(s) } } ?: cards.singleOrNull())
+                    ?: return "No card matches this statement"
+                saveStatement(card, m.due.minusDays(20), m.due, m.total, m.minDue, ::ms)
+            }
+        }
+    }
+
+    private suspend fun saveStatement(card: AccountEntity, statementDate: java.time.LocalDate, due: java.time.LocalDate, total: Double, min: Double, ms: (java.time.LocalDate) -> Long): String {
+        val st = db.statements()
+        val key = ms(statementDate)
+        val old = st.find(card.id, key)
+        // A bank statement you entered by hand is the more careful figure; an alert never replaces it.
+        if (old?.source == "MANUAL") return "Statement already entered"
+        st.upsert(com.paisaplus.compose.data.StatementEntity(old?.id ?: 0, card.id, key, ms(due), total, min, "SMS", old?.paid ?: false))
+        com.paisaplus.compose.work.Reminders.reschedule(ctx, db)
+        return STATEMENT_SAVED
     }
 
     /** Re-checks everything waiting (Review opens with this): recorded payments leave, recognisable ones are added. */

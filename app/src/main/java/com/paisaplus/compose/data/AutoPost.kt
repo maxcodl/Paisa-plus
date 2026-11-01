@@ -4,6 +4,7 @@ import androidx.room.withTransaction
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.YearMonth
 import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -138,7 +139,33 @@ class AutoPoster @Inject constructor(private val db: PaisaDatabase, private val 
         val n = post(loanRows + ruleRows)
         loans.forEach { db.loans().upsert(it) }
         rules.forEach { db.recurring().upsert(it) }
+        generateStatements(now.toLocalDate(), zone)
         n
+    }
+
+    /**
+     * Once a card's statement day has passed, saves that cycle's statement (source AUTO): that cycle's usage
+     * plus EMI, as [nextBill] computes it for the statement date. A bank statement (entered or from SMS) near
+     * that cycle already stands in for it, and replaces it when it arrives.
+     */
+    private suspend fun generateStatements(today: LocalDate, zone: ZoneId) {
+        val expenses = db.expenses().list()
+        for (a in db.accounts().list()) {
+            if (a.cardType != CardType.CREDIT) continue
+            val day = a.statementDay ?: 31
+            val ym = YearMonth.from(today)
+            val stmt = clampDay(ym, day).takeIf { it <= today } ?: clampDay(ym.minusMonths(1), day)
+            val key = stmt.atStartOfDay(zone).toInstant().toEpochMilli()
+            val end = stmt.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
+            val due = a.dueDay?.let { d -> clampDay(if (d > stmt.dayOfMonth) YearMonth.from(stmt) else YearMonth.from(stmt).plusMonths(1), d) } ?: stmt.plusDays(20)
+            val covered = db.statements().list().any { it.accountId == a.id && it.dueDate > key && it.dueDate <= key + 45 * 86_400_000L && it.source != "AUTO" }
+            if (covered) continue
+            // The same bill the card shows before the statement date: the cycle's full usage plus one month's EMI.
+            val total = nextBill(a, expenses.filter { it.time < end }, db.loans().list(), stmt, zone)?.total ?: 0.0
+            val old = db.statements().find(a.id, key)
+            if (total <= 0.0 || old != null && old.source != "AUTO") continue
+            db.statements().upsert(StatementEntity(old?.id ?: 0, a.id, key, due.atStartOfDay(zone).toInstant().toEpochMilli(), total, 0.0, "AUTO", old?.paid ?: false))
+        }
     }
 
     /** Resolves account/category by name (case-insensitive; last duplicate wins, like a Dart map), creating missing ones. */

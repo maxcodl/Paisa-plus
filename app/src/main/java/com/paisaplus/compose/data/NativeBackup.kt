@@ -42,6 +42,7 @@ data class Snapshot(
     val deleted: List<DeletedExpenseEntity> = emptyList(),
     val settings: JsonObject = JsonObject(emptyMap()),
     val aliases: List<com.paisaplus.compose.messages.PayeeAliasEntity> = emptyList(),
+    val statements: List<StatementEntity> = emptyList(),
 )
 
 /**
@@ -66,14 +67,15 @@ object NativeBackup {
             put("exportedAt", exportedAt)
             put("tables", buildJsonObject {
                 put("expenses", arr(s.expenses) { mapOf("id" to it.id, "name" to it.name, "amount" to it.amount, "time" to it.time, "type" to it.type.name, "accountId" to it.accountId, "categoryId" to it.categoryId, "note" to it.note, "method" to it.method, "upiApp" to it.upiApp) })
-                put("accounts", arr(s.accounts) { mapOf("id" to it.id, "name" to it.name, "icon" to it.icon, "bankName" to it.bankName, "number" to it.number, "cardType" to it.cardType.name, "amount" to it.amount, "creditLimit" to it.creditLimit, "limitGroup" to it.limitGroup, "statementDay" to it.statementDay, "network" to it.network) })
+                put("accounts", arr(s.accounts) { mapOf("id" to it.id, "name" to it.name, "icon" to it.icon, "bankName" to it.bankName, "number" to it.number, "cardType" to it.cardType.name, "amount" to it.amount, "creditLimit" to it.creditLimit, "limitGroup" to it.limitGroup, "statementDay" to it.statementDay, "network" to it.network, "dueDay" to it.dueDay, "remindDays" to it.remindDays) })
                 put("categories", arr(s.categories) { mapOf("id" to it.id, "name" to it.name, "description" to it.description, "icon" to it.icon, "budget" to it.budget, "isBudget" to it.isBudget, "color" to it.color, "isDefault" to it.isDefault) })
                 put("debts", arr(s.debts) { mapOf("id" to it.id, "name" to it.name, "description" to it.description, "amount" to it.amount, "dateTime" to it.dateTime, "expiryDateTime" to it.expiryDateTime, "debtType" to it.debtType.name) })
                 put("debt_transactions", arr(s.debtTransactions) { mapOf("id" to it.id, "debtId" to it.debtId, "amount" to it.amount, "time" to it.time) })
-                put("loans", arr(s.loans) { mapOf("id" to it.id, "name" to it.name, "kind" to it.kind.name, "account" to it.account, "emi" to it.emi, "tenure" to it.tenure, "paid" to it.paid, "principal" to it.principal, "nextDue" to it.nextDue, "autoPost" to it.autoPost, "dueDay" to it.dueDay) })
+                put("loans", arr(s.loans) { mapOf("id" to it.id, "name" to it.name, "kind" to it.kind.name, "account" to it.account, "emi" to it.emi, "tenure" to it.tenure, "paid" to it.paid, "principal" to it.principal, "nextDue" to it.nextDue, "autoPost" to it.autoPost, "dueDay" to it.dueDay, "remindDays" to it.remindDays, "accountNo" to it.accountNo) })
                 put("recurring_rules", arr(s.rules) { mapOf("id" to it.id, "name" to it.name, "amount" to it.amount, "type" to it.type.name, "category" to it.category, "account" to it.account, "frequency" to it.frequency.name, "next" to it.next, "remind" to it.remind, "dueDay" to it.dueDay) })
                 put("deleted_expenses", arr(s.deleted) { mapOf("id" to it.id, "originalId" to it.originalId, "name" to it.name, "amount" to it.amount, "time" to it.time, "type" to it.type.name, "accountId" to it.accountId, "categoryId" to it.categoryId, "deletedAt" to it.deletedAt, "note" to it.note, "method" to it.method, "upiApp" to it.upiApp) })
                 // Names bank alerts use for people; older builds neither write nor read this table.
+                put("statements", arr(s.statements) { mapOf("id" to it.id, "accountId" to it.accountId, "statementDate" to it.statementDate, "dueDate" to it.dueDate, "total" to it.total, "minDue" to it.minDue, "source" to it.source, "paid" to it.paid) })
                 put("payee_aliases", arr(s.aliases) { mapOf("key" to it.key, "alias" to it.alias, "name" to it.name) })
             })
             put("settings", s.settings)
@@ -90,14 +92,15 @@ object NativeBackup {
         fun rows(k: String) = (t[k] as? JsonArray).orEmpty().map { it.jsonObject }
         return Snapshot(
             expenses = rows("expenses").map { ExpenseEntity(it.l("id"), it.s("name"), it.d("amount"), it.l("time"), TransactionType.valueOf(it.s("type")), it.l("accountId"), it.l("categoryId"), it.sn("note"), it.sn("method"), it.sn("upiApp")) },
-            accounts = rows("accounts").map { AccountEntity(it.l("id"), it.s("name"), it.i("icon"), it.s("bankName"), it.s("number"), CardType.valueOf(it.s("cardType")), it.d("amount"), it.dn("creditLimit"), it.sn("limitGroup"), it.p("statementDay")?.intOrNull, it.sn("network")) },
+            accounts = rows("accounts").map { AccountEntity(it.l("id"), it.s("name"), it.i("icon"), it.s("bankName"), it.s("number"), CardType.valueOf(it.s("cardType")), it.d("amount"), it.dn("creditLimit"), it.sn("limitGroup"), it.p("statementDay")?.intOrNull, it.sn("network"), it.p("dueDay")?.intOrNull, it.p("remindDays")?.intOrNull ?: 3) },
             categories = rows("categories").map { CategoryEntity(it.l("id"), it.s("name"), it.sn("description"), it.i("icon"), it.d("budget"), it.b("isBudget"), it.i("color"), it.b("isDefault")) },
             debts = rows("debts").map { DebtEntity(it.l("id"), it.s("name"), it.s("description"), it.d("amount"), it.l("dateTime"), it.l("expiryDateTime"), DebtType.valueOf(it.s("debtType"))) },
             debtTransactions = rows("debt_transactions").map { DebtTransactionEntity(it.l("id"), it.l("debtId"), it.d("amount"), it.l("time")) },
-            loans = rows("loans").map { LoanEntity(it.l("id"), it.s("name"), LoanKind.valueOf(it.s("kind")), it.s("account"), it.d("emi"), it.i("tenure"), it.i("paid"), it.d("principal"), it.l("nextDue"), it.b("autoPost"), it.i("dueDay")) },
+            loans = rows("loans").map { LoanEntity(it.l("id"), it.s("name"), LoanKind.valueOf(it.s("kind")), it.s("account"), it.d("emi"), it.i("tenure"), it.i("paid"), it.d("principal"), it.l("nextDue"), it.b("autoPost"), it.i("dueDay"), remindDays = it.p("remindDays")?.intOrNull ?: 3, accountNo = it.sn("accountNo").orEmpty()) },
             rules = rows("recurring_rules").map { RecurringRuleEntity(it.l("id"), it.s("name"), it.d("amount"), TransactionType.valueOf(it.s("type")), it.s("category"), it.s("account"), Frequency.valueOf(it.s("frequency")), it.l("next"), it.b("remind"), it.i("dueDay")) },
             deleted = rows("deleted_expenses").map { DeletedExpenseEntity(it.l("id"), it.l("originalId"), it.s("name"), it.d("amount"), it.l("time"), TransactionType.valueOf(it.s("type")), it.l("accountId"), it.l("categoryId"), it.l("deletedAt"), it.sn("note"), it.sn("method"), it.sn("upiApp")) },
             settings = root["settings"] as? JsonObject ?: JsonObject(emptyMap()),
+            statements = rows("statements").map { StatementEntity(it.l("id"), it.l("accountId"), it.l("statementDate"), it.l("dueDate"), it.d("total"), it.d("minDue"), it.s("source"), it.b("paid")) },
             aliases = rows("payee_aliases").map { com.paisaplus.compose.messages.PayeeAliasEntity(it.s("key"), it.s("alias"), it.s("name")) },
         )
     }
@@ -139,7 +142,7 @@ class BackupManager @Inject constructor(
         Snapshot(
             db.expenses().list(), db.accounts().list(), db.categories().list(),
             db.debts().list(), db.debts().allTransactions(), db.loans().list(),
-            db.recurring().list(), db.deleted().list(), settings.export(), db.payeeAlias().list(),
+            db.recurring().list(), db.deleted().list(), settings.export(), db.payeeAlias().list(), db.statements().list(),
         )
     }
 
@@ -157,7 +160,8 @@ class BackupManager @Inject constructor(
             s.aliases.forEach { db.payeeAlias().put(it) }
             db.expenses().clear(); db.accounts().clear(); db.categories().clear()
             db.debts().clear(); db.debts().clearTransactions()
-            db.loans().clear(); db.recurring().clear(); db.deleted().clear()
+            db.loans().clear(); db.recurring().clear(); db.deleted().clear(); db.statements().clear()
+            db.statements().insertAll(s.statements)
             s.accounts.forEach { db.accounts().insert(it) }
             s.categories.forEach { db.categories().insert(it) }
             s.expenses.chunked(500).forEach { db.expenses().insertAll(it) }

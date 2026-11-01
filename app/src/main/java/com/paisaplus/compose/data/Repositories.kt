@@ -123,6 +123,16 @@ class LoanRepository @Inject constructor(private val dao: LoanDao) {
 }
 
 @Singleton
+class StatementRepository @Inject constructor(private val dao: StatementDao) {
+    fun all() = dao.all()
+    suspend fun find(accountId: Long, statementDate: Long) = dao.find(accountId, statementDate)
+    /** One statement per (card, statement date): saving again replaces it. */
+    suspend fun save(s: StatementEntity) = dao.upsert(dao.find(s.accountId, s.statementDate)?.let { s.copy(id = it.id) } ?: s)
+    suspend fun delete(s: StatementEntity) = dao.delete(s)
+    suspend fun markPaid(id: Long) = dao.markPaid(id)
+}
+
+@Singleton
 class RecurringRepository @Inject constructor(private val dao: RecurringDao) {
     fun all() = dao.all()
     suspend fun save(r: RecurringRuleEntity) = dao.upsert(r)

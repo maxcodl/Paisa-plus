@@ -48,6 +48,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -74,13 +75,16 @@ import com.paisaplus.compose.ui.components.TransactionRow
 import com.paisaplus.compose.ui.components.WavyProgress
 import com.paisaplus.compose.ui.label
 import com.paisaplus.compose.ui.money
+import com.paisaplus.compose.data.LoanEntity
+import com.paisaplus.compose.data.LoanKind
+import androidx.compose.foundation.lazy.items
 import com.paisaplus.compose.ui.dayFmt
 import com.paisaplus.compose.ui.moneyOrHidden
 import com.paisaplus.compose.ui.theme.LocalPaisaColors
 
 /** One account or card: the card, actions, details, this month, and its transactions. */
 @Composable
-fun AccountDetailScreen(vm: AppViewModel, id: Long, onBack: () -> Unit, onAdd: (accountId: Long) -> Unit, onPayBill: (cardId: Long) -> Unit, onOpenTx: (Long) -> Unit) {
+fun AccountDetailScreen(vm: AppViewModel, id: Long, onBack: () -> Unit, onAdd: (accountId: Long) -> Unit, onPayBill: (cardId: Long) -> Unit, onOpenTx: (Long) -> Unit, onStatement: (cardId: Long) -> Unit = {}, onOpenLoan: (Long) -> Unit = {}) {
     val d by vm.data.collectAsStateWithLifecycle()
     val hidden by vm.hideBalance.collectAsStateWithLifecycle()
     var editing by remember { mutableStateOf(false) }
@@ -90,7 +94,7 @@ fun AccountDetailScreen(vm: AppViewModel, id: Long, onBack: () -> Unit, onAdd: (
     if (row == null) return
     val a = row.account
     val group = remember(d.accounts, d.loans, id) { cardGroup(a, d.accounts.map { it.account }, d.loans) }
-    if (group != null) { GroupDetail(vm, d, group, hidden, onBack, onAdd, onPayBill, onOpenTx); return }
+    if (group != null) { GroupDetail(vm, d, group, hidden, onBack, onAdd, onPayBill, onOpenTx, onStatement, onOpenLoan); return }
     val txs = remember(d.expenses, id) { d.expenses.filter { it.accountId == id } }
     val groups = remember(txs) { groupByDay(txs) }
     val start = LocalMonthStart.current
@@ -117,6 +121,12 @@ fun AccountDetailScreen(vm: AppViewModel, id: Long, onBack: () -> Unit, onAdd: (
                     OutlinedButton({ editing = true }, Modifier.heightIn(min = 56.dp)) { Icon(Icons.Rounded.Edit, str(R.string.edit)) }
                 }
             }
+            if (a.cardType == CardType.CREDIT) item {
+                OutlinedButton({ onStatement(id) }, Modifier.fillMaxWidth().heightIn(min = 56.dp)) {
+                    Icon(Icons.AutoMirrored.Rounded.ReceiptLong, null, Modifier.padding(end = 8.dp)); Text(str(R.string.statement_and_due))
+                }
+                Spacer(Modifier.height(12.dp))
+            }
             item {
                 TintCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -125,8 +135,8 @@ fun AccountDetailScreen(vm: AppViewModel, id: Long, onBack: () -> Unit, onAdd: (
                             Line(str(R.string.emi_remaining_incl_interest), moneyOrHidden(row.emiRemaining, hidden))
                             Line(str(R.string.total_outstanding), moneyOrHidden(row.totalOutstanding, hidden))
                             row.nextBill?.let {
-                                Line(str(R.string.next_bill_est_on_x, it.date.format(dayFmt)), moneyOrHidden(it.total, hidden))
-                                Line(str(R.string.charges_emi), "${moneyOrHidden(it.charges, hidden)} + ${moneyOrHidden(it.emi, hidden)}")
+                                Line(if (it.actual) str(R.string.statement_total) + " · " + it.date.format(dayFmt) else str(R.string.next_bill_est_on_x, it.date.format(dayFmt)), moneyOrHidden(it.total, hidden))
+                                if (!it.actual) Line(str(R.string.charges_emi), "${moneyOrHidden(it.charges, hidden)} + ${moneyOrHidden(it.emi, hidden)}")
                             }
                         } else Line(str(R.string.balance), moneyOrHidden(a.amount, hidden))
                         val u = row.credit
@@ -153,6 +163,7 @@ fun AccountDetailScreen(vm: AppViewModel, id: Long, onBack: () -> Unit, onAdd: (
                     Stat(str(R.string.expense), month.expense, p.expense, hidden, Modifier.weight(1f))
                 }
             }
+            cardEmis(d.loans, setOf(a.name.lowercase()), onOpenLoan)
             item { SectionTitle(str(R.string.transactions)) }
             if (txs.isEmpty()) item { EmptyState(Icons.AutoMirrored.Rounded.ReceiptLong, str(R.string.no_transactions_yet)) }
             groups.forEach { (day, list) ->
@@ -179,9 +190,11 @@ fun AccountDetailScreen(vm: AppViewModel, id: Long, onBack: () -> Unit, onAdd: (
  * The list shows every transaction ("Exclude transfers" only affects totals).
  */
 @Composable
-private fun GroupDetail(vm: AppViewModel, d: AppData, g: CardGroup, hidden: Boolean, onBack: () -> Unit, onAdd: (Long) -> Unit, onPayBill: (Long) -> Unit, onOpenTx: (Long) -> Unit) {
-    var selected by rememberSaveable { mutableStateOf<Long?>(null) } // null = All cards
-    val card = g.members.firstOrNull { it.id == selected }
+private fun GroupDetail(vm: AppViewModel, d: AppData, g: CardGroup, hidden: Boolean, onBack: () -> Unit, onAdd: (Long) -> Unit, onPayBill: (Long) -> Unit, onOpenTx: (Long) -> Unit, onStatement: (Long) -> Unit, onOpenLoan: (Long) -> Unit) {
+    // Swipe the card to switch between the combined card (page 0) and each member; the chips below follow.
+    val pager = androidx.compose.foundation.pager.rememberPagerState { g.members.size + 1 }
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    val card = g.members.getOrNull(pager.currentPage - 1)
     val transfers = remember(d.categories) { transferIds(d.categories) }
     val txs = remember(d.expenses, g, card) { if (card == null) groupTransactions(d.expenses, g) else d.expenses.filter { it.accountId == card.id } }
     val groups = remember(txs) { groupByDay(txs) }
@@ -194,12 +207,17 @@ private fun GroupDetail(vm: AppViewModel, d: AppData, g: CardGroup, hidden: Bool
         },
     ) { pad ->
         LazyColumn(contentPadding = PaddingValues(16.dp, pad.calculateTopPadding() + 8.dp, 16.dp, pad.calculateBottomPadding() + 24.dp)) {
-            item { GroupHeroCard(g, hidden) }
+            item {
+                androidx.compose.foundation.pager.HorizontalPager(pager, pageSpacing = 12.dp, verticalAlignment = Alignment.Top) { p ->
+                    if (p == 0) GroupHeroCard(g, hidden, bill = com.paisaplus.compose.data.combineBills(d.accounts.filter { it.account.id in g.ids }.mapNotNull { it.nextBill }))
+                    else d.accounts.firstOrNull { it.account.id == g.members[p - 1].id }?.let { AccountHeroCard(it, hidden) }
+                }
+            }
             item {
                 Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(card == null, { selected = null }, { Text(str(R.string.all_cards)) })
-                    g.members.forEach { m ->
-                        FilterChip(card?.id == m.id, { selected = m.id }, { Text(m.last4Label()) })
+                    FilterChip(card == null, { scope.launch { pager.animateScrollToPage(0) } }, { Text(str(R.string.all_cards)) })
+                    g.members.forEachIndexed { i, m ->
+                        FilterChip(card?.id == m.id, { scope.launch { pager.animateScrollToPage(i + 1) } }, { Text(m.last4Label()) })
                     }
                 }
             }
@@ -209,8 +227,10 @@ private fun GroupDetail(vm: AppViewModel, d: AppData, g: CardGroup, hidden: Bool
                     OutlinedButton({ onPayBill((card ?: g.members.first()).id) }, Modifier.heightIn(min = 56.dp)) {
                         Icon(Icons.Rounded.SwapHoriz, null, Modifier.padding(end = 8.dp)); Text(str(R.string.pay_bill))
                     }
+                    OutlinedButton({ onStatement(g.members.first().id) }, Modifier.heightIn(min = 56.dp)) { Icon(Icons.AutoMirrored.Rounded.ReceiptLong, str(R.string.statement_and_due)) }
                 }
             }
+            cardEmis(d.loans, setOf(*g.members.map { it.name.lowercase() }.toTypedArray()), onOpenLoan)
             item { SectionTitle(str(R.string.transactions)) }
             if (txs.isEmpty()) item { EmptyState(Icons.AutoMirrored.Rounded.ReceiptLong, str(R.string.no_transactions_yet)) }
             groups.forEach { (day, list) ->
@@ -258,6 +278,30 @@ private fun Stat(label: String, v: Double, color: Color, hidden: Boolean, modifi
             Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(4.dp))
             AmountText(v, style = MaterialTheme.typography.titleLarge, color = color, hidden = hidden)
+        }
+    }
+}
+
+/** The EMIs booked on these cards (matched by card name): open ones first, each opens its loan page. */
+private fun androidx.compose.foundation.lazy.LazyListScope.cardEmis(loans: List<LoanEntity>, cards: Set<String>, onOpen: (Long) -> Unit) {
+    val emis = loans.filter { it.kind == LoanKind.EMI && it.account.lowercase() in cards }.sortedWith(compareBy({ it.closed }, { it.nextDue }))
+    if (emis.isEmpty()) return
+    item { SectionTitle(str(R.string.emi)) }
+    items(emis.size) { i ->
+        val l = emis[i]
+        val next = java.time.Instant.ofEpochMilli(l.nextDue).atZone(java.time.ZoneId.systemDefault()).toLocalDate().format(dayFmt)
+        androidx.compose.foundation.layout.Row(
+            Modifier.fillMaxWidth().clickable { onOpen(l.id) }.padding(vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(l.label.ifBlank { l.name }, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(
+                    money(l.emi) + " · " + (if (l.tenure > 0) str(R.string.x_of_x_paid, l.paid, l.tenure) else l.paid.toString()) + if (l.closed) " · " + str(R.string.closed) else " · $next",
+                    style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            if (!l.closed) Text(money(l.remaining), style = MaterialTheme.typography.titleSmall)
         }
     }
 }

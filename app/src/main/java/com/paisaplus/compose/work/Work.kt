@@ -63,7 +63,7 @@ class AutoBackupWorker @AssistedInject constructor(
 /** recurring_service.dart reschedule: one pending notification per remind rule, 9:00 on its next date. */
 class ReminderWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
     override suspend fun doWork(): Result {
-        Reminders.show(applicationContext, inputData.getLong("id", 0), inputData.getString("name").orEmpty(), inputData.getString("amount").orEmpty())
+        Reminders.show(applicationContext, inputData.getLong("id", 0), inputData.getString("name").orEmpty(), inputData.getString("amount").orEmpty(), inputData.getString("text"), inputData.getString("route"))
         return Result.success()
     }
 }
@@ -112,9 +112,47 @@ object Reminders {
                     .build(),
             )
         }
+        dues(wm, db, zone, now)
     }
 
-    fun show(ctx: Context, id: Long, name: String, amount: String) {
+    /** Credit-card bills (real statement if entered, else estimate) and standalone loans: [remindDays] before and on the due day, 9:00. */
+    private suspend fun dues(wm: WorkManager, db: PaisaDatabase, zone: ZoneId, now: Instant) {
+        val today = java.time.LocalDate.now(zone)
+        val accounts = db.accounts().list()
+        val expenses = db.expenses().list()
+        val loans = db.loans().list()
+        val statements = db.statements().list()
+        fun fmt(v: Double) = java.text.NumberFormat.getInstance().apply { maximumFractionDigits = 0 }.format(v)
+        fun queue(key: String, id: Long, name: String, amount: Double, on: java.time.LocalDate, daysLeft: Int, route: String) {
+            val at = on.atTime(9, 0).atZone(zone).toInstant()
+            if (at.isBefore(now)) return
+            val text = if (daysLeft <= 0) str(R.string.x_due_today, fmt(amount)) else str(R.string.x_due_in_n_days, fmt(amount), daysLeft)
+            wm.enqueueUniqueWork(
+                "remind-$key-$on", ExistingWorkPolicy.REPLACE,
+                OneTimeWorkRequestBuilder<ReminderWorker>().addTag(TAG).setInitialDelay(Duration.between(now, at))
+                    .setInputData(workDataOf("id" to id, "name" to name, "amount" to amount.toString(), "text" to text, "route" to route)).build(),
+            )
+        }
+        val cards = accounts.filter { it.cardType == com.paisaplus.compose.data.CardType.CREDIT }
+        cards.forEach { c ->
+            val b = com.paisaplus.compose.data.nextBill(c, expenses, loans, today, zone, statements, accounts) ?: return@forEach
+            val due = b.due ?: return@forEach
+            if (b.total <= 0) return@forEach
+            val id = 1_000_000L + c.id
+            queue("card${c.id}", id, c.name, b.total, due, 0, "statement/${c.id}")
+            if (c.remindDays > 0) queue("card${c.id}-early", id, c.name, b.total, due.minusDays(c.remindDays.toLong()), c.remindDays, "statement/${c.id}")
+        }
+        val cardNames = cards.map { it.name.lowercase() }.toSet()
+        loans.filter { !it.closed && !it.charged && it.account.lowercase() !in cardNames }.forEach { l ->
+            val due = Instant.ofEpochMilli(l.nextDue).atZone(zone).toLocalDate()
+            val id = 2_000_000L + l.id
+            val name = l.label.ifBlank { l.name }
+            queue("loan${l.id}", id, name, l.emi, due, 0, "loan/${l.id}")
+            if (l.remindDays > 0) queue("loan${l.id}-early", id, name, l.emi, due.minusDays(l.remindDays.toLong()), l.remindDays, "loan/${l.id}")
+        }
+    }
+
+    fun show(ctx: Context, id: Long, name: String, amount: String, text: String? = null, route: String? = null) {
         if (Build.VERSION.SDK_INT >= 33 &&
             ContextCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) return
@@ -125,10 +163,10 @@ object Reminders {
             NotificationCompat.Builder(ctx, CHANNEL)
                 .setSmallIcon(R.drawable.ic_stat_paisa)
                 .setContentTitle(str(R.string.upcoming_x, name))
-                .setContentText(str(R.string.x_due_today, amount))
+                .setContentText(text ?: str(R.string.x_due_today, amount))
                 .setContentIntent(PendingIntent.getActivity(
                     ctx, id.toInt(),
-                    Intent(ctx, MainActivity::class.java).putExtra(MainActivity.EXTRA_OPEN, Routes.RECURRING).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                    Intent(ctx, MainActivity::class.java).putExtra(MainActivity.EXTRA_OPEN, route ?: Routes.RECURRING).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP),
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
                 ))
                 .setAutoCancel(true)

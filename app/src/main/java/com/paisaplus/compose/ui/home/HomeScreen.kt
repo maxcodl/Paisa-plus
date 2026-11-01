@@ -104,6 +104,8 @@ import androidx.compose.foundation.background
 import java.time.LocalDate
 import java.time.ZoneId
 import com.paisaplus.compose.data.monthTotals
+import com.paisaplus.compose.data.periodRange
+import com.paisaplus.compose.data.date
 import com.paisaplus.compose.data.salaryIds
 import com.paisaplus.compose.editTransaction
 import com.paisaplus.compose.openTab
@@ -242,6 +244,13 @@ private fun Dashboard(d: AppData, skip: Set<Long>, name: String, hidden: Boolean
     val salary = remember(d.categories) { salaryIds(d.categories) }
     val month = remember(d.expenses, skip, salary, now) { monthTotals(d.expenses, now, skip = skip, salary = salary, start = start) }
     val last = remember(d.expenses, skip, salary, now) { monthTotals(d.expenses, now.minusMonths(1), skip = skip, salary = salary, start = start) }
+    // The % change compares the days so far with the same days of last month, and stays blank for a period's first week (too few days to mean anything).
+    val daysIn = remember(now, start) { java.time.temporal.ChronoUnit.DAYS.between(periodRange(now, start).first, LocalDate.now()).toInt() }
+    val lastSoFar = remember(d.expenses, skip, salary, now) {
+        val cutoff = periodRange(now.minusMonths(1), start).first.plusDays(daysIn.toLong())
+        monthTotals(d.expenses.filter { it.date(java.time.ZoneId.systemDefault()) <= cutoff }, now.minusMonths(1), skip = skip, salary = salary, start = start)
+    }
+    val showChange = daysIn >= 7
     val credit = remember(d.accounts) {
         // One row per limit group (or ungrouped card).
         d.accounts.filter { it.credit != null }.distinctBy { it.account.limitGroup?.trim()?.lowercase()?.ifEmpty { null } ?: "#${it.account.id}" }
@@ -264,7 +273,7 @@ private fun Dashboard(d: AppData, skip: Set<Long>, name: String, hidden: Boolean
         contentPadding = PaddingValues(16.dp, pad.calculateTopPadding(), 16.dp, bar + 88.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        item { BalancePager(d, modes, month, last, hidden, toggleHidden) }
+        item { BalancePager(d, modes, month, last, lastSoFar.takeIf { showChange }, hidden, toggleHidden) }
         item { SectionTitle(str(R.string.overview), Modifier.semantics { heading() }) }
         (if (oneColumn) tiles.chunked(1) else tiles.chunked(2)).forEach { row ->
             item {
@@ -314,10 +323,10 @@ private val dueFmt = java.time.format.DateTimeFormatter.ofPattern("d MMM")
 
 /** Balance card pages (Settings › Balance card); swipe to switch. */
 @Composable
-private fun BalancePager(d: AppData, modes: List<BalanceMode>, month: MonthTotals, last: MonthTotals, hidden: Boolean, toggle: () -> Unit) {
+private fun BalancePager(d: AppData, modes: List<BalanceMode>, month: MonthTotals, last: MonthTotals, lastSoFar: MonthTotals?, hidden: Boolean, toggle: () -> Unit) {
     val c = MaterialTheme.colorScheme
     val zone = ZoneId.systemDefault()
-    val s = remember(d) { balanceSummary(d.accounts.map { it.account }, d.expenses, d.loans, LocalDate.now(zone), zone) }
+    val s = remember(d) { balanceSummary(d.accounts.map { it.account }, d.expenses, d.loans, LocalDate.now(zone), zone, d.statements) }
     val pager = rememberPagerState { modes.size }
     Column {
         // Each page keeps its own height (Credit cards lists every card); the change animates.
@@ -334,8 +343,8 @@ private fun BalancePager(d: AppData, modes: List<BalanceMode>, month: MonthTotal
                 when (m) {
                     // Bank is the main page: balance with this month's income and expense.
                     BalanceMode.BANK -> {
-                        MonthStat(str(R.string.income), month.income, last.income, hidden, good = true, Modifier.weight(1f))
-                        MonthStat(str(R.string.expense), month.expense, last.expense, hidden, good = false, Modifier.weight(1f))
+                        MonthStat(str(R.string.income), month.income, last.income, hidden, good = true, Modifier.weight(1f), lastSoFar?.income)
+                        MonthStat(str(R.string.expense), month.expense, last.expense, hidden, good = false, Modifier.weight(1f), lastSoFar?.expense)
                     }
                     BalanceMode.TOTAL -> {
                         Stat(str(R.string.bank_cash), s.bank, null, hidden, Modifier.weight(1f))
@@ -398,7 +407,7 @@ private fun CardBills(bills: List<CardBill>, hidden: Boolean) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(b.card, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(str(R.string.statement_x, b.date.format(dueFmt)), style = MaterialTheme.typography.bodySmall, color = dim)
+                    Text(str(R.string.due_x, b.date.format(dueFmt)), style = MaterialTheme.typography.bodySmall, color = dim)
                 }
                 AmountText(b.amount, Modifier.widthIn(max = 160.dp), style = MaterialTheme.typography.titleSmall, hidden = hidden)
             }
@@ -417,10 +426,10 @@ private fun Stat(label: String, value: Double, sub: String?, hidden: Boolean, mo
 }
 
 @Composable
-private fun MonthStat(label: String, now: Double, before: Double, hidden: Boolean, good: Boolean, modifier: Modifier) {
+private fun MonthStat(label: String, now: Double, before: Double, hidden: Boolean, good: Boolean, modifier: Modifier, sameDays: Double? = null) {
     val p = LocalPaisaColors.current
     val dim = LocalContentColor.current.copy(alpha = 0.78f)
-    val pct = change(now, before)
+    val pct = sameDays?.let { change(now, it) } // null (blank) in a period's first week
     Column(modifier) {
         WrapText(label, style = MaterialTheme.typography.bodyMedium, color = dim)
         Row(verticalAlignment = Alignment.CenterVertically) {

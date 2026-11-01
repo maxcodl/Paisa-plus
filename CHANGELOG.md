@@ -1,4 +1,17 @@
 # Changelog
+## 0.11.0-beta1
+
+- Every credit card gets a bill: this cycle's full usage plus one month of EMI, with the statement day defaulting to month end and a payment due day you can set
+- New Statement & due date page on each card: enter the bank's statement (total, minimum due, dates) and it replaces the estimate; past statements are kept and included in backups
+- Statements are made automatically once a statement day passes, and rebuilt when you change the statement or due day
+- Paying a bill lowers it (a part payment lowers the amount and the minimum due); payments into any card of a shared-limit group count once
+- Reminders before and on the due date for card bills and loans, with a "remind days before" setting on each
+- Due-date and statement texts (loan EMI due, Pay Later bill, card statements) are read by the SMS scan and set the loan's due date or the card's statement
+- Shared-limit cards: swipe between the combined card and each card, and see one combined statement and bill
+- Home card bills are listed by due date, one row per shared-limit group
+- Card pages list the card's EMIs; EMIs already on the card show on the EMI side of the tile
+- Income and expense change on Home compares the same days of last month and stays blank for the first week
+- Database schema 11
 ## 0.10.6
 
 - Card EMIs can be marked "purchase already on the card": they stay tracked but are no longer added to the card's used amount or posted again

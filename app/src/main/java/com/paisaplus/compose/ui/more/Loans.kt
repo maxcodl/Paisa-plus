@@ -440,6 +440,8 @@ private fun LoanSheet(l: LoanEntity, accounts: List<String>, onDismiss: () -> Un
     var next by rememberSaveable { mutableLongStateOf(l.nextDue) }
     var autoPost by rememberSaveable { mutableStateOf(l.autoPost) }
     var charged by rememberSaveable { mutableStateOf(l.charged) }
+    var accountNo by rememberSaveable { mutableStateOf(l.accountNo) }
+    var remind by rememberSaveable { mutableStateOf(l.remindDays.toString()) }
     var confirmDelete by remember { mutableStateOf(false) }
     val emiV = emi.toAmount()
     val tenureV = if (tenure.isBlank()) 0 else tenure.toIntOrNull()
@@ -468,6 +470,10 @@ private fun LoanSheet(l: LoanEntity, accounts: List<String>, onDismiss: () -> Un
             }
             AmountField(principal, { principal = it }, str(R.string.principal_optional))
             DateField(str(R.string.next_due), next, { next = it }, Modifier.fillMaxWidth())
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (kind == LoanKind.LOAN) OutlinedTextField(accountNo, { accountNo = it.filter(Char::isDigit).takeLast(6) }, label = { Text(str(R.string.loan_account_digits)) }, singleLine = true, modifier = Modifier.weight(1f))
+                OutlinedTextField(remind, { remind = it.filter(Char::isDigit).take(2) }, label = { Text(str(R.string.remind_days_before)) }, singleLine = true, modifier = Modifier.weight(1f))
+            }
             if (kind == LoanKind.EMI) Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(str(R.string.purchase_on_card), style = MaterialTheme.typography.titleSmall)
@@ -489,7 +495,7 @@ private fun LoanSheet(l: LoanEntity, accounts: List<String>, onDismiss: () -> Un
                         onSave(
                             l.copy(
                                 name = name.trim(), label = label.trim(), kind = kind, account = account, emi = emiV!!, tenure = tenureV!!, paid = paidV!!,
-                                principal = principal.toAmount() ?: 0.0, nextDue = next, autoPost = autoPost, charged = charged && kind == LoanKind.EMI,
+                                principal = principal.toAmount() ?: 0.0, nextDue = next, autoPost = autoPost, charged = charged && kind == LoanKind.EMI, accountNo = if (kind == LoanKind.LOAN) accountNo else "", remindDays = remind.toIntOrNull() ?: 3,
                                 dueDay = if (isNew || next != l.nextDue) dayOfMonth(next) else l.dueDay,
                             ),
                         )

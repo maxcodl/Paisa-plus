@@ -46,8 +46,8 @@ android {
         applicationId = "com.paisaplus.compose"
         minSdk = 26
         targetSdk = 36
-        versionCode = 28
-        versionName = "0.10.6"
+        versionCode = 29
+        versionName = "0.11.0-beta1"
     }
 
     signingConfigs {
